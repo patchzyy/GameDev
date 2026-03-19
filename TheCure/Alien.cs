@@ -10,20 +10,18 @@ namespace TheCure
         private Texture2D _texture;
         private float _speed = 60f;
         private bool _isGameOver = false;
-
-        public Alien()
-        {
-
-        }
+        private int _maxHealth = 5;
+        private int _startHealth = 3;
 
         public override void Load(ContentManager content)
         {
             base.Load(content);
 
             _texture = content.Load<Texture2D>("Alien");
+            SetHealthBar(_texture, _maxHealth, _startHealth, Destroy, Destroy);
             _collider = new CircleCollider(Vector2.Zero, _texture.Width / 2);
-
             SetCollider(_collider);
+
             RandomMove();
         }
 
@@ -51,12 +49,13 @@ namespace TheCure
 
             base.Update(gameTime);
         }
+
         public override void OnCollision(GameObject tmp)
         {
             if (tmp is Bullet || tmp is Laser)
             {
                 _speed += 5f;
-                RandomMove();
+                LoseHealth(1);
             }
 
             base.OnCollision(tmp);
@@ -80,6 +79,12 @@ namespace TheCure
             spriteBatch.Draw(_texture, _collider.GetBoundingBox(), Color.White);
 
             base.Draw(gameTime, spriteBatch);
+        }
+
+        public override void Destroy()
+        {
+            RandomMove();
+            ResetHealth();
         }
     }
 }
