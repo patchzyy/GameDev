@@ -1,2 +1,2 @@
-﻿using var game = new TheCure.Game1();
+﻿using var game = new TheCure.TheCure();
 game.Run();
