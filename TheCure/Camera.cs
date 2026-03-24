@@ -32,6 +32,11 @@ namespace TheCure
             _position.Y = target.Y - _viewport.Height / 2;
         }
 
+        public Rectangle GetViewBounds()
+        {
+            return new Rectangle((int)_position.X, (int)_position.Y, _viewport.Width, _viewport.Height);
+        }
+
         public Matrix GetViewMatrix()
         {
             return Matrix.CreateTranslation(new Vector3(-_position, 0f));

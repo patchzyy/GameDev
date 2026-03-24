@@ -496,5 +496,30 @@ namespace TheCure
                 RNG.Next(0, Game.GraphicsDevice.Viewport.Height)
             );
         }
+
+        public Vector2 RandomLocationOutsideView(int margin = 150)
+        {
+            if (_camera == null)
+                return RandomScreenLocation();
+
+            Rectangle viewBounds = _camera.GetViewBounds();
+            int left = viewBounds.Left - margin;
+            int right = viewBounds.Right + margin;
+            int top = viewBounds.Top - margin;
+            int bottom = viewBounds.Bottom + margin;
+
+            int side = RNG.Next(0, 4);
+            switch (side)
+            {
+                case 0: // Spawn boven uit het zicht
+                    return new Vector2(RNG.Next(left, right), RNG.Next(top, viewBounds.Top));
+                case 1: // Spawn onder uit het zicht
+                    return new Vector2(RNG.Next(left, right), RNG.Next(viewBounds.Bottom, bottom));
+                case 2: // Spawn links uit het zicht
+                    return new Vector2(RNG.Next(left, viewBounds.Left), RNG.Next(top, bottom));
+                default: // Spawn rechts uit het zicht
+                    return new Vector2(RNG.Next(viewBounds.Right, right), RNG.Next(top, bottom));
+            }
+        }
     }
 }

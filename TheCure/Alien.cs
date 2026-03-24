@@ -64,13 +64,13 @@ namespace TheCure
         public void RandomMove()
         {
             GameManager game = GameManager.GetGameManager();
-            _collider.Center = game.RandomScreenLocation();
+            _collider.Center = game.RandomLocationOutsideView();
 
             Vector2 centerOfPlayer = game.Player.GetPosition().Center.ToVector2();
 
             while ((_collider.Center - centerOfPlayer).Length() < 100)
             {
-                _collider.Center = game.RandomScreenLocation();
+                _collider.Center = game.RandomLocationOutsideView();
             }
         }
 
