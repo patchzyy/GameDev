@@ -54,7 +54,6 @@ namespace TheCure
         {
             if (tmp is Bullet || tmp is Laser)
             {
-                _speed += 5f;
                 LoseHealth(1);
             }
 
@@ -83,8 +82,7 @@ namespace TheCure
 
         public override void Destroy()
         {
-            RandomMove();
-            ResetHealth();
+            GameManager.GetGameManager().RemoveGameObject(this);
         }
     }
 }

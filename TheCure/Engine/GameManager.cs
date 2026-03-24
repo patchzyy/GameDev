@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -29,16 +30,15 @@ namespace TheCure
         private int _score = 0;
         private SpriteFont _hudFont;
 
+        private float _gameTimeElapsed = 0f;
         private float _spawnTimer = 0f;
-        private float _timeSinceLastSpawn = 0f;
+
         private float _initialSpawnInterval = 5.0f;
         private float _currentSpawnInterval;
-        private float _minimumSpawnInterval = 1.0f;
-        private float _difficultyRampFactor = 0.98f;
+
         private int _enemiesToSpawn = 1;
-        private int _maxEnemiesPerSpawn = 5;
-        private float _increaseSpawnCountInterval = 30.0f;
-        private float _timeSinceLastSpawnCountIncrease = 0f;
+        private int _maxEnemiesOnScreen;
+
         private float _supplySpawnTimer = 0f;
         private float _supplySpawnInterval = 15.0f;
 
@@ -198,9 +198,8 @@ namespace TheCure
             Player._velocity = Vector2.Zero;
             Player._rotation = 0f;
 
+            _gameTimeElapsed = 0f;
             _spawnTimer = 0f;
-            _timeSinceLastSpawn = 0f;
-            _timeSinceLastSpawnCountIncrease = 0f;
             _supplySpawnTimer = 0f;
             _currentSpawnInterval = _initialSpawnInterval;
             _enemiesToSpawn = 1;
@@ -211,10 +210,7 @@ namespace TheCure
 
             for (int i = 0; i < 1; i++)
             {
-                Alien newAlien = new Alien();
-                newAlien.Load(_content);
-                _gameObjects.Add(newAlien);
-                newAlien.RandomMove();
+                SpawnAlien();
             }
 
             Supply initialSupply = new Supply();
@@ -318,42 +314,13 @@ namespace TheCure
             {
                 float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
+                _gameTimeElapsed += deltaTime;
                 _spawnTimer += deltaTime;
-                _timeSinceLastSpawn += deltaTime;
-                _timeSinceLastSpawnCountIncrease += deltaTime;
                 _supplySpawnTimer += deltaTime;
 
-                if (_supplySpawnTimer >= _supplySpawnInterval)
-                {
-                    Supply newSupply = new Supply();
-                    AddGameObject(newSupply);
-                    newSupply.RandomMove();
-                    _supplySpawnTimer = 0f;
-                }
-
-                if (_timeSinceLastSpawn >= _currentSpawnInterval)
-                {
-                    for (int i = 0; i < _enemiesToSpawn; i++)
-                    {
-                        Alien newAlien = new Alien();
-                        newAlien.Load(_content);
-                        AddGameObject(newAlien);
-                        newAlien.RandomMove();
-                    }
-                    _timeSinceLastSpawn = 0f;
-
-                    _currentSpawnInterval *= _difficultyRampFactor;
-                    if (_currentSpawnInterval < _minimumSpawnInterval)
-                    {
-                        _currentSpawnInterval = _minimumSpawnInterval;
-                    }
-
-                    if (_timeSinceLastSpawnCountIncrease >= _increaseSpawnCountInterval && _enemiesToSpawn < _maxEnemiesPerSpawn)
-                    {
-                        _enemiesToSpawn++;
-                        _timeSinceLastSpawnCountIncrease = 0f;
-                    }
-                }
+                UpdatePhase();
+                SpawnEnemies();
+                SpawnSupply();
 
                 _camera.Update(Player.GetPosition().Center.ToVector2());
 
@@ -376,12 +343,70 @@ namespace TheCure
 
                 foreach (GameObject gameObject in _toBeRemoved)
                 {
-                    gameObject.Destroy();
                     _gameObjects.Remove(gameObject);
                 }
 
                 _toBeRemoved.Clear();
             }
+        }
+
+        private void UpdatePhase()
+        {
+            if (_gameTimeElapsed < 60f) // early game
+            {
+                _currentSpawnInterval = 3.0f;
+                _enemiesToSpawn = 1;
+                _maxEnemiesOnScreen = 20;
+            }
+            else if (_gameTimeElapsed < 180f) // mid game
+            {
+                _currentSpawnInterval = 2.0f;
+                _enemiesToSpawn = 2;
+                _maxEnemiesOnScreen = 35;
+            }
+            else // late game
+            {
+                _currentSpawnInterval = 1.2f;
+                _enemiesToSpawn = 3;
+                _maxEnemiesOnScreen = 50;
+            }
+        }
+
+        private void SpawnEnemies()
+        {
+            if (_spawnTimer < _currentSpawnInterval)
+                return;
+            _spawnTimer = 0f;
+
+            int currentAlienCount = _gameObjects.OfType<Alien>().Count();
+
+            if (currentAlienCount >= _maxEnemiesOnScreen)
+                return;
+
+            _enemiesToSpawn = Math.Min(_enemiesToSpawn, _maxEnemiesOnScreen - currentAlienCount);
+
+            for (int i = 0; i < _enemiesToSpawn; i++)
+                SpawnAlien();
+        }
+
+        private void SpawnAlien()
+        {
+            Alien newAlien = new Alien();
+            newAlien.Load(_content);
+            AddGameObject(newAlien);
+            newAlien.RandomMove();
+        }
+
+        private void SpawnSupply() 
+        {
+            if (_supplySpawnTimer < _supplySpawnInterval)
+                return;
+
+            _supplySpawnTimer = 0f;   
+
+            Supply newSupply = new Supply();
+            AddGameObject(newSupply);
+            newSupply.RandomMove();    
         }
 
         public void AddScore(int pointsToAdd)
