@@ -18,7 +18,7 @@ namespace TheCure.Weapons
 
         }
 
-        void Fire(Vector2 position, Vector2 direction, Ship owner = null)
+        void Fire(Vector2 position, Vector2 direction, Player owner = null)
         {
 
         }

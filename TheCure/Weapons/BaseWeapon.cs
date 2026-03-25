@@ -21,7 +21,7 @@ namespace TheCure.Weapons
             }
         }
 
-        public abstract void Fire(Vector2 position, Vector2 direction, Ship owner = null);
+        public abstract void Fire(Vector2 position, Vector2 direction, Player owner = null);
 
         protected virtual void ResetCoolDown()
         {

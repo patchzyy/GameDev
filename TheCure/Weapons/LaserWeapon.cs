@@ -8,7 +8,7 @@ namespace TheCure.Weapons
 
         public override float FireRate => 0.10f;
 
-        public override void Fire(Vector2 position, Vector2 direction, Ship owner = null)
+        public override void Fire(Vector2 position, Vector2 direction, Player owner = null)
         {
             LinePieceCollider collider = new LinePieceCollider(position, direction, _laserLength);
 

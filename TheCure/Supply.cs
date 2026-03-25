@@ -56,7 +56,7 @@ namespace TheCure
 
         public override void OnCollision(GameObject tmp)
         {
-            if (tmp is Ship)
+            if (tmp is Player)
             {
                 ApplyEffect();
                 GameManager.GetGameManager().RemoveGameObject(this);
@@ -71,7 +71,7 @@ namespace TheCure
 
         private void ApplyEffect()
         {
-            Ship ship = GameManager.GetGameManager().Player;
+            Player player = GameManager.GetGameManager().Player;
             Random random = GameManager.GetGameManager().RNG;
 
             switch (Type)
@@ -80,18 +80,18 @@ namespace TheCure
                     int weaponChoice = random.Next(2);
                     if (weaponChoice == 0)
                     {
-                        ship.SetWeapon("Laser");
+                        player.SetWeapon("Laser");
                         System.Diagnostics.Debug.WriteLine("Supply opgepikt: LaserWeapon buff!");
                     }
                     else
                     {
-                        ship.SetWeapon("DoubleBarrel");
+                        player.SetWeapon("DoubleBarrel");
                         System.Diagnostics.Debug.WriteLine("Supply opgepikt: DoubleBarrelWeapon buff!");
                     }
-                    ship.SetWeaponBuffTimer(10f);
+                    player.SetWeaponBuffTimer(10f);
                     break;
                 case SupplyType.Health:
-                    ship.Heal(30f);
+                    player.Heal(30f);
                     System.Diagnostics.Debug.WriteLine("Supply opgepikt: +30 health!");
                     break;
                 case SupplyType.Score:

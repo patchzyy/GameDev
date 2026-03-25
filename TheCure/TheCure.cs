@@ -28,7 +28,7 @@ namespace TheCure
             _gameManager = GameManager.GetGameManager();
             base.Initialize();
 
-            Ship player = new Ship(new Point(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height / 2));
+            Player player = new Player(new Point(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height / 2));
 
             _gameManager.Initialize(Content, this, player);
 
