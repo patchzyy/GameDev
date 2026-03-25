@@ -28,6 +28,7 @@ namespace TheCure
         private Camera _camera;
         private int _score = 0;
         private SpriteFont _hudFont;
+        private Texture2D _buttonTexture;
 
         private float _spawnTimer = 0f;
         private float _timeSinceLastSpawn = 0f;
@@ -130,13 +131,13 @@ namespace TheCure
             _continueButton.Clicked += ContinueButton_Clicked;
 
             _pauseQuitButton = new Button(
-                new Rectangle(centerX - buttonWidth / 2, (int)(centerY + spacing * 0.5f), buttonWidth, buttonHeight),
+                new Rectangle(centerX - buttonWidth / 2, (int)(centerY + spacing * 3.5f), buttonWidth, buttonHeight),
                 "Quit",
                 _buttonFont);
             _pauseQuitButton.Clicked += PauseQuitButton_Clicked;
 
             _restartButton = new Button(
-                new Rectangle(centerX - buttonWidth / 2, centerY - spacing, buttonWidth, buttonHeight),
+                new Rectangle(centerX - buttonWidth / 2, (int)(centerY - spacing * 4f), buttonWidth, buttonHeight),
                 "Opnieuw spelen",
                 _buttonFont);
             _restartButton.Clicked += RestartButton_Clicked;
@@ -246,7 +247,7 @@ namespace TheCure
 
         public void Load(ContentManager content)
         {
-            _backgroundTexture = content.Load<Texture2D>("StartBackground");
+            _backgroundTexture = content.Load<Texture2D>("ZombieBackground");
             _titleFont = content.Load<SpriteFont>("TitleFont");
             _buttonFont = content.Load<SpriteFont>("ButtonFont");
             _hudFont = content.Load<SpriteFont>("HudFont");
@@ -408,11 +409,20 @@ namespace TheCure
             {
                 spriteBatch.Draw(_backgroundTexture, new Rectangle(0, 0, Game.GraphicsDevice.Viewport.Width, Game.GraphicsDevice.Viewport.Height), Color.White);
 
-                string titleText = "Space Defence";
-                Vector2 titleSize = _titleFont.MeasureString(titleText);
-                Vector2 titlePosition = new Vector2(Game.GraphicsDevice.Viewport.Width / 2 - titleSize.X / 2, 100);
+                var quitBounds = _quitButton.Rectangle;
 
-                spriteBatch.DrawString(_titleFont, titleText, titlePosition, Color.White);
+                float spacing = 120f;
+
+                float textY = quitBounds.Y + quitBounds.Height + spacing;
+
+                string titleText = "The Cure";
+                Vector2 titleSize = _titleFont.MeasureString(titleText);
+                Vector2 titlePosition = new Vector2(
+                    Game.GraphicsDevice.Viewport.Width / 2 - titleSize.X / 2,
+                    textY
+                );
+
+                spriteBatch.DrawString(_titleFont, titleText, titlePosition, Color.Red);
 
                 _startButton.Draw(spriteBatch);
                 _quitButton.Draw(spriteBatch);
@@ -435,6 +445,9 @@ namespace TheCure
             }
             else if (CurrentGameState == GameState.GameOver)
             {
+                float spacing = 20f;
+                float currentY = 150f;
+
                 spriteBatch.Draw(DummyTexture,
                     new Rectangle(0, 0, Game.GraphicsDevice.Viewport.Width, Game.GraphicsDevice.Viewport.Height),
                     new Color(0, 0, 0, 200)
@@ -442,13 +455,15 @@ namespace TheCure
 
                 string gameOverText = "Game Over";
                 Vector2 gameOverTextSize = _titleFont.MeasureString(gameOverText);
-                Vector2 gameOverTextPosition = new Vector2(Game.GraphicsDevice.Viewport.Width / 2 - gameOverTextSize.X / 2, 150);
+                Vector2 gameOverTextPosition = new Vector2(Game.GraphicsDevice.Viewport.Width / 2 - gameOverTextSize.X / 2, currentY);
 
                 spriteBatch.DrawString(_titleFont, gameOverText, gameOverTextPosition, Color.Red);
 
+                currentY += gameOverTextSize.Y + spacing;
+
                 string scoreText = $"Eindscore: {_score}";
                 Vector2 scoreTextSize = _titleFont.MeasureString(scoreText);
-                Vector2 scoreTextPosition = new Vector2(Game.GraphicsDevice.Viewport.Width / 2 - scoreTextSize.X / 2, 200);
+                Vector2 scoreTextPosition = new Vector2(Game.GraphicsDevice.Viewport.Width / 2 - scoreTextSize.X / 2, currentY);
 
                 spriteBatch.DrawString(_titleFont, scoreText, scoreTextPosition, Color.White);
 

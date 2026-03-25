@@ -48,11 +48,11 @@ namespace TheCure
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            Color color = Color.Gray;
+            Color color = Color.Green;
 
             if (_isHovering)
             {
-                color = new Color(64, 64, 64);
+                color = Color.DarkGreen;
             }
 
             spriteBatch.Draw(GameManager.GetGameManager().DummyTexture, Rectangle, color);
