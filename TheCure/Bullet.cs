@@ -40,12 +40,9 @@ namespace TheCure
 
         public override void OnCollision(GameObject other)
         {
-            if (other is Alien alien)
+            if (other is Zombie)
             {
-                if (!alien.IsFriendly)
-                {
-                    GameManager.GetGameManager().RemoveGameObject(this);
-                }
+                GameManager.GetGameManager().RemoveGameObject(this);
             }
             else if (other is Supply)
             {

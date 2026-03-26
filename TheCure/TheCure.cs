@@ -33,7 +33,7 @@ namespace TheCure
             _gameManager.Initialize(Content, this, player);
 
             _gameManager.AddGameObject(player);
-            _gameManager.AddGameObject(new Alien());
+            _gameManager.AddGameObject(new Zombie());
             _gameManager.AddGameObject(new Supply());
 
             Vector2 asteroidPosition1 = new Vector2(1000, 800);

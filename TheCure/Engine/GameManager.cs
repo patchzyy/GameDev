@@ -379,7 +379,7 @@ namespace TheCure
                 return;
             _spawnTimer = 0f;
 
-            int currentAlienCount = _gameObjects.OfType<Alien>().Count();
+            int currentAlienCount = _gameObjects.OfType<Zombie>().Count();
 
             if (currentAlienCount >= _maxEnemiesOnScreen)
                 return;
@@ -392,10 +392,10 @@ namespace TheCure
 
         private void SpawnAlien()
         {
-            Alien newAlien = new Alien();
-            newAlien.Load(_content);
-            AddGameObject(newAlien);
-            newAlien.RandomMove();
+            Zombie newZombie = new Zombie();
+            newZombie.Load(_content);
+            AddGameObject(newZombie);
+            newZombie.RandomMove();
         }
 
         private void SpawnSupply() 
