@@ -24,8 +24,6 @@ namespace TheCure
         private Button _continueButton;
         private Button _pauseQuitButton;
         private Button _restartButton;
-        private Planet _pickupPlanet;
-        private Planet _dropOffPlanet;
         private Camera _camera;
         private int _score = 0;
         private SpriteFont _hudFont;
@@ -145,15 +143,6 @@ namespace TheCure
             Vector2 pickupPos = new Vector2(-500, -300);
             Vector2 dropOffPos = new Vector2(2000, 600);
 
-            _pickupPlanet = new Planet(pickupPos, PlanetType.Pickup);
-            _dropOffPlanet = new Planet(dropOffPos, PlanetType.DropOff);
-
-            _gameObjects.Add(_pickupPlanet);
-            _gameObjects.Add(_dropOffPlanet);
-
-            _pickupPlanet.Load(content);
-            _dropOffPlanet.Load(content);
-
             CurrentGameState = GameState.StartScreen;
         }
 
@@ -192,7 +181,6 @@ namespace TheCure
             _score = 0;
 
             Player._health = Player.MaxHealth;
-            Player._isCarryingCargo = false;
             Player._currentWeapon = Player._bulletWeapon;
             Player._weaponBuffTimer = 0f;
             Player._rectangleCollider.shape.Location = new Point(Game.GraphicsDevice.Viewport.Width / 2, Game.GraphicsDevice.Viewport.Height / 2);
@@ -206,8 +194,6 @@ namespace TheCure
             _enemiesToSpawn = 1;
 
             _gameObjects.Add(Player);
-            _gameObjects.Add(_pickupPlanet);
-            _gameObjects.Add(_dropOffPlanet);
 
             for (int i = 0; i < 1; i++)
             {
@@ -502,10 +488,6 @@ namespace TheCure
                     string scoreText = $"Score: {_score}";
                     Vector2 scorePosition = new Vector2(10, 10);
                     spriteBatch.DrawString(_hudFont, scoreText, scorePosition, Color.White);
-
-                    string cargoText = $"Cargo: " + (Player.IsCarryingCargo ? "Ja" : "Nee");
-                    Vector2 cargoPosition = new Vector2(10, 35);
-                    spriteBatch.DrawString(_hudFont, cargoText, cargoPosition, Color.White);
 
                     int barWidth = 150;
                     int barHeight = 15;
