@@ -1,90 +1,92 @@
+#nullable disable
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace TheCure;
-
-public class HealthBar
+namespace TheCure
 {
-    private int _maxHealth;
-    private int _startHealth;
-    private int _currentHealth;
-    private Action _onDeath;
-    private Action? _onMaxHealth;
-
-    private Vector2 _barPosition;
-
-    public Texture2D _texture;
-
-    public HealthBar(Texture2D texture, int maxHealth, int startHealth, Action onDeath, Action? onMaxHealth)
+    public class HealthBar
     {
-        _maxHealth = maxHealth;
-        _startHealth = startHealth;
-        _currentHealth = startHealth;
-        _onDeath = onDeath;
-        _onMaxHealth = onMaxHealth;
-        _texture = texture;
-    }
+        private int _maxHealth;
+        private int _startHealth;
+        private int _currentHealth;
+        private Action _onDeath;
+        private Action? _onMaxHealth;
 
-    public void IncreaseHealth(int health)
-    {
-        _currentHealth += health;
-        if (_currentHealth >= _maxHealth)
+        private Vector2 _barPosition;
+
+        public Texture2D _texture;
+
+        public HealthBar(Texture2D texture, int maxHealth, int startHealth, Action onDeath, Action? onMaxHealth)
         {
-            _currentHealth = _maxHealth;
-            if (_onMaxHealth != null)
+            _maxHealth = maxHealth;
+            _startHealth = startHealth;
+            _currentHealth = startHealth;
+            _onDeath = onDeath;
+            _onMaxHealth = onMaxHealth;
+            _texture = texture;
+        }
+
+        public void IncreaseHealth(int health)
+        {
+            _currentHealth += health;
+            if (_currentHealth >= _maxHealth)
             {
-                _onMaxHealth.Invoke();
+                _currentHealth = _maxHealth;
+                if (_onMaxHealth != null)
+                {
+                    _onMaxHealth.Invoke();
+                }
             }
         }
-    }
 
-    public void DecreaseHealth(int health)
-    {
-        _currentHealth -= health;
-        if (_currentHealth <= 0)
+        public void DecreaseHealth(int health)
         {
-            _onDeath.Invoke();
+            _currentHealth -= health;
+            if (_currentHealth <= 0)
+            {
+                _onDeath.Invoke();
+            }
         }
-    }
 
-    public void ResetHealth()
-    {
-        _currentHealth = _startHealth;
-    }
+        public void ResetHealth()
+        {
+            _currentHealth = _startHealth;
+        }
 
-    public void UpdateHealthBar(Point position, Texture2D texture)
-    {
-        _barPosition = new Vector2(position.X, position.Y);
-        _texture = texture;
-    }
+        public void UpdateHealthBar(Point position, Texture2D texture)
+        {
+            _barPosition = new Vector2(position.X, position.Y);
+            _texture = texture;
+        }
 
 
-    public void Draw(SpriteBatch spriteBatch)
-    {
-        var dummyTexture = GameManager.GetGameManager().DummyTexture;
+        public void Draw(SpriteBatch spriteBatch)
+        {
+            var dummyTexture = GameManager.GetGameManager().DummyTexture;
 
-        if (_texture == null) return;
+            if (_texture == null) return;
 
-        int barWidth = _texture.Width / 2;
-        int barHeight = 15;
+            int barWidth = _texture.Width / 2;
+            int barHeight = 15;
 
-        int xOffset = barWidth / 2;
-        int yOffset = _texture.Height + 5;
+            int xOffset = barWidth / 2;
+            int yOffset = _texture.Height + 5;
 
-        int drawX = (int)_barPosition.X - xOffset;
-        int drawY = (int)_barPosition.Y - yOffset;
+            int drawX = (int)_barPosition.X - xOffset;
+            int drawY = (int)_barPosition.Y - yOffset;
 
-        spriteBatch.Draw(dummyTexture, new Rectangle(drawX, drawY, barWidth, barHeight),
-            Color.Gray);
+            spriteBatch.Draw(dummyTexture, new Rectangle(drawX, drawY, barWidth, barHeight),
+                Color.Gray);
 
-        double healthRatio = _currentHealth / (double)_maxHealth;
-        
-        // scale colour based on ratio from 0-red to 1-green
-        Color healthColor = Color.Lerp(Color.Red, Color.Green, (float)healthRatio);
+            double healthRatio = _currentHealth / (double)_maxHealth;
 
-        spriteBatch.Draw(dummyTexture,
-            new Rectangle(drawX, drawY, (int)(barWidth * healthRatio), barHeight),
-            healthColor);
+            // scale colour based on ratio from 0-red to 1-green
+            Color healthColor = Color.Lerp(Color.Red, Color.Green, (float)healthRatio);
+
+            spriteBatch.Draw(dummyTexture,
+                new Rectangle(drawX, drawY, (int)(barWidth * healthRatio), barHeight),
+                healthColor);
+        }
     }
 }
