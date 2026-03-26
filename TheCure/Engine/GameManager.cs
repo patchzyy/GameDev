@@ -48,7 +48,7 @@ namespace TheCure
             get;
             private set;
         }
-        public Ship Player
+        public Player Player
         {
             get;
             private set;
@@ -96,7 +96,7 @@ namespace TheCure
             _currentSpawnInterval = _initialSpawnInterval;
         }
 
-        public void Initialize(ContentManager content, Game game, Ship player)
+        public void Initialize(ContentManager content, Game game, Player player)
         {
             Game = game;
             _content = content;
@@ -191,7 +191,7 @@ namespace TheCure
 
             _score = 0;
 
-            Player._health = Ship.MaxHealth;
+            Player._health = Player.MaxHealth;
             Player._isCarryingCargo = false;
             Player._currentWeapon = Player._bulletWeapon;
             Player._weaponBuffTimer = 0f;
@@ -511,7 +511,7 @@ namespace TheCure
                     int barHeight = 15;
                     Vector2 barPosition = new Vector2(10, 60);
                     spriteBatch.Draw(DummyTexture, new Rectangle((int)barPosition.X, (int)barPosition.Y, barWidth, barHeight), Color.Gray);
-                    float healthRatio = Player.Health / Ship.MaxHealth;
+                    float healthRatio = Player.Health / Player.MaxHealth;
                     spriteBatch.Draw(DummyTexture, new Rectangle((int)barPosition.X, (int)barPosition.Y, (int)(barWidth * healthRatio), barHeight), Color.Green);
                 }
             }

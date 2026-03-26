@@ -6,7 +6,7 @@ namespace TheCure.Weapons
     {
         public override float FireRate => 0.1f;
 
-        public override void Fire(Vector2 position, Vector2 direction, Ship owner = null)
+        public override void Fire(Vector2 position, Vector2 direction, Player owner = null)
         {
             Vector2 perpendicular = new Vector2(-direction.Y, direction.X);
 

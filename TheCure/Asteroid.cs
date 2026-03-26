@@ -58,7 +58,7 @@ namespace TheCure
 
         public override void OnCollision(GameObject other)
         {
-            if (other is Ship)
+            if (other is Player)
             {
                 GameManager.GetGameManager().SetGameState(GameState.GameOver);
             }

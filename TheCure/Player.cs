@@ -8,8 +8,10 @@ using System;
 
 namespace TheCure
 {
-    public class Ship : GameObject
+    public class Player : GameObject
     {
+        private const float MoveSpeed = 300f;
+
         private Texture2D ship_body;
         private Texture2D base_turret;
         private Texture2D laser_turret;
@@ -34,7 +36,7 @@ namespace TheCure
         public const float MaxHealth = 100f;
         public float Health => _health;
 
-        public Ship(Point Position)
+        public Player(Point Position)
         {
             _rectangleCollider = new RectangleCollider(new Rectangle(Position, Point.Zero));
 
@@ -113,9 +115,10 @@ namespace TheCure
             if (moveDirection != Vector2.Zero)
             {
                 moveDirection.Normalize();
-                _velocity += moveDirection * 10f;
                 _rotation = LinePieceCollider.GetAngle(moveDirection);
             }
+
+            _velocity = moveDirection * MoveSpeed;
         }
 
         public override void Update(GameTime gameTime)
@@ -138,8 +141,6 @@ namespace TheCure
 
             _rectangleCollider.shape.X += (int)(_velocity.X * deltaTime);
             _rectangleCollider.shape.Y += (int)(_velocity.Y * deltaTime);
-
-            _velocity *= 0.99f;
 
             base.Update(gameTime);
         }
