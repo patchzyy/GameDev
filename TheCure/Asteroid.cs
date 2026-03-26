@@ -62,7 +62,7 @@ namespace TheCure
             {
                 GameManager.GetGameManager().SetGameState(GameState.GameOver);
             }
-            else if (other is Alien)
+            else if (other is Zombie)
             {
                 GameManager.GetGameManager().RemoveGameObject(other);
             }
