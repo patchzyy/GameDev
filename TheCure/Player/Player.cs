@@ -29,9 +29,6 @@ namespace TheCure
 
         internal float _weaponBuffTimer = 0f;
 
-        internal bool _isCarryingCargo = false;
-        public bool IsCarryingCargo => _isCarryingCargo;
-
         internal float _health = 100f;
         public const float MaxHealth = 100f;
         public float Health => _health;
@@ -59,7 +56,8 @@ namespace TheCure
             }
             catch (ContentLoadException)
             {
-                System.Diagnostics.Debug.WriteLine("Waarschuwing: Kon textuur 'double_turret' niet laden. 'base_turret' wordt gebruikt als fallback.");
+                System.Diagnostics.Debug.WriteLine(
+                    "Waarschuwing: Kon textuur 'double_turret' niet laden. 'base_turret' wordt gebruikt als fallback.");
                 double_turret = base_turret;
             }
 
@@ -80,10 +78,12 @@ namespace TheCure
             {
                 if (_currentWeapon != null && _currentWeapon.CanFire)
                 {
-                    Vector2 aimDirection = LinePieceCollider.GetDirection(GetPosition().Center.ToVector2(), worldMousePosition);
+                    Vector2 aimDirection =
+                        LinePieceCollider.GetDirection(GetPosition().Center.ToVector2(), worldMousePosition);
 
                     Texture2D currentTurretTexture = GetCurrentTurretTexture();
-                    Vector2 turretExit = _rectangleCollider.shape.Center.ToVector2() + aimDirection * (currentTurretTexture.Height / 2f);
+                    Vector2 turretExit = _rectangleCollider.shape.Center.ToVector2() +
+                                         aimDirection * (currentTurretTexture.Height / 2f);
 
                     _currentWeapon.Fire(turretExit, aimDirection, this);
                 }
@@ -133,7 +133,6 @@ namespace TheCure
 
                 if (_weaponBuffTimer <= 0)
                 {
-
                     _currentWeapon = _bulletWeapon;
                     System.Diagnostics.Debug.WriteLine("Wapen-buff verlopen. Teruggeschakeld naar BulletWeapon.");
                 }
@@ -153,7 +152,6 @@ namespace TheCure
             }
             else if (_currentWeapon is DoubleBarrelWeapon)
             {
-
                 return double_turret;
             }
             else
@@ -165,7 +163,8 @@ namespace TheCure
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             Vector2 bodyOrigin = ship_body.Bounds.Size.ToVector2() / 2f;
-            spriteBatch.Draw(ship_body, _rectangleCollider.shape.Center.ToVector2(), null, Color.White, _rotation, bodyOrigin, 1f, SpriteEffects.None, 0);
+            spriteBatch.Draw(ship_body, _rectangleCollider.shape.Center.ToVector2(), null, Color.White, _rotation,
+                bodyOrigin, 1f, SpriteEffects.None, 0);
 
             Texture2D texture = GetCurrentTurretTexture();
 
@@ -186,24 +185,7 @@ namespace TheCure
 
         public override void OnCollision(GameObject tmp)
         {
-            if (tmp is Planet planet)
-            {
-                if (planet.Type == PlanetType.Pickup && !_isCarryingCargo)
-                {
-                    _isCarryingCargo = true;
-                    System.Diagnostics.Debug.WriteLine("Lading OPGEPIKT!");
-                }
-                else if (planet.Type == PlanetType.DropOff && _isCarryingCargo)
-                {
-                    _isCarryingCargo = false;
-
-                    int points = 10;
-
-                    GameManager.GetGameManager().AddScore(points);
-                    System.Diagnostics.Debug.WriteLine($"Cargo DROPPED OFF! +{points} points!");
-                }
-            }
-            else if (tmp is Supply)
+            if (tmp is Supply)
             {
                 Random rng = GameManager.GetGameManager().RNG;
 
@@ -227,10 +209,11 @@ namespace TheCure
         public void Reset()
         {
             _health = MaxHealth;
-            _isCarryingCargo = false;
             _currentWeapon = _bulletWeapon;
             _weaponBuffTimer = 0f;
-            _rectangleCollider.shape.Location = new Point(GameManager.GetGameManager().Game.GraphicsDevice.Viewport.Width / 2, GameManager.GetGameManager().Game.GraphicsDevice.Viewport.Height / 2);
+            _rectangleCollider.shape.Location =
+                new Point(GameManager.GetGameManager().Game.GraphicsDevice.Viewport.Width / 2,
+                    GameManager.GetGameManager().Game.GraphicsDevice.Viewport.Height / 2);
             _velocity = Vector2.Zero;
             _rotation = 0f;
         }
