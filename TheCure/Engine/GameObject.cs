@@ -9,7 +9,7 @@ namespace TheCure
     public abstract class GameObject
     {
         protected Collider collider;
-        private HealthBar _healthBar;
+        protected HealthBar _healthBar;
 
         public void SetCollider(Collider collider)
         {

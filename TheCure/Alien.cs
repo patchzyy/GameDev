@@ -16,7 +16,7 @@ namespace TheCure
 
         private bool _isFriendly = false;
         public bool IsFriendly => _isFriendly;
-        private float _followDistance = 50f;
+        private float _followDistance = 60f;
 
         public override void Load(ContentManager content)
         {
@@ -44,7 +44,7 @@ namespace TheCure
                 if (distance > _followDistance)
                 {
                     direction.Normalize();
-                    _collider.Center += direction * _speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                    _collider.Center += direction * (_speed + 20f) * (float)gameTime.ElapsedGameTime.TotalSeconds;
                 }
             }
             else
@@ -62,14 +62,32 @@ namespace TheCure
             base.Update(gameTime);
         }
 
-        public void BecomeFriendly()
-        {
-            _isFriendly = true;
-            _speed = 80f;
-        }
+            public void BecomeFriendly()
+            {
+                if (!_isFriendly)
+                {
+                    _isFriendly = true;
+                    _speed = 80f;
+
+                    _healthBar?.IncreaseHealth(_maxHealth);
+                }
+            }
 
         public override void OnCollision(GameObject tmp)
         {
+            if (tmp is Alien otherAlien)
+            {
+                if (this._isFriendly && !otherAlien.IsFriendly)
+                {
+                    otherAlien.LoseHealth(1);
+
+                    Vector2 pushDir = otherAlien._collider.Center - this._collider.Center;
+
+                    pushDir.Normalize();
+                    otherAlien._collider.Center += pushDir * 5;
+                }
+            }
+
             if (!_isFriendly && (tmp is Bullet || tmp is Laser))
             {
                 LoseHealth(1);
@@ -86,16 +104,15 @@ namespace TheCure
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(_texture, _collider.GetBoundingBox(), Color.White);
+            Color tint = _isFriendly ? Color.LightBlue : Color.White;
+            spriteBatch.Draw(_texture, _collider.GetBoundingBox(), tint);
 
-            if (_isFriendly)
+            if (_isFriendly && _font != null)
             {
                 string text = "Friendly";
-
                 Vector2 textSize = _font.MeasureString(text);
                 Vector2 textPos = new Vector2(_collider.Center.X - (textSize.X / 2), _collider.Center.Y - (_texture.Height / 2) - 20);
-
-                spriteBatch.DrawString(_font, text, textPos, Color.Green);
+                spriteBatch.DrawString(_font, text, textPos, Color.LimeGreen);
             }
 
             base.Draw(gameTime, spriteBatch);
