@@ -60,7 +60,6 @@ namespace TheCure
             _texture = texture;
         }
 
-
         public void Draw(SpriteBatch spriteBatch)
         {
             var dummyTexture = GameManager.GetGameManager().DummyTexture;
@@ -81,7 +80,6 @@ namespace TheCure
 
             double healthRatio = _currentHealth / (double)_maxHealth;
 
-            // scale colour based on ratio from 0-red to 1-green
             Color healthColor = Color.Lerp(Color.Red, Color.Green, (float)healthRatio);
 
             spriteBatch.Draw(dummyTexture,

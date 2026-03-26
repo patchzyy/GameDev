@@ -7,13 +7,21 @@ namespace TheCure
 {
     internal class Zombie : Mob
     {
-        public Zombie() : base("Alien", 60f, 3, 5)
+        private int _frameWidth;
+        private int _frameHeight;
+
+        public Zombie() : base("zombie", 60f, 3, 5)
         {
         }
 
         public override void Load(ContentManager content)
         {
             base.Load(content);
+
+            _frameWidth = _texture.Width / 5;
+            _frameHeight = _texture.Height / 2;
+
+            _collider.Radius = _frameWidth / 4f;
 
             SetHealthBar(_texture, _maxHealth, _startHealth, BecomeFriendly, null);
 
@@ -40,11 +48,10 @@ namespace TheCure
 
         private void BecomeFriendly()
         {
-            GameManager gm = GameManager.GetGameManager();
-            
-            // turn into friendly at same position
-            gm.AddGameObject(new Friendly(_collider.Center));
-            gm.RemoveGameObject(this);
+            GameManager game = GameManager.GetGameManager();
+
+            game.AddGameObject(new Friendly(_collider.Center));
+            game.RemoveGameObject(this);
         }
 
         public override void OnCollision(GameObject tmp)
@@ -65,8 +72,19 @@ namespace TheCure
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            Color tint = Color.White;
-            spriteBatch.Draw(_texture, _collider.GetBoundingBox(), tint);
+            Rectangle sourceRectangle = new Rectangle(0, 0, _frameWidth, _frameHeight);
+
+            int displayWidth = _frameWidth / 2;
+            int displayHeight = _frameHeight / 2;
+
+            Rectangle destinationRectangle = new Rectangle(
+                (int)(_collider.Center.X - displayWidth / 2),
+                (int)(_collider.Center.Y - displayHeight / 2),
+                displayWidth,
+                displayHeight
+            );
+
+            spriteBatch.Draw(_texture, destinationRectangle, sourceRectangle, Color.White);
 
             base.Draw(gameTime, spriteBatch);
         }

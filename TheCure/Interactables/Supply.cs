@@ -38,8 +38,8 @@ namespace TheCure
             }
             catch (ContentLoadException)
             {
-                System.Diagnostics.Debug.WriteLine($"Waarschuwing: Kon texture '{textureName}' voor Supply niet laden. Standaardtextuur 'Alien' wordt geladen.");
-                _texture = content.Load<Texture2D>("Alien");
+                System.Diagnostics.Debug.WriteLine($"Waarschuwing: Kon texture '{textureName}' voor Supply niet laden. Standaardtextuur 'zombie' wordt geladen.");
+                _texture = content.Load<Texture2D>("zombie");
             }
 
             if (_texture != null)

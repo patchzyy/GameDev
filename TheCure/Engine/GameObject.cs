@@ -78,7 +78,7 @@ namespace TheCure
             }
             else
             {
-                Console.WriteLine("No healthbar set");
+                System.Diagnostics.Debug.WriteLine("Fout: Health bar is nog niet geïnitialiseerd.");
             }
         }
 
@@ -90,7 +90,7 @@ namespace TheCure
             }
             else
             {
-                Console.WriteLine("No healthbar set");
+                System.Diagnostics.Debug.WriteLine("Fout: Health bar is nog niet geïnitialiseerd.");
             }
         }
 

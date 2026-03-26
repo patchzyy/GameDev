@@ -26,7 +26,7 @@ namespace TheCure
             }
             catch (ContentLoadException)
             {
-                _texture = content.Load<Texture2D>("Alien");
+                _texture = content.Load<Texture2D>("zombie");
             }
 
             if (_texture != null)

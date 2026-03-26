@@ -9,12 +9,14 @@ namespace TheCure
     {
         private float _followDistance = 60f;
         private Vector2 _startPosition;
+        private int _frameWidth;
+        private int _frameHeight;
 
-        public Friendly() : base("Alien", 80f, 5, 5)
+        public Friendly() : base("friendly", 60f, 3, 5)
         {
         }
 
-        public Friendly(Vector2 position) : base("Alien", 80f, 5, 5)
+        public Friendly(Vector2 position) : base("friendly", 60f, 3, 5)
         {
             _startPosition = position;
         }
@@ -22,6 +24,11 @@ namespace TheCure
         public override void Load(ContentManager content)
         {
             base.Load(content);
+
+            _frameWidth = _texture.Width / 5;
+            _frameHeight = _texture.Height / 2;
+
+            _collider.Radius = _frameWidth / 4f;
             _collider.Center = _startPosition;
 
             SetHealthBar(_texture, _maxHealth, _startHealth, null, null);
@@ -42,7 +49,6 @@ namespace TheCure
             base.Update(gameTime);
         }
 
-
         public override void OnCollision(GameObject tmp)
         {
             if (tmp is Zombie zombie)
@@ -55,20 +61,36 @@ namespace TheCure
                 zombie._collider.Center += pushDir * 5;
             }
 
-
             base.OnCollision(tmp);
         }
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            Color tint = Color.LightBlue;
-            spriteBatch.Draw(_texture, _collider.GetBoundingBox(), tint);
+            int frameWidth = _texture.Width / 5;
+            int frameHeight = _texture.Height / 2;
 
+            int displayWidth = frameWidth / 2;
+            int displayHeight = frameHeight / 2;
+
+            Rectangle sourceRectangle = new Rectangle(0, 0, frameWidth, frameHeight);
+
+            Rectangle destinationRectangle = new Rectangle(
+                (int)(_collider.Center.X - (displayWidth / 2)),
+                (int)(_collider.Center.Y - (displayHeight / 2)),
+                displayWidth,
+                displayHeight
+            );
+
+            Color tint = Color.LightBlue;
+            spriteBatch.Draw(_texture, destinationRectangle, sourceRectangle, tint);
 
             string text = "Friendly";
             Vector2 textSize = _font.MeasureString(text);
-            Vector2 textPos = new Vector2(_collider.Center.X - (textSize.X / 2),
-                _collider.Center.Y - (_texture.Height / 2) - 20);
+            Vector2 textPos = new Vector2(
+                _collider.Center.X - (textSize.X / 2),
+                _collider.Center.Y - (displayHeight / 2) - 25
+            );
+
             spriteBatch.DrawString(_font, text, textPos, Color.LimeGreen);
 
             base.Draw(gameTime, spriteBatch);
