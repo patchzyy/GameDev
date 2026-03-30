@@ -56,17 +56,23 @@ namespace TheCure
 
         public virtual void Destroy()
         {
+            GameManager.GetGameManager().RemoveGameObject(this);
         }
 
         public void SetHealthBar(Texture2D texture, int maxHealth, int startHealth, Action onDeath,
-            Action onMaxHealth)
+            Action onMaxHealth, bool hide = false)
         {
-            _healthBar = new HealthBar(texture, maxHealth, startHealth, onDeath, onMaxHealth);
+            _healthBar = new HealthBar(texture, maxHealth, startHealth, onDeath, onMaxHealth, hide);
         }
 
         public void SetHealthBar(Texture2D texture, int maxHealth, int startHealth, Action onDeath)
         {
             SetHealthBar(texture, maxHealth, startHealth, onDeath, null);
+        }
+
+        public void SetHealthBar(Texture2D texture, int maxHealth, int startHealth, Action onDeath, bool hide)
+        {
+            SetHealthBar(texture, maxHealth, startHealth, onDeath, null, hide);
         }
 
 
@@ -100,6 +106,16 @@ namespace TheCure
             {
                 _healthBar.ResetHealth();
             }
+        }
+
+        public int CurrentHealth()
+        {
+            return _healthBar?.CurrentHealth ?? 0;
+        }
+
+        public Collider GetCollider()
+        {
+            return collider;
         }
     }
 }

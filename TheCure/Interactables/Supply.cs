@@ -1,5 +1,4 @@
-﻿
-using TheCure.Collision;
+﻿using TheCure.Collision;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -38,7 +37,8 @@ namespace TheCure
             }
             catch (ContentLoadException)
             {
-                System.Diagnostics.Debug.WriteLine($"Waarschuwing: Kon texture '{textureName}' voor Supply niet laden. Standaardtextuur 'Alien' wordt geladen.");
+                System.Diagnostics.Debug.WriteLine(
+                    $"Waarschuwing: Kon texture '{textureName}' voor Supply niet laden. Standaardtextuur 'Alien' wordt geladen.");
                 _texture = content.Load<Texture2D>("Alien");
             }
 
@@ -50,7 +50,8 @@ namespace TheCure
             }
             else
             {
-                System.Diagnostics.Debug.WriteLine($"Fout: Kan textuur voor Supply niet laden. Collider is niet ingesteld.");
+                System.Diagnostics.Debug.WriteLine(
+                    $"Fout: Kan textuur voor Supply niet laden. Collider is niet ingesteld.");
             }
         }
 
@@ -88,10 +89,11 @@ namespace TheCure
                         player.SetWeapon("DoubleBarrel");
                         System.Diagnostics.Debug.WriteLine("Supply opgepikt: DoubleBarrelWeapon buff!");
                     }
+
                     player.SetWeaponBuffTimer(10f);
                     break;
                 case SupplyType.Health:
-                    player.Heal(30f);
+                    player.GainHealth(1);
                     System.Diagnostics.Debug.WriteLine("Supply opgepikt: +30 health!");
                     break;
                 case SupplyType.Score:
@@ -108,7 +110,8 @@ namespace TheCure
 
             if (_rectangleCollider == null || game.Player == null)
             {
-                System.Diagnostics.Debug.WriteLine("Let op: RandomMove uitgevoerd terwijl collider/speler nog niet klaar is.");
+                System.Diagnostics.Debug.WriteLine(
+                    "Let op: RandomMove uitgevoerd terwijl collider/speler nog niet klaar is.");
                 return;
             }
 
@@ -130,7 +133,8 @@ namespace TheCure
 
             if (attempts >= 100)
             {
-                System.Diagnostics.Debug.WriteLine("Waarschuwing: RandomMove kon geen vrije plek vinden voor de voorraad.");
+                System.Diagnostics.Debug.WriteLine(
+                    "Waarschuwing: RandomMove kon geen vrije plek vinden voor de voorraad.");
             }
         }
 
