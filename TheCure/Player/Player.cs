@@ -9,7 +9,7 @@ namespace TheCure
 {
     public class Player : GameObject
     {
-        private const float MoveSpeed = 300f;
+        public const float MoveSpeed = 300f;
 
         private Texture2D ship_body;
         private Texture2D base_turret;
