@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
@@ -25,7 +26,9 @@ namespace TheCure
         private Button _pauseQuitButton;
         private Button _restartButton;
         private Camera _camera;
+        private HUD _hud;
         private int _score = 0;
+        private Dictionary<string, string> _stats = new Dictionary<string, string>();
         private SpriteFont _hudFont;
         private Texture2D _buttonTexture;
 
@@ -233,11 +236,14 @@ namespace TheCure
             _titleFont = content.Load<SpriteFont>("TitleFont");
             _buttonFont = content.Load<SpriteFont>("ButtonFont");
             _hudFont = content.Load<SpriteFont>("HudFont");
+            if (_hud == null)
+                _hud = new HUD();
 
             foreach (GameObject gameObject in _gameObjects)
             {
                 gameObject.Load(content);
             }
+            _hud.Load(content);
         }
 
         public void HandleInput(InputManager inputManager)
@@ -310,6 +316,7 @@ namespace TheCure
                 SpawnSupply();
 
                 _camera.Update(Player.GetPosition().Center.ToVector2());
+                _hud.Update();
 
                 HandleInput(InputManager);
 
@@ -483,22 +490,31 @@ namespace TheCure
             }
             else if (CurrentGameState == GameState.Playing)
             {
-                if (_hudFont != null && Player != null)
-                {
-                    string scoreText = $"Score: {_score}";
-                    Vector2 scorePosition = new Vector2(10, 10);
-                    spriteBatch.DrawString(_hudFont, scoreText, scorePosition, Color.White);
-
-                    int barWidth = 150;
-                    int barHeight = 15;
-                    Vector2 barPosition = new Vector2(10, 60);
-                    spriteBatch.Draw(DummyTexture, new Rectangle((int)barPosition.X, (int)barPosition.Y, barWidth, barHeight), Color.Gray);
-                    float healthRatio = Player.Health / Player.MaxHealth;
-                    spriteBatch.Draw(DummyTexture, new Rectangle((int)barPosition.X, (int)barPosition.Y, (int)(barWidth * healthRatio), barHeight), Color.Green);
-                }
+                _hud.Draw(spriteBatch, this);
             }
 
             spriteBatch.End();
+        }
+
+        public float GetGameTime()
+        {
+            return _gameTimeElapsed;
+        }
+
+        public int GetScore()
+        {
+            return _score;
+        }
+
+        public List<Stat> GetStats()
+        {
+            var stats = new List<Stat>
+            {
+                new Stat("Max Health", Player.MaxHealth.ToString()),
+                new Stat("Move Speed", (Player.MoveSpeed / 10).ToString("0.0", CultureInfo.InvariantCulture)),
+                new Stat("Friendlies", _gameObjects.OfType<Friendly>().Count().ToString())
+            };
+            return stats;
         }
 
         public void AddGameObject(GameObject gameObject)
