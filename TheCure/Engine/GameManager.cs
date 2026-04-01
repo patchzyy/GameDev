@@ -162,7 +162,7 @@ namespace TheCure
 
             _score = 0;
 
-            Player.GainHealth(Player.MaxHealth);
+            Player.GainHealth((int)Player.MaxHealth);
             Player._currentWeapon = Player._bulletWeapon;
             Player._weaponBuffTimer = 0f;
             Player._rectangleCollider.shape.Location = new Point(Game.GraphicsDevice.Viewport.Width / 2,
@@ -493,6 +493,8 @@ namespace TheCure
                     spriteBatch.Draw(DummyTexture,
                         new Rectangle((int)barPosition.X, (int)barPosition.Y, barWidth, barHeight), Color.Gray);
                     float healthRatio = Player.CurrentHealth() / Player.MaxHealth;
+                    Console.WriteLine(Player.CurrentHealth() + " / " + Player.MaxHealth + " / " + healthRatio);
+
                     spriteBatch.Draw(DummyTexture,
                         new Rectangle((int)barPosition.X, (int)barPosition.Y, (int)(barWidth * healthRatio), barHeight),
                         Color.Green);

@@ -26,7 +26,7 @@ namespace TheCure
 
         internal float _weaponBuffTimer = 0f;
 
-        public const int MaxHealth = 100;
+        public const float MaxHealth = 10;
 
         public Player(Point Position)
         {
@@ -45,7 +45,9 @@ namespace TheCure
             base_turret = content.Load<Texture2D>("base_turret");
             laser_turret = content.Load<Texture2D>("laser_turret");
 
-            SetHealthBar(ship_body, MaxHealth, MaxHealth, null, null, true);
+            SetHealthBar(ship_body, (int)MaxHealth, (int)MaxHealth,
+                () => GameManager.GetGameManager().SetGameState(GameState.GameOver),
+                null, true);
             try
             {
                 double_turret = content.Load<Texture2D>("double_turret");
