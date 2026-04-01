@@ -1,14 +1,17 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 using TheCure.Mobs;
 
 namespace TheCure
 {
-    internal class Friendly : Mob
+    public class Friendly : Mob
     {
         private float _followDistance = 60f;
         private Vector2 _startPosition;
+        private float _angleOffset;
+        private float _radius = 20f;
 
         public Friendly() : base("Alien", 80f, 5, 5)
         {
@@ -17,6 +20,7 @@ namespace TheCure
         public Friendly(Vector2 position) : base("Alien", 80f, 5, 5)
         {
             _startPosition = position;
+            _angleOffset = (float)(GameManager.GetGameManager().RNG.NextDouble() * MathHelper.TwoPi);
         }
 
         public override void Load(ContentManager content)
@@ -29,14 +33,50 @@ namespace TheCure
 
         public override void Update(GameTime gameTime)
         {
-            Vector2 playerPosition = GameManager.GetGameManager().Player.GetPosition().Center.ToVector2();
-            Vector2 direction = playerPosition - _collider.Center;
-            float distance = Vector2.Distance(_collider.Center, playerPosition);
+            float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            if (distance > _followDistance)
-            {
+            Vector2 playerPosition = GameManager.GetGameManager().Player.GetPosition().Center.ToVector2();
+
+            float orbitRadius = 200f;
+            float time = (float)gameTime.TotalGameTime.TotalSeconds;
+
+            Vector2 offset = new Vector2(
+                (float)Math.Cos(time + _angleOffset),
+                (float)Math.Sin(time + _angleOffset)
+            ) * orbitRadius;
+
+            Vector2 targetPosition = playerPosition + offset;
+
+            Vector2 direction = targetPosition - _collider.Center;
+            float distance = direction.Length();
+
+            if (distance > 1f)
                 direction.Normalize();
-                _collider.Center += direction * (_speed + 20f) * (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            Vector2 separation = Vector2.Zero;
+            float separationRadius = 40f;
+
+            foreach (var other in GameManager.GetGameManager().Friendlies)
+            {
+                if (other == this) continue;
+
+                float dist = Vector2.Distance(_collider.Center, other._collider.Center);
+
+                if (dist < separationRadius && dist > 0)
+                {
+                    Vector2 push = _collider.Center - other._collider.Center;
+                    push.Normalize();
+
+                    separation += push * (separationRadius - dist);
+                }
+            }
+
+            Vector2 velocity = direction + (separation * 0.05f);
+
+            if (velocity != Vector2.Zero)
+            {
+                velocity.Normalize();
+                _collider.Center += velocity * (_speed + 20f) * deltaTime;
             }
 
             base.Update(gameTime);

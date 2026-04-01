@@ -40,6 +40,7 @@ namespace TheCure
 
         private float _supplySpawnTimer = 0f;
         private float _supplySpawnInterval = 15.0f;
+        
 
         public Random RNG
         {
@@ -71,6 +72,8 @@ namespace TheCure
             get;
             private set;
         }
+
+        public List<Friendly> Friendlies = new List<Friendly>();
 
         public static GameManager GetGameManager()
         {
