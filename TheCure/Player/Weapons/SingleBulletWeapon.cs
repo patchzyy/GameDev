@@ -6,9 +6,9 @@ namespace TheCure.Weapons
     {
         public override float FireRate => 0.2f;
 
-        public override void Fire(Vector2 position, Vector2 direction, Player owner = null)
+        public override void Fire(Vector2 position, Vector2 direction, GameObject owner = null)
         {
-            Bullet bullet = new Bullet(position, direction, 300f);
+            Bullet bullet = new Bullet(position, direction, 300f, true);
 
             GameManager.GetGameManager().AddGameObject(bullet);
 

@@ -10,13 +10,16 @@ namespace TheCure
         private CircleCollider _collider;
         private Vector2 _velo;
 
+        public bool IsHealing = false;
+
         private float _life = 3.0f;
 
-        public Bullet(Vector2 location, Vector2 direction, float speed)
+        public Bullet(Vector2 location, Vector2 direction, float speed, bool isHealing = false)
         {
             _collider = new CircleCollider(location, 4);
             SetCollider(_collider);
             _velo = direction * speed;
+            IsHealing = isHealing;
         }
 
         public override void Load(ContentManager content)

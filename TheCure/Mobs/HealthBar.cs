@@ -7,17 +7,22 @@ namespace TheCure
 {
     public class HealthBar
     {
-        private int _maxHealth;
-        private int _startHealth;
-        private int _currentHealth;
+        private float _maxHealth;
+        private float _startHealth;
+        private float _currentHealth;
         private Action _onDeath;
         private Action? _onMaxHealth;
+        private bool _hideHealthBar;
 
         private Vector2 _barPosition;
 
         public Texture2D _texture;
+        public bool IsMaxHealth => _currentHealth >= _maxHealth;
 
-        public HealthBar(Texture2D texture, int maxHealth, int startHealth, Action onDeath, Action? onMaxHealth)
+        public float CurrentHealth => _currentHealth;
+
+        public HealthBar(Texture2D texture, int maxHealth, int startHealth, Action onDeath, Action? onMaxHealth,
+            bool hide = false)
         {
             _maxHealth = maxHealth;
             _startHealth = startHealth;
@@ -25,6 +30,7 @@ namespace TheCure
             _onDeath = onDeath;
             _onMaxHealth = onMaxHealth;
             _texture = texture;
+            _hideHealthBar = hide;
         }
 
         public void IncreaseHealth(int health)
@@ -63,6 +69,8 @@ namespace TheCure
 
         public void Draw(SpriteBatch spriteBatch)
         {
+            if (_hideHealthBar) return;
+
             var dummyTexture = GameManager.GetGameManager().DummyTexture;
 
             if (_texture == null) return;
