@@ -108,7 +108,7 @@ namespace TheCure
             }
         }
 
-        public int CurrentHealth()
+        public float CurrentHealth()
         {
             return _healthBar?.CurrentHealth ?? 0;
         }

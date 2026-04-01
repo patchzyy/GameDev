@@ -7,9 +7,9 @@ namespace TheCure
 {
     public class HealthBar
     {
-        private int _maxHealth;
-        private int _startHealth;
-        private int _currentHealth;
+        private float _maxHealth;
+        private float _startHealth;
+        private float _currentHealth;
         private Action _onDeath;
         private Action? _onMaxHealth;
         private bool _hideHealthBar;
@@ -19,7 +19,7 @@ namespace TheCure
         public Texture2D _texture;
         public bool IsMaxHealth => _currentHealth >= _maxHealth;
 
-        public int CurrentHealth => _currentHealth;
+        public float CurrentHealth => _currentHealth;
 
         public HealthBar(Texture2D texture, int maxHealth, int startHealth, Action onDeath, Action? onMaxHealth,
             bool hide = false)
