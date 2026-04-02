@@ -60,11 +60,11 @@ namespace TheCure
         {
             if (other is Player)
             {
-                GameManager.GetGameManager().SetGameState(GameState.GameOver);
+                // GameManager.GetGameManager().SetGameState(GameState.GameOver);
             }
             else if (other is Zombie)
             {
-                GameManager.GetGameManager().RemoveGameObject(other);
+                // GameManager.GetGameManager().RemoveGameObject(other);
             }
         }
 

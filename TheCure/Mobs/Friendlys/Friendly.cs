@@ -52,12 +52,12 @@ namespace TheCure
 
             int index = gm.Friendlies.IndexOf(this);
 
-          
-            int ringSize = 6;  
+
+            int ringSize = 6;
             float baseRadius = 130f;
             float ringSpacing = 80f;
 
-            int ringNumber = index / ringSize;     
+            int ringNumber = index / ringSize;
             int indexInRing = index % ringSize;
 
             float orbitRadius = baseRadius + ringNumber * ringSpacing;
@@ -90,6 +90,7 @@ namespace TheCure
             }
 
             _collider.Center = Vector2.Lerp(_collider.Center, targetPos, 5f * deltaTime);
+            Attack(gameTime);
 
             base.Update(gameTime);
         }
