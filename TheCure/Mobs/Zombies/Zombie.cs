@@ -29,10 +29,9 @@ namespace TheCure
         {
             base.Load(content);
 
-            int frameWidth = 204;
-            int frameHeight = _texture.Height;
+            int frameWidth = _texture.Width / 5;
 
-            _animatedSprite = new AnimatedSprite(_texture, frameWidth, frameHeight, 5, 5f, true);
+            _animatedSprite = new AnimatedSprite(_texture, frameWidth, _texture.Height, 5, 5f, true);
 
             SetHealthBar(_texture, _maxHealth, _startHealth, Destroy, BecomeFriendly);
 
@@ -48,9 +47,7 @@ namespace TheCure
                 Attack(deltaTime);
             }
             else
-            {
                 Move(deltaTime);
-            }
 
             LastHealed += deltaTime;
 
@@ -70,6 +67,7 @@ namespace TheCure
             Vector2 targetPosition = _currentTarget == null
                 ? GameManager.GetGameManager().Player.GetPosition().Center.ToVector2()
                 : _currentTarget.GetCollider().GetBoundingBox().Center.ToVector2();
+
             Vector2 direction = targetPosition - _collider.Center;
 
             direction.Normalize();
@@ -78,11 +76,10 @@ namespace TheCure
 
         private void BecomeFriendly()
         {
-            GameManager gm = GameManager.GetGameManager();
+            GameManager game = GameManager.GetGameManager();
 
-            // turn into friendly at same position
-            gm.AddGameObject(new Friendly(FriendlyWeapons.HandGun, _collider.Center));
-            gm.RemoveGameObject(this);
+            game.AddGameObject(new Friendly(FriendlyWeapons.HandGun, _collider.Center));
+            game.RemoveGameObject(this);
         }
 
         private void Attack(float deltaTime)
@@ -109,9 +106,7 @@ namespace TheCure
                     LastHealed = 0f;
                 }
                 else
-                {
                     LoseHealth(1);
-                }
 
                 tmp.Destroy();
             }

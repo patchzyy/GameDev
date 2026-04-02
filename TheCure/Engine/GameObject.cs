@@ -84,7 +84,7 @@ namespace TheCure
             }
             else
             {
-                Console.WriteLine("No healthbar set");
+                System.Diagnostics.Debug.WriteLine("No healthbar set");
             }
         }
 
@@ -96,7 +96,7 @@ namespace TheCure
             }
             else
             {
-                Console.WriteLine("No healthbar set");
+                System.Diagnostics.Debug.WriteLine("No healthbar set");
             }
         }
 
