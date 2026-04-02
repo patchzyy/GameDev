@@ -50,7 +50,6 @@ namespace TheCure
             spriteBatch.Draw(gm.DummyTexture,
                 new Rectangle((int)barPosition.X, (int)barPosition.Y, barWidth, barHeight), Color.Gray);
             float healthRatio = gm.Player.CurrentHealth() / Player.MaxHealth;
-            Console.WriteLine(gm.Player.CurrentHealth() + " / " + Player.MaxHealth + " / " + healthRatio);
 
             spriteBatch.Draw(gm.DummyTexture,
                 new Rectangle((int)barPosition.X, (int)barPosition.Y, (int)(barWidth * healthRatio), barHeight),

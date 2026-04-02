@@ -41,7 +41,7 @@ namespace TheCure
 
         private float _supplySpawnTimer = 0f;
         private float _supplySpawnInterval = 15.0f;
-        
+
 
         public Random RNG { get; private set; }
         public Player Player { get; private set; }
@@ -187,26 +187,26 @@ namespace TheCure
                 SpawnAlien();
             }
 
-            Supply initialSupply = new Supply();
-            initialSupply.Load(_content);
-            _gameObjects.Add(initialSupply);
-            initialSupply.RandomMove();
-
-            Vector2 asteroidPos1 = new Vector2(1000, 800);
-            Vector2 asteroidPos2 = new Vector2(-200, 200);
-            Vector2 asteroidPos3 = new Vector2(500, -400);
-
-            Asteroid asteroid1 = new Asteroid(asteroidPos1);
-            Asteroid asteroid2 = new Asteroid(asteroidPos2);
-            Asteroid asteroid3 = new Asteroid(asteroidPos3);
-
-            asteroid1.Load(_content);
-            asteroid2.Load(_content);
-            asteroid3.Load(_content);
-
-            _gameObjects.Add(asteroid1);
-            _gameObjects.Add(asteroid2);
-            _gameObjects.Add(asteroid3);
+            // Supply initialSupply = new Supply();
+            // initialSupply.Load(_content);
+            // _gameObjects.Add(initialSupply);
+            // initialSupply.RandomMove();
+            //
+            // Vector2 asteroidPos1 = new Vector2(1000, 800);
+            // Vector2 asteroidPos2 = new Vector2(-200, 200);
+            // Vector2 asteroidPos3 = new Vector2(500, -400);
+            //
+            // Asteroid asteroid1 = new Asteroid(asteroidPos1);
+            // Asteroid asteroid2 = new Asteroid(asteroidPos2);
+            // Asteroid asteroid3 = new Asteroid(asteroidPos3);
+            //
+            // asteroid1.Load(_content);
+            // asteroid2.Load(_content);
+            // asteroid3.Load(_content);
+            //
+            // _gameObjects.Add(asteroid1);
+            // _gameObjects.Add(asteroid2);
+            // _gameObjects.Add(asteroid3);
         }
 
         public void SetGameState(GameState newState)
@@ -226,6 +226,7 @@ namespace TheCure
             {
                 gameObject.Load(content);
             }
+
             _hud.Load(content);
         }
 
@@ -296,7 +297,7 @@ namespace TheCure
 
                 UpdatePhase();
                 SpawnEnemies();
-                SpawnSupply();
+                // SpawnSupply();
 
                 _camera.Update(Player.GetPosition().Center.ToVector2());
                 _hud.Update();
@@ -328,6 +329,12 @@ namespace TheCure
                     if (gameObject is Zombie)
                     {
                         Zombies.Remove(gameObject as Zombie);
+                    }
+
+
+                    if (gameObject is Friendly)
+                    {
+                        Friendlies.Remove(gameObject as Friendly);
                     }
 
                     _gameObjects.Remove(gameObject);
