@@ -40,6 +40,7 @@ namespace TheCure
 
         private float _supplySpawnTimer = 0f;
         private float _supplySpawnInterval = 15.0f;
+        
 
         public Random RNG { get; private set; }
         public Player Player { get; private set; }
@@ -49,6 +50,8 @@ namespace TheCure
         public GameState CurrentGameState { get; private set; }
         public List<Zombie> Zombies;
 
+
+        public List<Friendly> Friendlies { get; private set; } = new List<Friendly>();
 
         public static GameManager GetGameManager()
         {

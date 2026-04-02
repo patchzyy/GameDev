@@ -1,15 +1,18 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 using TheCure.Mobs;
 using TheCure.Weapons;
 
 namespace TheCure
 {
-    internal class Friendly : Mob
+    public class Friendly : Mob
     {
         private float _followDistance = 60f;
         private Vector2 _startPosition;
+        private float _angleOffset;
+        private float _radius = 20f;
 
         private BaseWeapon _weapon;
 
@@ -26,6 +29,8 @@ namespace TheCure
         public Friendly(FriendlyWeapons friendlyWeapons, Vector2 position) : this(friendlyWeapons)
         {
             _startPosition = position;
+            _angleOffset = (float)(GameManager.GetGameManager().RNG.NextDouble() * MathHelper.TwoPi);
+            GameManager.GetGameManager().Friendlies.Add(this);
         }
 
         public override void Load(ContentManager content)
@@ -38,11 +43,56 @@ namespace TheCure
 
         public override void Update(GameTime gameTime)
         {
-            Move(gameTime);
-            Attack(gameTime);
+            float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            var gm = GameManager.GetGameManager();
+            Vector2 playerPosition = gm.Player.GetPosition().Center.ToVector2();
+
+            int count = gm.Friendlies.Count;
+            if (count == 0) return;
+
+            int index = gm.Friendlies.IndexOf(this);
+
+          
+            int ringSize = 6;  
+            float baseRadius = 130f;
+            float ringSpacing = 80f;
+
+            int ringNumber = index / ringSize;     
+            int indexInRing = index % ringSize;
+
+            float orbitRadius = baseRadius + ringNumber * ringSpacing;
+
+            float angleStep = MathHelper.TwoPi / ringSize;
+            float time = (float)gameTime.TotalGameTime.TotalSeconds;
+
+            float angle = angleStep * indexInRing + time + _angleOffset;
+
+            Vector2 offset = new Vector2(
+                (float)Math.Cos(angle),
+                (float)Math.Sin(angle)
+            ) * orbitRadius;
+
+            Vector2 targetPos = playerPosition + offset;
+
+            foreach (var other in gm.Friendlies)
+            {
+                if (other == this) continue;
+
+                float dist = Vector2.Distance(targetPos, other._collider.Center);
+                float minDist = _radius * 2;
+
+                if (dist < minDist && dist > 0)
+                {
+                    Vector2 push = targetPos - other._collider.Center;
+                    push.Normalize();
+                    targetPos += push * (minDist - dist);
+                }
+            }
+
+            _collider.Center = Vector2.Lerp(_collider.Center, targetPos, 5f * deltaTime);
+
             base.Update(gameTime);
         }
-
 
         public override void OnCollision(GameObject tmp)
         {
