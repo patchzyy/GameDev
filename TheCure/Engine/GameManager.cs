@@ -42,36 +42,14 @@ namespace TheCure
         private float _supplySpawnInterval = 15.0f;
         
 
-        public Random RNG
-        {
-            get;
-            private set;
-        }
-        public Player Player
-        {
-            get;
-            private set;
-        }
-        public InputManager InputManager
-        {
-            get;
-            private set;
-        }
-        public Game Game
-        {
-            get;
-            private set;
-        }
-        public Texture2D DummyTexture
-        {
-            get;
-            private set;
-        }
-        public GameState CurrentGameState
-        {
-            get;
-            private set;
-        }
+        public Random RNG { get; private set; }
+        public Player Player { get; private set; }
+        public InputManager InputManager { get; private set; }
+        public Game Game { get; private set; }
+        public Texture2D DummyTexture { get; private set; }
+        public GameState CurrentGameState { get; private set; }
+        public List<Zombie> Zombies;
+
 
         public List<Friendly> Friendlies { get; private set; } = new List<Friendly>();
 
@@ -84,11 +62,13 @@ namespace TheCure
 
             return gameManager;
         }
+
         public GameManager()
         {
             _gameObjects = new List<GameObject>();
             _toBeRemoved = new List<GameObject>();
             _toBeAdded = new List<GameObject>();
+            Zombies = new List<Zombie>();
 
             InputManager = new InputManager();
             RNG = new Random();
@@ -114,7 +94,8 @@ namespace TheCure
             int spacing = 20;
 
             _startButton = new Button(
-                new Rectangle(centerX - buttonWidth / 2, centerY - buttonHeight - spacing / 2, buttonWidth, buttonHeight),
+                new Rectangle(centerX - buttonWidth / 2, centerY - buttonHeight - spacing / 2, buttonWidth,
+                    buttonHeight),
                 "Start",
                 _buttonFont);
             _startButton.Clicked += StartButton_Clicked;
@@ -126,7 +107,8 @@ namespace TheCure
             _quitButton.Clicked += QuitButton_Clicked;
 
             _continueButton = new Button(
-                new Rectangle(centerX - buttonWidth / 2, (int)(centerY - buttonHeight - spacing * 1.5f), buttonWidth, buttonHeight),
+                new Rectangle(centerX - buttonWidth / 2, (int)(centerY - buttonHeight - spacing * 1.5f), buttonWidth,
+                    buttonHeight),
                 "Continue",
                 _buttonFont);
             _continueButton.Clicked += ContinueButton_Clicked;
@@ -183,10 +165,11 @@ namespace TheCure
 
             _score = 0;
 
-            Player._health = Player.MaxHealth;
+            Player.GainHealth((int)Player.MaxHealth);
             Player._currentWeapon = Player._bulletWeapon;
             Player._weaponBuffTimer = 0f;
-            Player._rectangleCollider.shape.Location = new Point(Game.GraphicsDevice.Viewport.Width / 2, Game.GraphicsDevice.Viewport.Height / 2);
+            Player._rectangleCollider.shape.Location = new Point(Game.GraphicsDevice.Viewport.Width / 2,
+                Game.GraphicsDevice.Viewport.Height / 2);
             Player._velocity = Vector2.Zero;
             Player._rotation = 0f;
 
@@ -325,6 +308,11 @@ namespace TheCure
 
                 foreach (GameObject gameObject in _toBeAdded)
                 {
+                    if (gameObject is Zombie)
+                    {
+                        Zombies.Add(gameObject as Zombie);
+                    }
+
                     gameObject.Load(_content);
                     _gameObjects.Add(gameObject);
                 }
@@ -333,6 +321,11 @@ namespace TheCure
 
                 foreach (GameObject gameObject in _toBeRemoved)
                 {
+                    if (gameObject is Zombie)
+                    {
+                        Zombies.Remove(gameObject as Zombie);
+                    }
+
                     _gameObjects.Remove(gameObject);
                 }
 
@@ -387,16 +380,16 @@ namespace TheCure
             newZombie.RandomMove();
         }
 
-        private void SpawnSupply() 
+        private void SpawnSupply()
         {
             if (_supplySpawnTimer < _supplySpawnInterval)
                 return;
 
-            _supplySpawnTimer = 0f;   
+            _supplySpawnTimer = 0f;
 
             Supply newSupply = new Supply();
             AddGameObject(newSupply);
-            newSupply.RandomMove();    
+            newSupply.RandomMove();
         }
 
         public void AddScore(int pointsToAdd)
@@ -421,7 +414,9 @@ namespace TheCure
 
             if (CurrentGameState == GameState.StartScreen)
             {
-                spriteBatch.Draw(_backgroundTexture, new Rectangle(0, 0, Game.GraphicsDevice.Viewport.Width, Game.GraphicsDevice.Viewport.Height), Color.White);
+                spriteBatch.Draw(_backgroundTexture,
+                    new Rectangle(0, 0, Game.GraphicsDevice.Viewport.Width, Game.GraphicsDevice.Viewport.Height),
+                    Color.White);
 
                 var quitBounds = _quitButton.Rectangle;
 
@@ -450,7 +445,8 @@ namespace TheCure
 
                 string pauseText = "Game gepauzeerd";
                 Vector2 pauseTextSize = _titleFont.MeasureString(pauseText);
-                Vector2 pauseTextPosition = new Vector2(Game.GraphicsDevice.Viewport.Width / 2 - pauseTextSize.X / 2, 150);
+                Vector2 pauseTextPosition =
+                    new Vector2(Game.GraphicsDevice.Viewport.Width / 2 - pauseTextSize.X / 2, 150);
 
                 spriteBatch.DrawString(_titleFont, pauseText, pauseTextPosition, Color.White);
 
@@ -469,7 +465,8 @@ namespace TheCure
 
                 string gameOverText = "Game Over";
                 Vector2 gameOverTextSize = _titleFont.MeasureString(gameOverText);
-                Vector2 gameOverTextPosition = new Vector2(Game.GraphicsDevice.Viewport.Width / 2 - gameOverTextSize.X / 2, currentY);
+                Vector2 gameOverTextPosition =
+                    new Vector2(Game.GraphicsDevice.Viewport.Width / 2 - gameOverTextSize.X / 2, currentY);
 
                 spriteBatch.DrawString(_titleFont, gameOverText, gameOverTextPosition, Color.Red);
 
@@ -477,7 +474,8 @@ namespace TheCure
 
                 string scoreText = $"Eindscore: {_score}";
                 Vector2 scoreTextSize = _titleFont.MeasureString(scoreText);
-                Vector2 scoreTextPosition = new Vector2(Game.GraphicsDevice.Viewport.Width / 2 - scoreTextSize.X / 2, currentY);
+                Vector2 scoreTextPosition =
+                    new Vector2(Game.GraphicsDevice.Viewport.Width / 2 - scoreTextSize.X / 2, currentY);
 
                 spriteBatch.DrawString(_titleFont, scoreText, scoreTextPosition, Color.White);
 
@@ -495,9 +493,14 @@ namespace TheCure
                     int barWidth = 150;
                     int barHeight = 15;
                     Vector2 barPosition = new Vector2(10, 60);
-                    spriteBatch.Draw(DummyTexture, new Rectangle((int)barPosition.X, (int)barPosition.Y, barWidth, barHeight), Color.Gray);
-                    float healthRatio = Player.Health / Player.MaxHealth;
-                    spriteBatch.Draw(DummyTexture, new Rectangle((int)barPosition.X, (int)barPosition.Y, (int)(barWidth * healthRatio), barHeight), Color.Green);
+                    spriteBatch.Draw(DummyTexture,
+                        new Rectangle((int)barPosition.X, (int)barPosition.Y, barWidth, barHeight), Color.Gray);
+                    float healthRatio = Player.CurrentHealth() / Player.MaxHealth;
+                    Console.WriteLine(Player.CurrentHealth() + " / " + Player.MaxHealth + " / " + healthRatio);
+
+                    spriteBatch.Draw(DummyTexture,
+                        new Rectangle((int)barPosition.X, (int)barPosition.Y, (int)(barWidth * healthRatio), barHeight),
+                        Color.Green);
                 }
             }
 

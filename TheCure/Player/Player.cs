@@ -4,7 +4,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using TheCure.Collision;
 using TheCure.Weapons;
-using System;
 
 namespace TheCure
 {
@@ -22,16 +21,12 @@ namespace TheCure
         internal Vector2 _velocity;
         internal float _rotation;
 
-        internal IWeapon _currentWeapon;
+        internal BaseWeapon _currentWeapon;
         internal readonly SingleBulletWeapon _bulletWeapon = new SingleBulletWeapon();
-        private readonly LaserWeapon _laserWeapon = new LaserWeapon();
-        private readonly DoubleBarrelWeapon _doubleBarrelWeapon = new DoubleBarrelWeapon();
 
         internal float _weaponBuffTimer = 0f;
 
-        internal float _health = 100f;
-        public const float MaxHealth = 100f;
-        public float Health => _health;
+        public const float MaxHealth = 10;
 
         public Player(Point Position)
         {
@@ -50,6 +45,9 @@ namespace TheCure
             base_turret = content.Load<Texture2D>("base_turret");
             laser_turret = content.Load<Texture2D>("laser_turret");
 
+            SetHealthBar(ship_body, (int)MaxHealth, (int)MaxHealth,
+                () => GameManager.GetGameManager().SetGameState(GameState.GameOver),
+                null, true);
             try
             {
                 double_turret = content.Load<Texture2D>("double_turret");
@@ -125,7 +123,7 @@ namespace TheCure
         {
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            _currentWeapon?.UpdateCoolDown(deltaTime);
+            _currentWeapon?.UpdateCoolDown(gameTime);
 
             if (_weaponBuffTimer > 0)
             {
@@ -185,30 +183,11 @@ namespace TheCure
 
         public override void OnCollision(GameObject tmp)
         {
-            if (tmp is Supply)
-            {
-                Random rng = GameManager.GetGameManager().RNG;
-
-                int weapon = rng.Next(2);
-
-                if (weapon == 0)
-                {
-                    _currentWeapon = _laserWeapon;
-                    System.Diagnostics.Debug.WriteLine("Schip botste met Supply, gewisseld naar LaserWeapon!");
-                }
-                else
-                {
-                    _currentWeapon = _doubleBarrelWeapon;
-                    System.Diagnostics.Debug.WriteLine("Schip raakte Supply, overgeschakeld op DoubleBarrelWeapon!");
-                }
-
-                _weaponBuffTimer = 10f;
-            }
         }
 
         public void Reset()
         {
-            _health = MaxHealth;
+            _healthBar.ResetHealth();
             _currentWeapon = _bulletWeapon;
             _weaponBuffTimer = 0f;
             _rectangleCollider.shape.Location =
@@ -218,30 +197,10 @@ namespace TheCure
             _rotation = 0f;
         }
 
-        public void TakeDamage(float damage)
-        {
-            _health -= damage;
-            if (_health <= 0)
-            {
-                GameManager.GetGameManager().SetGameState(GameState.GameOver);
-            }
-        }
-
-        public void Heal(float amount)
-        {
-            _health = Math.Min(_health + amount, MaxHealth);
-        }
-
         public void SetWeapon(string weaponName)
         {
             switch (weaponName)
             {
-                case "Laser":
-                    _currentWeapon = _laserWeapon;
-                    break;
-                case "DoubleBarrel":
-                    _currentWeapon = _doubleBarrelWeapon;
-                    break;
                 default:
                     _currentWeapon = _bulletWeapon;
                     break;

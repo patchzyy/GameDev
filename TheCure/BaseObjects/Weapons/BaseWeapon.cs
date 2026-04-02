@@ -6,22 +6,20 @@ namespace TheCure.Weapons
     {
         protected float CoolDown = 0f;
 
-        public abstract float FireRate
-        {
-            get;
-        }
+        public abstract float FireRate { get; }
 
         public bool CanFire => CoolDown <= 0f;
 
-        public virtual void UpdateCoolDown(float time)
+        public virtual void UpdateCoolDown(GameTime gameTime)
         {
+            float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
             if (CoolDown > 0f)
             {
-                CoolDown -= time;
+                CoolDown -= deltaTime;
             }
         }
 
-        public abstract void Fire(Vector2 position, Vector2 direction, Player owner = null);
+        public abstract void Fire(Vector2 position, Vector2 direction, GameObject owner = null);
 
         protected virtual void ResetCoolDown()
         {
