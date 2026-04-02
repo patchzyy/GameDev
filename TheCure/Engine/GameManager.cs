@@ -73,7 +73,7 @@ namespace TheCure
             private set;
         }
 
-        public List<Friendly> Friendlies = new List<Friendly>();
+        public List<Friendly> Friendlies { get; private set; } = new List<Friendly>();
 
         public static GameManager GetGameManager()
         {
