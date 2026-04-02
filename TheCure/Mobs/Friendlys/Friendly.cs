@@ -90,6 +90,7 @@ namespace TheCure
             }
 
             _collider.Center = Vector2.Lerp(_collider.Center, targetPos, 5f * deltaTime);
+            Attack(gameTime);
 
             base.Update(gameTime);
         }
