@@ -16,7 +16,7 @@ namespace TheCure
 
         private BaseWeapon _weapon;
 
-        public Friendly(FriendlyWeapons friendlyWeapon) : base("Alien", 80f, 5, 5)
+        public Friendly(FriendlyWeapons friendlyWeapon) : base("player", 80f, 5, 5)
         {
             switch (friendlyWeapon)
             {
@@ -52,12 +52,12 @@ namespace TheCure
 
             int index = gm.Friendlies.IndexOf(this);
 
-          
-            int ringSize = 6;  
+
+            int ringSize = 6;
             float baseRadius = 130f;
             float ringSpacing = 80f;
 
-            int ringNumber = index / ringSize;     
+            int ringNumber = index / ringSize;
             int indexInRing = index % ringSize;
 
             float orbitRadius = baseRadius + ringNumber * ringSpacing;

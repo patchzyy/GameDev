@@ -13,7 +13,7 @@ namespace TheCure
         //tip btw if you have a sprite sheet with 1 row, you can do frameHeight = texture.Height and frameWidth = texture.Width / frameCount
         public int FrameWidth { get; } //This should be the width of 1 frame
         public int FrameHeight { get; } //This should be the height of 1 frame
-    
+
         public int FrameCount { get; }
         public int CurrentFrame { get; private set; }
         public float FrameRate { get; set; }
@@ -52,19 +52,25 @@ namespace TheCure
                 throw new ArgumentOutOfRangeException(nameof(frameRate), "Frame rate must be greater than zero.");
             }
 
-            if (texture.Width % frameWidth != 0 || texture.Height % frameHeight != 0)
+            if (frameCount <= 0)
             {
-                throw new ArgumentException("Texture size must fit evenly into the frame size.");
+                throw new ArgumentOutOfRangeException(nameof(frameCount), "Frame count must be greater than zero.");
+            }
+
+            if (frameWidth > texture.Width || frameHeight > texture.Height)
+            {
+                throw new ArgumentException(
+                    $"Frame size ({frameWidth}x{frameHeight}) cannot be larger than texture size ({texture.Width}x{texture.Height}).");
             }
 
             _columns = texture.Width / frameWidth;
             int rows = texture.Height / frameHeight;
             int maxFrameCount = _columns * rows;
 
-            if (frameCount <= 0 || frameCount > maxFrameCount)
+            if (frameCount > maxFrameCount)
             {
                 throw new ArgumentOutOfRangeException(nameof(frameCount),
-                    "Frame count must fit inside the supplied sprite sheet.");
+                    $"Frame count ({frameCount}) exceeds maximum possible frames ({maxFrameCount}) for {_columns}x{rows} grid.");
             }
 
             _texture = texture;

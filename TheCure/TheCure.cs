@@ -92,7 +92,7 @@ namespace TheCure
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.Black);
+            GraphicsDevice.Clear(Color.White);
             _gameManager.Draw(gameTime, _spriteBatch);
 
             base.Draw(gameTime);

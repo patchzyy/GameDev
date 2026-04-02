@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using TheCure.Mobs;
@@ -9,7 +10,7 @@ namespace TheCure
     public class Zombie : Mob
     {
         private bool _attackNextCombat;
-        private float _attackCooldown = 1f;
+        private float _attackCoolDown = 1f;
         private float _attackTimer;
         private GameObject _currentTarget;
         private float _stagger = 1f;
@@ -17,13 +18,21 @@ namespace TheCure
 
         public float LastHealed;
 
-        public Zombie() : base("Alien", 60f, 3, 10)
+        private AnimatedSprite _animatedSprite;
+        private float _scale = 0.35f;
+
+        public Zombie() : base("zombie", 60f, 3, 10)
         {
         }
 
         public override void Load(ContentManager content)
         {
             base.Load(content);
+
+            int frameWidth = 204;
+            int frameHeight = _texture.Height;
+
+            _animatedSprite = new AnimatedSprite(_texture, frameWidth, frameHeight, 5, 5f, true);
 
             SetHealthBar(_texture, _maxHealth, _startHealth, Destroy, BecomeFriendly);
 
@@ -44,6 +53,8 @@ namespace TheCure
             }
 
             LastHealed += deltaTime;
+
+            _animatedSprite.Update(gameTime);
 
             base.Update(gameTime);
         }
@@ -84,7 +95,7 @@ namespace TheCure
 
             _currentTarget.LoseHealth(_attackDamage);
             _attackNextCombat = false;
-            _attackTimer = _attackCooldown;
+            _attackTimer = _attackCoolDown;
             _currentTarget = null;
         }
 
@@ -122,8 +133,17 @@ namespace TheCure
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            Color tint = Color.White;
-            spriteBatch.Draw(_texture, _collider.GetBoundingBox(), tint);
+            int scaledWidth = (int)(_animatedSprite.FrameWidth * _scale);
+            int scaledHeight = (int)(_animatedSprite.FrameHeight * _scale);
+
+            Rectangle destinationRectangle = new Rectangle(
+                (int)(_collider.X - scaledWidth / 2),
+                (int)(_collider.Y - scaledHeight / 2),
+                scaledWidth,
+                scaledHeight
+            );
+
+            _animatedSprite.Draw(spriteBatch, destinationRectangle, Color.White);
 
             base.Draw(gameTime, spriteBatch);
         }
