@@ -216,7 +216,6 @@ namespace TheCure
             _backgroundTexture = content.Load<Texture2D>("ZombieBackground");
             _titleFont = content.Load<SpriteFont>("TitleFont");
             _buttonFont = content.Load<SpriteFont>("ButtonFont");
-            _hudFont = content.Load<SpriteFont>("HudFont");
             if (_hud == null)
                 _hud = new HUD();
 
