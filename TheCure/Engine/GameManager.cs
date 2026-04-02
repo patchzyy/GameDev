@@ -28,8 +28,6 @@ namespace TheCure
         private Camera _camera;
         private HUD _hud;
         private int _score = 0;
-        private Dictionary<string, string> _stats = new Dictionary<string, string>();
-        private SpriteFont _hudFont;
         private Texture2D _buttonTexture;
 
         private float _gameTimeElapsed = 0f;
