@@ -15,6 +15,7 @@ namespace TheCure
         private float _stagger = 1f;
         private int _attackDamage = 1;
         private Vector2 _previousCenter;
+        private Vector2 _facingDirection = Vector2.UnitX;
 
         public float LastHealed;
 
@@ -43,6 +44,12 @@ namespace TheCure
             else
             {
                 Move(deltaTime);
+            }
+
+            Vector2 movement = _collider.Center - _previousCenter;
+            if (movement.LengthSquared() > 0.0001f)
+            {
+                _facingDirection = Vector2.Normalize(movement);
             }
 
             LastHealed += deltaTime;
@@ -148,7 +155,8 @@ namespace TheCure
                 scaledHeight
             );
 
-            spriteBatch.Draw(_texture, destRect, _animatedSprite.SourceRectangle, tint);
+            SpriteEffects effects = _facingDirection.X < 0f ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+            spriteBatch.Draw(_texture, destRect, _animatedSprite.SourceRectangle, tint, 0f, Vector2.Zero, effects, 0f);
 
             base.Draw(gameTime, spriteBatch);
         }

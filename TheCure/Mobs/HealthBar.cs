@@ -77,11 +77,11 @@ namespace TheCure
 
             if (_texture == null) return;
 
-            int barWidth = 50;
-            int barHeight = 15;
+            int barWidth = 40;
+            int barHeight = 12;
 
             int xOffset = barWidth / 2;
-            int yOffset = (_objectHeight / 2) + barHeight + 5;
+            int yOffset = (_objectHeight / 2) + barHeight + 2;
 
             int drawX = (int)_barPosition.X - xOffset;
             int drawY = (int)_barPosition.Y - yOffset;

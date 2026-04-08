@@ -14,10 +14,11 @@ namespace TheCure
         private float _angleOffset;
         private float _radius = 20f;
         private Vector2 _previousCenter;
+        private Vector2 _facingDirection = Vector2.UnitX;
 
         private BaseWeapon _weapon;
 
-        public Friendly(FriendlyWeapons friendlyWeapon) : base("player", 80f, 5, 5, frameCount: 5, frameRate: 5f, scale: 0.35f)
+        public Friendly(FriendlyWeapons friendlyWeapon) : base("player", 60f, 3, 10, frameCount: 5, frameRate: 5f, scale: 0.35f)
         {
             switch (friendlyWeapon)
             {
@@ -94,6 +95,12 @@ namespace TheCure
             _collider.Center = Vector2.Lerp(_collider.Center, targetPos, 5f * deltaTime);
             Attack(gameTime);
 
+            Vector2 movement = _collider.Center - _previousCenter;
+            if (movement.LengthSquared() > 0.0001f)
+            {
+                _facingDirection = Vector2.Normalize(movement);
+            }
+
             base.Update(gameTime);
         }
 
@@ -131,13 +138,8 @@ namespace TheCure
                 scaledHeight
             );
 
-            spriteBatch.Draw(_texture, destRect, _animatedSprite.SourceRectangle, tint);
-
-            string text = "Friendly";
-            Vector2 textSize = _font.MeasureString(text);
-            Vector2 textPos = new Vector2(_collider.Center.X - (textSize.X / 2),
-                _collider.Center.Y - (scaledHeight / 2) - 20);
-            spriteBatch.DrawString(_font, text, textPos, Color.LimeGreen);
+            SpriteEffects effects = _facingDirection.X < 0f ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+            spriteBatch.Draw(_texture, destRect, _animatedSprite.SourceRectangle, tint, 0f, Vector2.Zero, effects, 0f);
 
             base.Draw(gameTime, spriteBatch);
         }
