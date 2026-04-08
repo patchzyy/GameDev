@@ -18,7 +18,7 @@ namespace TheCure
 
         private BaseWeapon _weapon;
 
-        public Friendly(FriendlyWeapons friendlyWeapon) : base("player", 60f, 3, 10, frameCount: 5, frameRate: 5f, scale: 0.35f)
+        public Friendly(FriendlyWeapons friendlyWeapon) : base("player", 60f, 3, 10, frameCount: 10, frameRate: 5f, scale: 0.35f)
         {
             switch (friendlyWeapon)
             {

@@ -77,26 +77,26 @@ namespace TheCure
 
             if (_texture == null) return;
 
-            int barWidth = 40;
-            int barHeight = 12;
-
+            int objectHeight = Math.Max(1, _objectHeight);
+            int barWidth = Math.Clamp(objectHeight * 2, 44, 72);
+            int barHeight = 10;
             int xOffset = barWidth / 2;
-            int yOffset = (_objectHeight / 2) + barHeight + 2;
+            int yOffset = (objectHeight / 2) + barHeight + 4;
 
             int drawX = (int)_barPosition.X - xOffset;
             int drawY = (int)_barPosition.Y - yOffset;
 
-            spriteBatch.Draw(dummyTexture, new Rectangle(drawX, drawY, barWidth, barHeight),
-                Color.Gray);
+            var borderRect = new Rectangle(drawX - 1, drawY - 1, barWidth + 2, barHeight + 2);
+            var backgroundRect = new Rectangle(drawX, drawY, barWidth, barHeight);
+            var fillRect = new Rectangle(drawX + 1, drawY + 1, Math.Max(1, (int)((barWidth - 2) * (_currentHealth / _maxHealth))), barHeight - 2);
+
+            spriteBatch.Draw(dummyTexture, borderRect, Color.Black * 0.9f);
+            spriteBatch.Draw(dummyTexture, backgroundRect, new Color(30, 30, 30, 220));
 
             double healthRatio = _currentHealth / (double)_maxHealth;
-
-            // scale colour based on ratio from 0-red to 1-green
             Color healthColor = Color.Lerp(Color.Red, Color.Green, (float)healthRatio);
 
-            spriteBatch.Draw(dummyTexture,
-                new Rectangle(drawX, drawY, (int)(barWidth * healthRatio), barHeight),
-                healthColor);
+            spriteBatch.Draw(dummyTexture, fillRect, healthColor);
         }
     }
 }
