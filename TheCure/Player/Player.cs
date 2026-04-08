@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -20,6 +21,7 @@ namespace TheCure
 
         internal Vector2 _velocity;
         internal float _rotation;
+        private Rectangle _previousBounds;
 
         internal BaseWeapon _currentWeapon;
         internal readonly SingleBulletWeapon _bulletWeapon = new SingleBulletWeapon();
@@ -37,6 +39,7 @@ namespace TheCure
             _velocity = Vector2.Zero;
             _rotation = 0f;
             _currentWeapon = _bulletWeapon;
+            _previousBounds = _rectangleCollider.shape;
         }
 
         public override void Load(ContentManager content)
@@ -135,7 +138,8 @@ namespace TheCure
                     System.Diagnostics.Debug.WriteLine("Wapen-buff verlopen. Teruggeschakeld naar BulletWeapon.");
                 }
             }
-
+            
+            _previousBounds = _rectangleCollider.shape;
             _rectangleCollider.shape.X += (int)(_velocity.X * deltaTime);
             _rectangleCollider.shape.Y += (int)(_velocity.Y * deltaTime);
 
@@ -183,6 +187,11 @@ namespace TheCure
 
         public override void OnCollision(GameObject tmp)
         {
+            if (tmp is Wall wall)
+            {
+                // speler netjes terugduwen uit de muur
+                wall.ResolveRectangleCollision(_rectangleCollider, _previousBounds, ref _velocity);
+            }
         }
 
         public void Reset()

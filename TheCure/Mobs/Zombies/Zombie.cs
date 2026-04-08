@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using TheCure.Mobs;
@@ -10,15 +9,16 @@ namespace TheCure
     public class Zombie : Mob
     {
         private bool _attackNextCombat;
-        private float _attackCoolDown = 1f;
+        private float _attackCooldown = 1f;
         private float _attackTimer;
         private GameObject _currentTarget;
         private float _stagger = 1f;
         private int _attackDamage = 1;
+        private Vector2 _previousCenter;
 
         public float LastHealed;
 
-        public Zombie() : base("zombie", 60f, 3, 10, frameCount: 5, frameRate: 5f, scale: 0.35f)
+        public Zombie() : base("Alien", 60f, 3, 10)
         {
         }
 
@@ -34,13 +34,16 @@ namespace TheCure
         public override void Update(GameTime gameTime)
         {
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            _previousCenter = _collider.Center;
 
             if (_attackNextCombat)
             {
                 Attack(deltaTime);
             }
             else
+            {
                 Move(deltaTime);
+            }
 
             LastHealed += deltaTime;
 
@@ -58,7 +61,6 @@ namespace TheCure
             Vector2 targetPosition = _currentTarget == null
                 ? GameManager.GetGameManager().Player.GetPosition().Center.ToVector2()
                 : _currentTarget.GetCollider().GetBoundingBox().Center.ToVector2();
-
             Vector2 direction = targetPosition - _collider.Center;
 
             direction.Normalize();
@@ -67,10 +69,13 @@ namespace TheCure
 
         private void BecomeFriendly()
         {
-            GameManager game = GameManager.GetGameManager();
+            GameManager gm = GameManager.GetGameManager();
 
-            game.AddGameObject(new Friendly(FriendlyWeapons.HandGun, _collider.Center));
-            game.RemoveGameObject(this);
+            // turn into friendly at same position
+            gm.AddGameObject(new Friendly(FriendlyWeapons.HandGun, _collider.Center));
+            gm.RemoveGameObject(this);
+
+            gm.AddScore(100, "Zombie Healed"); // Add score for converting a zombie to friendly
         }
 
         private void Attack(float deltaTime)
@@ -83,7 +88,7 @@ namespace TheCure
 
             _currentTarget.LoseHealth(_attackDamage);
             _attackNextCombat = false;
-            _attackTimer = _attackCoolDown;
+            _attackTimer = _attackCooldown;
             _currentTarget = null;
         }
 
@@ -97,7 +102,9 @@ namespace TheCure
                     LastHealed = 0f;
                 }
                 else
+                {
                     LoseHealth(1);
+                }
 
                 tmp.Destroy();
             }
@@ -108,18 +115,31 @@ namespace TheCure
                 _attackNextCombat = true;
             }
 
+            if (tmp is Wall wall)
+            {
+                wall.ResolveCircleCollision(_collider, _previousCenter);
+            }
+
             base.OnCollision(tmp);
+        }
+
+        public override void Destroy()
+        {
+            GameManager.GetGameManager().AddScore(50, "Zombie Killed");
+            base.Destroy();
         }
 
         public void RandomMove()
         {
-            GameManager game = GameManager.GetGameManager();
-            _collider.Center = game.RandomLocationOutsideView();
+            var game = GameManager.GetGameManager();
+            _collider.Center = game.RandomLocationOutsideView((int)_collider.Radius);
         }
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            DrawAnimatedSprite(spriteBatch, Color.White);
+            Color tint = Color.White;
+            spriteBatch.Draw(_texture, _collider.GetBoundingBox(), tint);
+
             base.Draw(gameTime, spriteBatch);
         }
     }
