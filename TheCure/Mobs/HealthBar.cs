@@ -15,6 +15,7 @@ namespace TheCure
         private bool _hideHealthBar;
 
         private Vector2 _barPosition;
+        private int _objectHeight;
 
         public Texture2D _texture;
         public bool IsMaxHealth => _currentHealth >= _maxHealth;
@@ -31,6 +32,7 @@ namespace TheCure
             _onMaxHealth = onMaxHealth;
             _texture = texture;
             _hideHealthBar = hide;
+            _objectHeight = 0;
         }
 
         public void IncreaseHealth(int health)
@@ -60,10 +62,10 @@ namespace TheCure
             _currentHealth = _startHealth;
         }
 
-        public void UpdateHealthBar(Point position, Texture2D texture)
+        public void UpdateHealthBar(Point position, int objectHeight)
         {
             _barPosition = new Vector2(position.X, position.Y);
-            _texture = texture;
+            _objectHeight = objectHeight;
         }
 
 
@@ -75,11 +77,11 @@ namespace TheCure
 
             if (_texture == null) return;
 
-            int barWidth = _texture.Width / 2;
+            int barWidth = 50;
             int barHeight = 15;
 
             int xOffset = barWidth / 2;
-            int yOffset = _texture.Height + 5;
+            int yOffset = (_objectHeight / 2) + barHeight + 5;
 
             int drawX = (int)_barPosition.X - xOffset;
             int drawY = (int)_barPosition.Y - yOffset;

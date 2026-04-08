@@ -42,7 +42,7 @@ namespace TheCure
         {
             if (_healthBar != null)
             {
-                _healthBar.UpdateHealthBar(collider.GetBoundingBox().Center, _healthBar._texture);
+                _healthBar.UpdateHealthBar(collider.GetBoundingBox().Center, collider.GetBoundingBox().Height);
             }
         }
 

@@ -31,7 +31,6 @@ namespace TheCure
         private HUD _hud;
         private int _score = 0;
         private List<ScorePopup> _scorePopups = new List<ScorePopup>();
-        private Texture2D _buttonTexture;
 
         private float _gameTimeElapsed = 0f;
         private float _spawnTimer = 0f;
@@ -531,7 +530,7 @@ namespace TheCure
         {
             return _scorePopups;
         }
-        
+
         public void AddScore(int pointsToAdd, string reason = "")
         {
             scoreManager.AddScore(pointsToAdd);
@@ -596,7 +595,7 @@ namespace TheCure
                     return candidate;
                 }
             }
-            
+
             Vector2[] fallbackPoints =
             {
                 new (safePlayableBounds.Left, safePlayableBounds.Top),
@@ -649,13 +648,13 @@ namespace TheCure
         {
             // boven
             AddWorldWall(new(_playableBounds.Left - WallThickness, _playableBounds.Top - WallThickness, _playableBounds.Width + WallThickness * 2, WallThickness));
-            
+
             // onder
             AddWorldWall(new(_playableBounds.Left - WallThickness, _playableBounds.Bottom, _playableBounds.Width + WallThickness * 2, WallThickness));
-            
+
             // links
             AddWorldWall(new(_playableBounds.Left - WallThickness, _playableBounds.Top, WallThickness, _playableBounds.Height));
-            
+
             // rechts
             AddWorldWall(new(_playableBounds.Right, _playableBounds.Top, WallThickness, _playableBounds.Height));
         }
@@ -678,7 +677,7 @@ namespace TheCure
             {
                 return;
             }
-            
+
             var worldBounds = GetWorldBounds();
 
             for (var x = worldBounds.Left; x < worldBounds.Right; x += _gameplayBackgroundTexture.Width)

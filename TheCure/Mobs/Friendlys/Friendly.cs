@@ -17,7 +17,7 @@ namespace TheCure
 
         private BaseWeapon _weapon;
 
-        public Friendly(FriendlyWeapons friendlyWeapon) : base("player", 80f, 5, 5)
+        public Friendly(FriendlyWeapons friendlyWeapon) : base("player", 80f, 5, 5, frameCount: 5, frameRate: 5f, scale: 0.35f)
         {
             switch (friendlyWeapon)
             {
@@ -121,13 +121,22 @@ namespace TheCure
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             Color tint = Color.LightBlue;
-            spriteBatch.Draw(_texture, _collider.GetBoundingBox(), tint);
+            int scaledWidth = (int)(_animatedSprite.FrameWidth * 0.35f);
+            int scaledHeight = (int)(_animatedSprite.FrameHeight * 0.35f);
 
+            Rectangle destRect = new Rectangle(
+                (int)(_collider.Center.X - scaledWidth / 2),
+                (int)(_collider.Center.Y - scaledHeight / 2),
+                scaledWidth,
+                scaledHeight
+            );
+
+            spriteBatch.Draw(_texture, destRect, _animatedSprite.SourceRectangle, tint);
 
             string text = "Friendly";
             Vector2 textSize = _font.MeasureString(text);
             Vector2 textPos = new Vector2(_collider.Center.X - (textSize.X / 2),
-                _collider.Center.Y - (_texture.Height / 2) - 20);
+                _collider.Center.Y - (scaledHeight / 2) - 20);
             spriteBatch.DrawString(_font, text, textPos, Color.LimeGreen);
 
             base.Draw(gameTime, spriteBatch);

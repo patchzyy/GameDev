@@ -18,7 +18,7 @@ namespace TheCure
 
         public float LastHealed;
 
-        public Zombie() : base("Alien", 60f, 3, 10)
+        public Zombie() : base("Zombie", 60f, 3, 10, frameCount: 5, frameRate: 5f, scale: 0.35f)
         {
         }
 
@@ -138,7 +138,17 @@ namespace TheCure
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             Color tint = Color.White;
-            spriteBatch.Draw(_texture, _collider.GetBoundingBox(), tint);
+            int scaledWidth = (int)(_animatedSprite.FrameWidth * 0.35f);
+            int scaledHeight = (int)(_animatedSprite.FrameHeight * 0.35f);
+
+            Rectangle destRect = new Rectangle(
+                (int)(_collider.Center.X - scaledWidth / 2),
+                (int)(_collider.Center.Y - scaledHeight / 2),
+                scaledWidth,
+                scaledHeight
+            );
+
+            spriteBatch.Draw(_texture, destRect, _animatedSprite.SourceRectangle, tint);
 
             base.Draw(gameTime, spriteBatch);
         }
