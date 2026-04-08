@@ -298,7 +298,7 @@ namespace TheCure
 
                 UpdatePhase();
                 SpawnEnemies();
-                SpawnSupply();
+                // SpawnSupply();
                 for (int i = _scorePopups.Count - 1; i >= 0; i--)
                 {
                     _scorePopups[i].TimeLeft -= deltaTime;
