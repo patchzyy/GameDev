@@ -14,6 +14,7 @@ namespace TheCure
         private GameObject _currentTarget;
         private float _stagger = 1f;
         private int _attackDamage = 1;
+        private Vector2 _previousCenter;
 
         public float LastHealed;
 
@@ -33,6 +34,7 @@ namespace TheCure
         public override void Update(GameTime gameTime)
         {
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            _previousCenter = _collider.Center;
 
             if (_attackNextCombat)
             {
@@ -113,6 +115,11 @@ namespace TheCure
                 _attackNextCombat = true;
             }
 
+            if (tmp is Wall wall)
+            {
+                wall.ResolveCircleCollision(_collider, _previousCenter);
+            }
+
             base.OnCollision(tmp);
         }
 
@@ -124,8 +131,8 @@ namespace TheCure
 
         public void RandomMove()
         {
-            GameManager game = GameManager.GetGameManager();
-            _collider.Center = game.RandomLocationOutsideView();
+            var game = GameManager.GetGameManager();
+            _collider.Center = game.RandomLocationOutsideView((int)_collider.Radius);
         }
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)

@@ -19,6 +19,7 @@ namespace TheCure
         private List<GameObject> _toBeAdded;
         private ContentManager _content;
         private Texture2D _backgroundTexture;
+        private Texture2D _gameplayBackgroundTexture;
         private SpriteFont _titleFont;
         private SpriteFont _buttonFont;
         private Button _startButton;
@@ -43,6 +44,13 @@ namespace TheCure
 
         private float _supplySpawnTimer = 0f;
         private float _supplySpawnInterval = 15.0f;
+
+
+        //World borders
+        private const int WorldWidth = 3600;
+        private const int WorldHeight = 2400;
+        private const int WallThickness = 32;
+        private readonly Rectangle _playableBounds = new Rectangle(-1800, -1200, WorldWidth, WorldHeight);
 
 
         public Random RNG { get; private set; }
@@ -87,14 +95,14 @@ namespace TheCure
             Player = player;
             _camera = new Camera(Game.GraphicsDevice.Viewport);
 
-            DummyTexture = new Texture2D(Game.GraphicsDevice, 1, 1);
-            DummyTexture.SetData(new Color[] { Color.White });
+            DummyTexture = new (Game.GraphicsDevice, 1, 1);
+            DummyTexture.SetData(new[] { Color.White });
 
-            int buttonWidth = 200;
-            int buttonHeight = 50;
-            int centerX = Game.GraphicsDevice.Viewport.Width / 2;
-            int centerY = Game.GraphicsDevice.Viewport.Height / 2;
-            int spacing = 20;
+            var buttonWidth = 200;
+            var buttonHeight = 50;
+            var centerX = Game.GraphicsDevice.Viewport.Width / 2;
+            var centerY = Game.GraphicsDevice.Viewport.Height / 2;
+            var spacing = 20;
 
             _startButton = new Button(
                 new Rectangle(centerX - buttonWidth / 2, centerY - buttonHeight - spacing / 2, buttonWidth,
@@ -128,8 +136,8 @@ namespace TheCure
                 _buttonFont);
             _restartButton.Clicked += RestartButton_Clicked;
 
-            Vector2 pickupPos = new Vector2(-500, -300);
-            Vector2 dropOffPos = new Vector2(2000, 600);
+            var pickupPos = new Vector2(-500, -300);
+            var dropOffPos = new Vector2(2000, 600);
 
             CurrentGameState = GameState.StartScreen;
         }
@@ -182,9 +190,10 @@ namespace TheCure
             _currentSpawnInterval = _initialSpawnInterval;
             _enemiesToSpawn = 1;
 
+            AddWorldWalls();
             _gameObjects.Add(Player);
 
-            for (int i = 0; i < 1; i++)
+            for (var i = 0; i < 1; i++)
             {
                 SpawnAlien();
             }
@@ -219,12 +228,13 @@ namespace TheCure
         public void Load(ContentManager content)
         {
             _backgroundTexture = content.Load<Texture2D>("ZombieBackground");
+            _gameplayBackgroundTexture = content.Load<Texture2D>("BackGround");
             _titleFont = content.Load<SpriteFont>("TitleFont");
             _buttonFont = content.Load<SpriteFont>("ButtonFont");
             _hud = new HUD();
             scoreManager = new ScoreManager();
 
-            foreach (GameObject gameObject in _gameObjects)
+            foreach (var gameObject in _gameObjects)
             {
                 gameObject.Load(content);
             }
@@ -234,7 +244,7 @@ namespace TheCure
 
         public void HandleInput(InputManager inputManager)
         {
-            foreach (GameObject gameObject in _gameObjects)
+            foreach (var gameObject in _gameObjects)
             {
                 gameObject.HandleInput(this.InputManager);
             }
@@ -242,9 +252,9 @@ namespace TheCure
 
         public void CheckCollision()
         {
-            for (int i = 0; i < _gameObjects.Count; i++)
+            for (var i = 0; i < _gameObjects.Count; i++)
             {
-                for (int j = i + 1; j < _gameObjects.Count; j++)
+                for (var j = i + 1; j < _gameObjects.Count; j++)
                 {
                     if (_gameObjects[i].CheckCollision(_gameObjects[j]))
                     {
@@ -263,7 +273,7 @@ namespace TheCure
         public void Update(GameTime gameTime)
         {
             InputManager.Update();
-            MouseState mouseState = Mouse.GetState();
+            var mouseState = Mouse.GetState();
 
             if (CurrentGameState == GameState.StartScreen)
             {
@@ -291,7 +301,7 @@ namespace TheCure
 
             if (CurrentGameState == GameState.Playing)
             {
-                float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+                var deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
                 _gameTimeElapsed += deltaTime;
                 _spawnTimer += deltaTime;
@@ -308,19 +318,19 @@ namespace TheCure
                         _scorePopups.RemoveAt(i);
                 }
 
-                _camera.Update(Player.GetPosition().Center.ToVector2());
-                _hud.Update();
-
                 HandleInput(InputManager);
 
-                foreach (GameObject gameObject in _gameObjects)
+                foreach (var gameObject in _gameObjects)
                 {
                     gameObject.Update(gameTime);
                 }
 
+                _camera.Update(Player.GetPosition().Center.ToVector2(), GetWorldBounds());
+                _hud.Update();
+
                 CheckCollision();
 
-                foreach (GameObject gameObject in _toBeAdded)
+                foreach (var gameObject in _toBeAdded)
                 {
                     if (gameObject is Zombie)
                     {
@@ -333,7 +343,7 @@ namespace TheCure
 
                 _toBeAdded.Clear();
 
-                foreach (GameObject gameObject in _toBeRemoved)
+                foreach (var gameObject in _toBeRemoved)
                 {
                     if (gameObject is Zombie)
                     {
@@ -381,20 +391,20 @@ namespace TheCure
                 return;
             _spawnTimer = 0f;
 
-            int currentAlienCount = _gameObjects.OfType<Zombie>().Count();
+            var currentAlienCount = _gameObjects.OfType<Zombie>().Count();
 
             if (currentAlienCount >= _maxEnemiesOnScreen)
                 return;
 
             _enemiesToSpawn = Math.Min(_enemiesToSpawn, _maxEnemiesOnScreen - currentAlienCount);
 
-            for (int i = 0; i < _enemiesToSpawn; i++)
+            for (var i = 0; i < _enemiesToSpawn; i++)
                 SpawnAlien();
         }
 
         private void SpawnAlien()
         {
-            Zombie newZombie = new Zombie();
+            var newZombie = new Zombie();
             newZombie.Load(_content);
             AddGameObject(newZombie);
             newZombie.RandomMove();
@@ -407,7 +417,7 @@ namespace TheCure
 
             _supplySpawnTimer = 0f;
 
-            Supply newSupply = new Supply();
+            var newSupply = new Supply();
             AddGameObject(newSupply);
             newSupply.RandomMove();
         }
@@ -418,7 +428,9 @@ namespace TheCure
 
             if (CurrentGameState == GameState.Playing || CurrentGameState == GameState.Paused)
             {
-                foreach (GameObject gameObject in _gameObjects)
+                DrawTiledGameplayBackground(spriteBatch);
+
+                foreach (var gameObject in _gameObjects)
                 {
                     gameObject.Draw(gameTime, spriteBatch);
                 }
@@ -435,13 +447,13 @@ namespace TheCure
 
                 var quitBounds = _quitButton.Rectangle;
 
-                float spacing = 120f;
+                var spacing = 120f;
 
-                float textY = quitBounds.Y + quitBounds.Height + spacing;
+                var textY = quitBounds.Y + quitBounds.Height + spacing;
 
-                string titleText = "The Cure";
-                Vector2 titleSize = _titleFont.MeasureString(titleText);
-                Vector2 titlePosition = new Vector2(
+                var titleText = "The Cure";
+                var titleSize = _titleFont.MeasureString(titleText);
+                var titlePosition = new Vector2(
                     Game.GraphicsDevice.Viewport.Width / 2 - titleSize.X / 2,
                     textY
                 );
@@ -458,9 +470,9 @@ namespace TheCure
                     new Color(0, 0, 0, 128)
                 );
 
-                string pauseText = "Game gepauzeerd";
-                Vector2 pauseTextSize = _titleFont.MeasureString(pauseText);
-                Vector2 pauseTextPosition =
+                var pauseText = "Game gepauzeerd";
+                var pauseTextSize = _titleFont.MeasureString(pauseText);
+                var pauseTextPosition =
                     new Vector2(Game.GraphicsDevice.Viewport.Width / 2 - pauseTextSize.X / 2, 150);
 
                 spriteBatch.DrawString(_titleFont, pauseText, pauseTextPosition, Color.White);
@@ -470,26 +482,26 @@ namespace TheCure
             }
             else if (CurrentGameState == GameState.GameOver)
             {
-                float spacing = 20f;
-                float currentY = 150f;
+                var spacing = 20f;
+                var currentY = 150f;
 
                 spriteBatch.Draw(DummyTexture,
                     new Rectangle(0, 0, Game.GraphicsDevice.Viewport.Width, Game.GraphicsDevice.Viewport.Height),
                     new Color(0, 0, 0, 200)
                 );
 
-                string gameOverText = "Game Over";
-                Vector2 gameOverTextSize = _titleFont.MeasureString(gameOverText);
-                Vector2 gameOverTextPosition =
+                var gameOverText = "Game Over";
+                var gameOverTextSize = _titleFont.MeasureString(gameOverText);
+                var gameOverTextPosition =
                     new Vector2(Game.GraphicsDevice.Viewport.Width / 2 - gameOverTextSize.X / 2, currentY);
 
                 spriteBatch.DrawString(_titleFont, gameOverText, gameOverTextPosition, Color.Red);
 
                 currentY += gameOverTextSize.Y + spacing;
 
-                string scoreText = $"Eindscore: {scoreManager.GetScore()}";
-                Vector2 scoreTextSize = _titleFont.MeasureString(scoreText);
-                Vector2 scoreTextPosition =
+                var scoreText = $"Eindscore: {_score}";
+                var scoreTextSize = _titleFont.MeasureString(scoreText);
+                var scoreTextPosition =
                     new Vector2(Game.GraphicsDevice.Viewport.Width / 2 - scoreTextSize.X / 2, currentY);
 
                 spriteBatch.DrawString(_titleFont, scoreText, scoreTextPosition, Color.White);
@@ -555,28 +567,133 @@ namespace TheCure
             );
         }
 
-        public Vector2 RandomLocationOutsideView(int margin = 150)
+        public Vector2 RandomLocationOutsideView(int margin = 150, int padding = 0)
         {
             if (_camera == null)
-                return RandomScreenLocation();
-
-            Rectangle viewBounds = _camera.GetViewBounds();
-            int left = viewBounds.Left - margin;
-            int right = viewBounds.Right + margin;
-            int top = viewBounds.Top - margin;
-            int bottom = viewBounds.Bottom + margin;
-
-            int side = RNG.Next(0, 4);
-            switch (side)
             {
-                case 0: // Spawn boven uit het zicht
-                    return new Vector2(RNG.Next(left, right), RNG.Next(top, viewBounds.Top));
-                case 1: // Spawn onder uit het zicht
-                    return new Vector2(RNG.Next(left, right), RNG.Next(viewBounds.Bottom, bottom));
-                case 2: // Spawn links uit het zicht
-                    return new Vector2(RNG.Next(left, viewBounds.Left), RNG.Next(top, bottom));
-                default: // Spawn rechts uit het zicht
-                    return new Vector2(RNG.Next(viewBounds.Right, right), RNG.Next(top, bottom));
+                return ClampToPlayableBounds(RandomScreenLocation(), padding);
+            }
+
+            var playableBounds = GetPlayableBounds();
+            var safePlayableBounds = new Rectangle(
+                playableBounds.Left + padding,
+                playableBounds.Top + padding,
+                playableBounds.Width - padding * 2,
+                playableBounds.Height - padding * 2);
+
+            var blockedViewBounds = _camera.GetViewBounds();
+            blockedViewBounds.Inflate(margin, margin);
+
+            // todo: check of dit... niet random kan, heb dit van de les lol
+            for (var i = 0; i < 7; i++)
+            {
+                var candidate = new Vector2(
+                    RNG.Next(safePlayableBounds.Left, safePlayableBounds.Right),
+                    RNG.Next(safePlayableBounds.Top, safePlayableBounds.Bottom));
+
+                if (!blockedViewBounds.Contains(candidate))
+                {
+                    return candidate;
+                }
+            }
+            
+            Vector2[] fallbackPoints =
+            {
+                new (safePlayableBounds.Left, safePlayableBounds.Top),
+                new (safePlayableBounds.Right - 1, safePlayableBounds.Top),
+                new (safePlayableBounds.Left, safePlayableBounds.Bottom - 1),
+                new (safePlayableBounds.Right - 1, safePlayableBounds.Bottom - 1)
+            };
+
+            var bestPoint = fallbackPoints[0];
+            var bestDistance = -1f;
+
+            // verste hoek
+            foreach (var point in fallbackPoints)
+            {
+                var distance = Vector2.DistanceSquared(point, blockedViewBounds.Center.ToVector2());
+                if (distance > bestDistance)
+                {
+                    bestDistance = distance;
+                    bestPoint = point;
+                }
+            }
+
+            return bestPoint;
+        }
+
+        public Rectangle GetPlayableBounds()
+        {
+            return _playableBounds;
+        }
+
+        public Rectangle GetWorldBounds()
+        {
+            return new Rectangle(
+                _playableBounds.X - WallThickness,
+                _playableBounds.Y - WallThickness,
+                _playableBounds.Width + WallThickness * 2,
+                _playableBounds.Height + WallThickness * 2);
+        }
+
+        public Vector2 ClampToPlayableBounds(Vector2 position, float padding = 0f)
+        {
+            var playableBounds = GetPlayableBounds();
+
+            return new Vector2(
+                MathHelper.Clamp(position.X, playableBounds.Left + padding, playableBounds.Right - padding),
+                MathHelper.Clamp(position.Y, playableBounds.Top + padding, playableBounds.Bottom - padding));
+        }
+
+        public void AddWorldWalls()
+        {
+            // boven
+            AddWorldWall(new(_playableBounds.Left - WallThickness, _playableBounds.Top - WallThickness, _playableBounds.Width + WallThickness * 2, WallThickness));
+            
+            // onder
+            AddWorldWall(new(_playableBounds.Left - WallThickness, _playableBounds.Bottom, _playableBounds.Width + WallThickness * 2, WallThickness));
+            
+            // links
+            AddWorldWall(new(_playableBounds.Left - WallThickness, _playableBounds.Top, WallThickness, _playableBounds.Height));
+            
+            // rechts
+            AddWorldWall(new(_playableBounds.Right, _playableBounds.Top, WallThickness, _playableBounds.Height));
+        }
+
+        private void AddWorldWall(Rectangle bounds)
+        {
+            var wall = new Wall(bounds);
+
+            if (_content != null && _backgroundTexture != null)
+            {
+                wall.Load(_content);
+            }
+
+            _gameObjects.Add(wall);
+        }
+
+        private void DrawTiledGameplayBackground(SpriteBatch spriteBatch)
+        {
+            if (_gameplayBackgroundTexture == null)
+            {
+                return;
+            }
+            
+            var worldBounds = GetWorldBounds();
+
+            for (var x = worldBounds.Left; x < worldBounds.Right; x += _gameplayBackgroundTexture.Width)
+            {
+                for (var y = worldBounds.Top; y < worldBounds.Bottom; y += _gameplayBackgroundTexture.Height)
+                {
+                    var tileWidth = Math.Min(_gameplayBackgroundTexture.Width, worldBounds.Right - x);
+                    var tileHeight = Math.Min(_gameplayBackgroundTexture.Height, worldBounds.Bottom - y);
+
+                    spriteBatch.Draw(
+                        _gameplayBackgroundTexture,
+                        new Rectangle(x, y, tileWidth, tileHeight),
+                        new Rectangle(0, 0, tileWidth, tileHeight),
+                        Color.White);
+                }
             }
         }
     }
