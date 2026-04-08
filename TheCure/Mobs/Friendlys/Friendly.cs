@@ -13,6 +13,7 @@ namespace TheCure
         private Vector2 _startPosition;
         private float _angleOffset;
         private float _radius = 20f;
+        private Vector2 _previousCenter;
 
         private BaseWeapon _weapon;
 
@@ -46,6 +47,7 @@ namespace TheCure
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
             var gm = GameManager.GetGameManager();
             Vector2 playerPosition = gm.Player.GetPosition().Center.ToVector2();
+            _previousCenter = _collider.Center;
 
             int count = gm.Friendlies.Count;
             if (count == 0) return;
@@ -104,6 +106,13 @@ namespace TheCure
                     GainHealth(1);
                     tmp.Destroy();
                 }
+            }
+
+            if (tmp is Wall wall)
+            {
+                // todo: dit is buggy en ziet er slecht uit maar geen tijd om te fixen nu
+                // gebeurd wel alleen bij friendly, misschien omdat ze persee rondje wille maken
+                wall.ResolveCircleCollision(_collider, _previousCenter);
             }
 
             base.OnCollision(tmp);
