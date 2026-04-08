@@ -40,6 +40,7 @@ namespace TheCure
             DrawTimer(spriteBatch, gm);
             DrawScore(spriteBatch, gm);
             DrawStatsPanel(spriteBatch, gm);
+            DrawScorePopups(spriteBatch, gm);
         }
 
         private void DrawHealthBar(SpriteBatch spriteBatch, GameManager gm)
@@ -80,6 +81,30 @@ namespace TheCure
             Vector2 position = new Vector2(gm.Game.GraphicsDevice.Viewport.Width - size.X - 10, 10);
 
             spriteBatch.DrawString(_font, text, position, Color.White);
+        }
+
+        private void DrawScorePopups(SpriteBatch spriteBatch, GameManager gm)
+        {
+            var popups = gm.GetScorePopups();
+
+            int startY = 40;
+            int spacing = 20;
+
+            for (int i = 0; i < popups.Count; i++)
+            {
+                var popup = popups[i];
+
+                float alpha = popup.TimeLeft / 1.5f; // fade out
+
+                Color color = Color.Lerp(Color.Transparent, Color.Green, alpha);
+                Vector2 textSize = _font.MeasureString(popup.Text) * 0.9f;
+
+                Vector2 position = new Vector2(gm.Game.GraphicsDevice.Viewport.Width - textSize.X - 10,
+                    startY + i * spacing
+                );
+
+                spriteBatch.DrawString(_font, popup.Text, position, color, 0f, Vector2.Zero, 0.9f, SpriteEffects.None, 0f);
+            }
         }
 
         private void DrawStatsPanel(SpriteBatch spriteBatch, GameManager gm)
