@@ -12,6 +12,7 @@ namespace TheCure
     public class GameManager
     {
         private static GameManager gameManager;
+        private ScoreManager scoreManager;
 
         private List<GameObject> _gameObjects;
         private List<GameObject> _toBeRemoved;
@@ -28,6 +29,7 @@ namespace TheCure
         private Camera _camera;
         private HUD _hud;
         private int _score = 0;
+        private List<ScorePopup> _scorePopups = new List<ScorePopup>();
         private Texture2D _buttonTexture;
 
         private float _gameTimeElapsed = 0f;
@@ -164,7 +166,7 @@ namespace TheCure
             _toBeRemoved.Clear();
             _toBeAdded.Clear();
 
-            _score = 0;
+            scoreManager.Reset();
 
             Player.GainHealth((int)Player.MaxHealth);
             Player._currentWeapon = Player._bulletWeapon;
@@ -219,8 +221,8 @@ namespace TheCure
             _backgroundTexture = content.Load<Texture2D>("ZombieBackground");
             _titleFont = content.Load<SpriteFont>("TitleFont");
             _buttonFont = content.Load<SpriteFont>("ButtonFont");
-            if (_hud == null)
-                _hud = new HUD();
+            _hud = new HUD();
+            scoreManager = new ScoreManager();
 
             foreach (GameObject gameObject in _gameObjects)
             {
@@ -298,6 +300,13 @@ namespace TheCure
                 UpdatePhase();
                 SpawnEnemies();
                 // SpawnSupply();
+                for (int i = _scorePopups.Count - 1; i >= 0; i--)
+                {
+                    _scorePopups[i].TimeLeft -= deltaTime;
+
+                    if (_scorePopups[i].TimeLeft <= 0)
+                        _scorePopups.RemoveAt(i);
+                }
 
                 _camera.Update(Player.GetPosition().Center.ToVector2());
                 _hud.Update();
@@ -403,11 +412,6 @@ namespace TheCure
             newSupply.RandomMove();
         }
 
-        public void AddScore(int pointsToAdd)
-        {
-            _score += pointsToAdd;
-        }
-
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             spriteBatch.Begin(transformMatrix: _camera.GetViewMatrix());
@@ -483,7 +487,7 @@ namespace TheCure
 
                 currentY += gameOverTextSize.Y + spacing;
 
-                string scoreText = $"Eindscore: {_score}";
+                string scoreText = $"Eindscore: {scoreManager.GetScore()}";
                 Vector2 scoreTextSize = _titleFont.MeasureString(scoreText);
                 Vector2 scoreTextPosition =
                     new Vector2(Game.GraphicsDevice.Viewport.Width / 2 - scoreTextSize.X / 2, currentY);
@@ -508,7 +512,18 @@ namespace TheCure
 
         public int GetScore()
         {
-            return _score;
+            return scoreManager.GetScore();
+        }
+
+        public List<ScorePopup> GetScorePopups()
+        {
+            return _scorePopups;
+        }
+        
+        public void AddScore(int pointsToAdd, string reason = "")
+        {
+            scoreManager.AddScore(pointsToAdd);
+            _scorePopups.Add(new ScorePopup($"{reason}  +{pointsToAdd}", 2f));
         }
 
         public List<Stat> GetStats()
