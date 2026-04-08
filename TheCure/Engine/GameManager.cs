@@ -423,7 +423,7 @@ namespace TheCure
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            spriteBatch.Begin(transformMatrix: _camera.GetViewMatrix());
+            spriteBatch.Begin(transformMatrix: _camera.GetViewMatrix(), samplerState: SamplerState.LinearClamp);
 
             if (CurrentGameState == GameState.Playing || CurrentGameState == GameState.Paused)
             {

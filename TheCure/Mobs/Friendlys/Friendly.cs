@@ -17,8 +17,7 @@ namespace TheCure
         private Vector2 _facingDirection = Vector2.UnitX;
 
         private BaseWeapon _weapon;
-
-        public Friendly(FriendlyWeapons friendlyWeapon) : base("player", 60f, 3, 10, frameCount: 10, frameRate: 5f, scale: 0.35f)
+        public Friendly(FriendlyWeapons friendlyWeapon) : base("player", 60f, 3, 10, frameCount: 5, frameRate: 5f, scale: 0.35f)
         {
             switch (friendlyWeapon)
             {
@@ -137,6 +136,22 @@ namespace TheCure
                 scaledWidth,
                 scaledHeight
             );
+
+            Rectangle shadowCore = new Rectangle(
+                destRect.X + destRect.Width / 8,
+                destRect.Y + destRect.Height - 6,
+                destRect.Width - destRect.Width / 4,
+                4
+            );
+            Rectangle shadowSoft = new Rectangle(
+                destRect.X + destRect.Width / 6,
+                destRect.Y + destRect.Height - 4,
+                destRect.Width - destRect.Width / 3,
+                2
+            );
+
+            spriteBatch.Draw(GameManager.GetGameManager().DummyTexture, shadowCore, Color.Black * 0.14f);
+            spriteBatch.Draw(GameManager.GetGameManager().DummyTexture, shadowSoft, Color.Black * 0.08f);
 
             SpriteEffects effects = _facingDirection.X < 0f ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
             spriteBatch.Draw(_texture, destRect, _animatedSprite.SourceRectangle, tint, 0f, Vector2.Zero, effects, 0f);

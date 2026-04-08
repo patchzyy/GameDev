@@ -155,6 +155,22 @@ namespace TheCure
                 scaledHeight
             );
 
+            Rectangle shadowCore = new Rectangle(
+                destRect.X + destRect.Width / 8,
+                destRect.Y + destRect.Height - 6,
+                destRect.Width - destRect.Width / 4,
+                4
+            );
+            Rectangle shadowSoft = new Rectangle(
+                destRect.X + destRect.Width / 6,
+                destRect.Y + destRect.Height - 4,
+                destRect.Width - destRect.Width / 3,
+                2
+            );
+
+            spriteBatch.Draw(GameManager.GetGameManager().DummyTexture, shadowCore, Color.Black * 0.14f);
+            spriteBatch.Draw(GameManager.GetGameManager().DummyTexture, shadowSoft, Color.Black * 0.08f);
+
             SpriteEffects effects = _facingDirection.X < 0f ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
             spriteBatch.Draw(_texture, destRect, _animatedSprite.SourceRectangle, tint, 0f, Vector2.Zero, effects, 0f);
 
