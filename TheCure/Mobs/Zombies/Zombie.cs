@@ -8,18 +8,28 @@ namespace TheCure
 {
     public class Zombie : Mob
     {
+        // constants
+        private float _attackCooldown;
+        private float _stagger;
+        private int _attackDamage;
+
+        // states
         private bool _attackNextCombat;
-        private float _attackCooldown = 1f;
         private float _attackTimer;
         private GameObject _currentTarget;
-        private float _stagger = 1f;
-        private int _attackDamage = 1;
         private Vector2 _previousCenter;
 
         public float LastHealed;
 
-        public Zombie() : base("Alien", 60f, 3, 10)
+        public Zombie() : base(
+            "Alien",
+            Settings.GetValue(SettingsConst.ZOMBIE.SPEED),
+            (int)Settings.GetValue(SettingsConst.ZOMBIE.START_HEALTH),
+            (int)Settings.GetValue(SettingsConst.ZOMBIE.MAX_HEALTH))
         {
+            _stagger = Settings.GetValue(SettingsConst.ZOMBIE.STAGGER);
+            _attackDamage = Settings.GetValue(SettingsConst.ZOMBIE.ATTACK_DAMAGE);
+            _attackCooldown = Settings.GetValue(SettingsConst.ZOMBIE.ATTACK_COOLDOWN);
         }
 
         public override void Load(ContentManager content)
