@@ -74,6 +74,8 @@ namespace TheCure
             // turn into friendly at same position
             gm.AddGameObject(new Friendly(FriendlyWeapons.HandGun, _collider.Center));
             gm.RemoveGameObject(this);
+
+            gm.AddScore(100, "Zombie Healed"); // Add score for converting a zombie to friendly
         }
 
         private void Attack(float deltaTime)
@@ -119,6 +121,12 @@ namespace TheCure
             }
 
             base.OnCollision(tmp);
+        }
+
+        public override void Destroy()
+        {
+            GameManager.GetGameManager().AddScore(50, "Zombie Killed");
+            base.Destroy();
         }
 
         public void RandomMove()
