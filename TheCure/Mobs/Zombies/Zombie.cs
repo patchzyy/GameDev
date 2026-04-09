@@ -24,8 +24,8 @@ namespace TheCure
         public Zombie() : base(
             "Alien",
             Settings.GetValue(SettingsConst.ZOMBIE.SPEED),
-            (int)Settings.GetValue(SettingsConst.ZOMBIE.START_HEALTH),
-            (int)Settings.GetValue(SettingsConst.ZOMBIE.MAX_HEALTH))
+            Settings.GetValue(SettingsConst.ZOMBIE.START_HEALTH),
+            Settings.GetValue(SettingsConst.ZOMBIE.MAX_HEALTH))
         {
             _stagger = Settings.GetValue(SettingsConst.ZOMBIE.STAGGER);
             _attackDamage = Settings.GetValue(SettingsConst.ZOMBIE.ATTACK_DAMAGE);

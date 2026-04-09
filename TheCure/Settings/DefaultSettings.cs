@@ -16,8 +16,8 @@ public static class DefaultSettings
         { SettingsConst.ZOMBIE.STAGGER, 1f },
         { SettingsConst.ZOMBIE.ATTACK_DAMAGE, 1 },
         { SettingsConst.ZOMBIE.ATTACK_COOLDOWN, 1f },
-        { SettingsConst.ZOMBIE.START_HEALTH, 3 },
-        { SettingsConst.ZOMBIE.MAX_HEALTH, 10 },
+        { SettingsConst.ZOMBIE.START_HEALTH, 3f },
+        { SettingsConst.ZOMBIE.MAX_HEALTH, 10f },
 
 
         // FRIENDLY

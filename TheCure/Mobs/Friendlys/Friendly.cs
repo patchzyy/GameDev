@@ -19,8 +19,8 @@ namespace TheCure
 
         public Friendly(FriendlyWeapons friendlyWeapon) : base("Alien",
             Settings.GetValue(SettingsConst.FRIENDLY.MOVE_SPEED),
-            (int)Settings.GetValue(SettingsConst.FRIENDLY.START_HEALTH),
-            (int)Settings.GetValue(SettingsConst.FRIENDLY.MAX_HEALTH))
+            Settings.GetValue(SettingsConst.FRIENDLY.START_HEALTH),
+            Settings.GetValue(SettingsConst.FRIENDLY.MAX_HEALTH))
         {
             _followDistance = Settings.GetValue(SettingsConst.FRIENDLY.FOLLOW_DISTANCE);
             _radius = Settings.GetValue(SettingsConst.FRIENDLY.RADIUS);
