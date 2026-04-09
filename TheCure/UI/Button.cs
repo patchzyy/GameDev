@@ -34,7 +34,6 @@ namespace TheCure
             Rectangle = new Rectangle(x, y, Rectangle.Width, Rectangle.Height);
         }
 
-
         public void Update(MouseState mouseState)
         {
             if (Rectangle.Contains(mouseState.X, mouseState.Y))
