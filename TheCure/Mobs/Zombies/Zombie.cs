@@ -145,34 +145,9 @@ namespace TheCure
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             Color tint = Color.White;
-            int scaledWidth = (int)(_animatedSprite.FrameWidth * 0.35f);
-            int scaledHeight = (int)(_animatedSprite.FrameHeight * 0.35f);
-
-            Rectangle destRect = new Rectangle(
-                (int)(_collider.Center.X - scaledWidth / 2),
-                (int)(_collider.Center.Y - scaledHeight / 2),
-                scaledWidth,
-                scaledHeight
-            );
-
-            Rectangle shadowCore = new Rectangle(
-                destRect.X + destRect.Width / 8,
-                destRect.Y + destRect.Height - 6,
-                destRect.Width - destRect.Width / 4,
-                4
-            );
-            Rectangle shadowSoft = new Rectangle(
-                destRect.X + destRect.Width / 6,
-                destRect.Y + destRect.Height - 4,
-                destRect.Width - destRect.Width / 3,
-                2
-            );
-
-            spriteBatch.Draw(GameManager.GetGameManager().DummyTexture, shadowCore, Color.Black * 0.14f);
-            spriteBatch.Draw(GameManager.GetGameManager().DummyTexture, shadowSoft, Color.Black * 0.08f);
-
-            SpriteEffects effects = _facingDirection.X < 0f ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
-            spriteBatch.Draw(_texture, destRect, _animatedSprite.SourceRectangle, tint, 0f, Vector2.Zero, effects, 0f);
+            Rectangle destRect = GetAnimatedSpriteDestinationRectangle();
+            DrawShadow(spriteBatch, destRect);
+            DrawAnimatedSprite(spriteBatch, tint, _facingDirection);
 
             base.Draw(gameTime, spriteBatch);
         }

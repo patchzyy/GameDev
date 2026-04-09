@@ -62,8 +62,41 @@ public class Mob : GameObject
         );
     }
 
+    protected void DrawShadow(SpriteBatch spriteBatch, Rectangle destRect,
+        float coreAlpha = 0.14f, float softAlpha = 0.08f)
+    {
+        Rectangle shadowCore = new Rectangle(
+            destRect.X + destRect.Width / 8,
+            destRect.Y + destRect.Height - 6,
+            destRect.Width - destRect.Width / 4,
+            4
+        );
+        Rectangle shadowSoft = new Rectangle(
+            destRect.X + destRect.Width / 6,
+            destRect.Y + destRect.Height - 4,
+            destRect.Width - destRect.Width / 3,
+            2
+        );
+
+        spriteBatch.Draw(GameManager.GetGameManager().DummyTexture, shadowCore, Color.Black * coreAlpha);
+        spriteBatch.Draw(GameManager.GetGameManager().DummyTexture, shadowSoft, Color.Black * softAlpha);
+    }
+
     protected void DrawAnimatedSprite(SpriteBatch spriteBatch, Color color)
     {
         _animatedSprite?.Draw(spriteBatch, GetAnimatedSpriteDestinationRectangle(), color);
+    }
+
+    protected void DrawAnimatedSprite(SpriteBatch spriteBatch, Color color, Vector2 facingDirection)
+    {
+        if (_animatedSprite == null)
+        {
+            return;
+        }
+
+        SpriteEffects effects = facingDirection.X < 0f ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+        var destRect = GetAnimatedSpriteDestinationRectangle();
+        var position = destRect.Center.ToVector2();
+        _animatedSprite.Draw(spriteBatch, position, color, 0f, _scale, effects, 0f);
     }
 }
