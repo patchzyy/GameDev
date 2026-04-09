@@ -97,7 +97,7 @@ namespace TheCure
             Player = player;
             _camera = new Camera(Game.GraphicsDevice.Viewport);
 
-            DummyTexture = new (Game.GraphicsDevice, 1, 1);
+            DummyTexture = new(Game.GraphicsDevice, 1, 1);
             DummyTexture.SetData(new[] { Color.White });
 
             CreateButtons();
@@ -174,7 +174,8 @@ namespace TheCure
             Player.GainHealth((int)Player.MaxHealth);
             Player._currentWeapon = Player._bulletWeapon;
             Player._weaponBuffTimer = 0f;
-            Player._rectangleCollider.shape.Location = new Point(Game.GraphicsDevice.Viewport.Width / 2, Game.GraphicsDevice.Viewport.Height / 2);
+            Player._rectangleCollider.shape.Location = new Point(Game.GraphicsDevice.Viewport.Width / 2,
+                Game.GraphicsDevice.Viewport.Height / 2);
             Player._velocity = Vector2.Zero;
             Player._rotation = 0f;
 
@@ -264,6 +265,7 @@ namespace TheCure
                 {
                     CurrentGameState = GameState.Playing;
                 }
+
                 _continueButton.Update(mouseState);
                 _pauseQuitButton.Update(mouseState);
 
@@ -307,7 +309,7 @@ namespace TheCure
                 }
 
                 _camera.Update(Player.GetPosition().Center.ToVector2(), GetWorldBounds());
-                _hud.Update();
+                _hud.Update(gameTime);
 
                 CheckCollision();
 
@@ -453,9 +455,12 @@ namespace TheCure
                 string pauseText = "Game gepauzeerd";
                 Vector2 pauseTextSize = _titleFont.MeasureString(pauseText);
                 float scale = 0.6f;
-                Vector2 pauseTextPosition = new Vector2(Game.GraphicsDevice.Viewport.Width / 2 - (pauseTextSize.X * scale) / 2, Game.GraphicsDevice.Viewport.Height / 8f);
+                Vector2 pauseTextPosition =
+                    new Vector2(Game.GraphicsDevice.Viewport.Width / 2 - (pauseTextSize.X * scale) / 2,
+                        Game.GraphicsDevice.Viewport.Height / 8f);
 
-                spriteBatch.DrawString(_titleFont, pauseText, pauseTextPosition, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
+                spriteBatch.DrawString(_titleFont, pauseText, pauseTextPosition, Color.White, 0f, Vector2.Zero, scale,
+                    SpriteEffects.None, 0f);
 
                 _continueButton.Draw(spriteBatch);
                 _pauseQuitButton.Draw(spriteBatch);
@@ -476,7 +481,8 @@ namespace TheCure
                 var gameOverText = "Game Over";
                 var gameOverTextSize = _titleFont.MeasureString(gameOverText);
                 var gameOverTextPosition =
-                    new Vector2(Game.GraphicsDevice.Viewport.Width / 2 - gameOverTextSize.X / 2, Game.GraphicsDevice.Viewport.Height / 8f);
+                    new Vector2(Game.GraphicsDevice.Viewport.Width / 2 - gameOverTextSize.X / 2,
+                        Game.GraphicsDevice.Viewport.Height / 8f);
 
                 spriteBatch.DrawString(_titleFont, gameOverText, gameOverTextPosition, Color.Red);
 
@@ -486,14 +492,18 @@ namespace TheCure
                 Vector2 scoreTextSize = _titleFont.MeasureString(scoreText);
                 float scale = 0.5f;
                 Vector2 scoreTextPosition =
-                    new Vector2(Game.GraphicsDevice.Viewport.Width / 2 - (scoreTextSize.X * scale) / 2, Game.GraphicsDevice.Viewport.Height / 10f);
+                    new Vector2(Game.GraphicsDevice.Viewport.Width / 2 - (scoreTextSize.X * scale) / 2,
+                        Game.GraphicsDevice.Viewport.Height / 10f);
 
-                spriteBatch.DrawString(_titleFont, scoreText, scoreTextPosition, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
+                spriteBatch.DrawString(_titleFont, scoreText, scoreTextPosition, Color.White, 0f, Vector2.Zero, scale,
+                    SpriteEffects.None, 0f);
 
                 _restartButton.Draw(spriteBatch);
                 _quitButton.Draw(spriteBatch);
             }
-            if (CurrentGameState == GameState.Playing || CurrentGameState == GameState.Paused || CurrentGameState == GameState.GameOver)
+
+            if (CurrentGameState == GameState.Playing || CurrentGameState == GameState.Paused ||
+                CurrentGameState == GameState.GameOver)
             {
                 _hud.Draw(spriteBatch, this);
             }
@@ -579,10 +589,10 @@ namespace TheCure
 
             Vector2[] fallbackPoints =
             {
-                new (safePlayableBounds.Left, safePlayableBounds.Top),
-                new (safePlayableBounds.Right - 1, safePlayableBounds.Top),
-                new (safePlayableBounds.Left, safePlayableBounds.Bottom - 1),
-                new (safePlayableBounds.Right - 1, safePlayableBounds.Bottom - 1)
+                new(safePlayableBounds.Left, safePlayableBounds.Top),
+                new(safePlayableBounds.Right - 1, safePlayableBounds.Top),
+                new(safePlayableBounds.Left, safePlayableBounds.Bottom - 1),
+                new(safePlayableBounds.Right - 1, safePlayableBounds.Bottom - 1)
             };
 
             var bestPoint = fallbackPoints[0];
@@ -629,13 +639,16 @@ namespace TheCure
         public void AddWorldWalls()
         {
             // boven
-            AddWorldWall(new(_playableBounds.Left - WallThickness, _playableBounds.Top - WallThickness, _playableBounds.Width + WallThickness * 2, WallThickness));
+            AddWorldWall(new(_playableBounds.Left - WallThickness, _playableBounds.Top - WallThickness,
+                _playableBounds.Width + WallThickness * 2, WallThickness));
 
             // onder
-            AddWorldWall(new(_playableBounds.Left - WallThickness, _playableBounds.Bottom, _playableBounds.Width + WallThickness * 2, WallThickness));
+            AddWorldWall(new(_playableBounds.Left - WallThickness, _playableBounds.Bottom,
+                _playableBounds.Width + WallThickness * 2, WallThickness));
 
             // links
-            AddWorldWall(new(_playableBounds.Left - WallThickness, _playableBounds.Top, WallThickness, _playableBounds.Height));
+            AddWorldWall(new(_playableBounds.Left - WallThickness, _playableBounds.Top, WallThickness,
+                _playableBounds.Height));
 
             // rechts
             AddWorldWall(new(_playableBounds.Right, _playableBounds.Top, WallThickness, _playableBounds.Height));

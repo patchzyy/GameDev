@@ -1,3 +1,4 @@
+using Microsoft.Xna.Framework.Input;
 using TheCure.Weapons;
 
 namespace TheCure
@@ -10,6 +11,7 @@ namespace TheCure
 
             public static readonly SettingKey<float> MAX_HEALTH = new(_group, "MAX_HEALTH");
             public static readonly SettingKey<float> MOVE_SPEED = new(_group, "MOVE_SPEED");
+            
         }
 
         public static class ZOMBIE
@@ -34,6 +36,19 @@ namespace TheCure
             public static readonly SettingKey<float> FOLLOW_DISTANCE = new(_group, "FOLLOW_DISTANCE");
             public static readonly SettingKey<BaseWeapon> START_WEAPON = new(_group, "START_WEAPON");
             public static readonly SettingKey<float> RADIUS = new(_group, "RADIUS");
+        }
+
+        public static class KEYBINDS
+        {
+            private static string _group = "KEYBINDS";
+
+            // PLAYER ACTIONS
+            public static readonly SettingKey<Keys> ACTION_1 = new(_group, "ACTION_1");
+            public static readonly SettingKey<Keys> ACTION_2 = new(_group, "ACTION_2");
+            public static readonly SettingKey<Keys> ACTION_3 = new(_group, "ACTION_3");
+            public static readonly SettingKey<Keys> ACTION_4 = new(_group, "ACTION_4");
+            public static readonly SettingKey<Keys> ACTION_5 = new(_group, "ACTION_5");
+            public static readonly SettingKey<Keys> ACTION_6 = new(_group, "ACTION_6");
         }
     }
 }

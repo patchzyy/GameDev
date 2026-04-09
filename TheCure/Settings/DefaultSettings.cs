@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Microsoft.Xna.Framework.Input;
 using TheCure.Weapons;
 
 namespace TheCure
@@ -25,7 +26,16 @@ namespace TheCure
             { SettingsConst.FRIENDLY.START_HEALTH, 10f },
             { SettingsConst.FRIENDLY.MAX_HEALTH, 10f },
             { SettingsConst.FRIENDLY.RADIUS, 20f },
-            { SettingsConst.FRIENDLY.START_WEAPON, FriendlyWeapons.HandGun }
+            { SettingsConst.FRIENDLY.START_WEAPON, FriendlyWeapons.HandGun },
+
+            // KEYBINDS
+            //PLAYER ACTIONS
+            { SettingsConst.KEYBINDS.ACTION_1, Keys.D1 },
+            { SettingsConst.KEYBINDS.ACTION_2, Keys.D2 },
+            { SettingsConst.KEYBINDS.ACTION_3, Keys.D3 },
+            { SettingsConst.KEYBINDS.ACTION_4, Keys.D4 },
+            { SettingsConst.KEYBINDS.ACTION_5, Keys.D5 },
+            { SettingsConst.KEYBINDS.ACTION_6, Keys.D6 },
         };
     }
 }
