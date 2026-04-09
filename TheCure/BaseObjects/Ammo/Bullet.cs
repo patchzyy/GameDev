@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using TheCure.World;
 
 namespace TheCure
 {
@@ -41,22 +42,22 @@ namespace TheCure
             }
         }
 
-        public override void OnCollision(GameObject other)
+        public override void OnCollision(GameObject gameObject)
         {
-            if (other is Zombie)
+            if (gameObject is Zombie)
             {
                 GameManager.GetGameManager().RemoveGameObject(this);
             }
-            else if (other is Supply)
+            else if (gameObject is Supply)
             {
                 GameManager.GetGameManager().RemoveGameObject(this);
             }
         }
 
-        public override void Draw(GameTime time, SpriteBatch spriteBatch)
+        public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(_texture, _collider.GetBoundingBox(), Color.Red);
-            base.Draw(time, spriteBatch);
+            base.Draw(gameTime, spriteBatch);
         }
     }
 }

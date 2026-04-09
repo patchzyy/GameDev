@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using TheCure.World;
 
 namespace TheCure
 {
@@ -103,9 +104,6 @@ namespace TheCure
 
             PositionButtons();
 
-            Vector2 pickupPos = new Vector2(-500, -300);
-            Vector2 dropOffPos = new Vector2(2000, 600);
-
             CurrentGameState = GameState.StartScreen;
         }
 
@@ -130,7 +128,6 @@ namespace TheCure
         {
             int buttonWidth = 200;
             int centerX = Game.GraphicsDevice.Viewport.Width / 2;
-            int centerY = Game.GraphicsDevice.Viewport.Height / 2;
 
             _startButton.SetPosition(centerX - buttonWidth / 2, (int)(Game.GraphicsDevice.Viewport.Height * 0.54f));
             _quitButton.SetPosition(centerX - buttonWidth / 2, (int)(Game.GraphicsDevice.Viewport.Height * 0.68f));
@@ -177,8 +174,7 @@ namespace TheCure
             Player.GainHealth((int)Player.MaxHealth);
             Player._currentWeapon = Player._bulletWeapon;
             Player._weaponBuffTimer = 0f;
-            Player._rectangleCollider.shape.Location = new Point(Game.GraphicsDevice.Viewport.Width / 2,
-                Game.GraphicsDevice.Viewport.Height / 2);
+            Player._rectangleCollider.shape.Location = new Point(Game.GraphicsDevice.Viewport.Width / 2, Game.GraphicsDevice.Viewport.Height / 2);
             Player._velocity = Vector2.Zero;
             Player._rotation = 0f;
 
@@ -195,27 +191,6 @@ namespace TheCure
             {
                 SpawnAlien();
             }
-
-            // Supply initialSupply = new Supply();
-            // initialSupply.Load(_content);
-            // _gameObjects.Add(initialSupply);
-            // initialSupply.RandomMove();
-            //
-            // Vector2 asteroidPos1 = new Vector2(1000, 800);
-            // Vector2 asteroidPos2 = new Vector2(-200, 200);
-            // Vector2 asteroidPos3 = new Vector2(500, -400);
-            //
-            // Asteroid asteroid1 = new Asteroid(asteroidPos1);
-            // Asteroid asteroid2 = new Asteroid(asteroidPos2);
-            // Asteroid asteroid3 = new Asteroid(asteroidPos3);
-            //
-            // asteroid1.Load(_content);
-            // asteroid2.Load(_content);
-            // asteroid3.Load(_content);
-            //
-            // _gameObjects.Add(asteroid1);
-            // _gameObjects.Add(asteroid2);
-            // _gameObjects.Add(asteroid3);
         }
 
         public void SetGameState(GameState newState)
@@ -319,7 +294,9 @@ namespace TheCure
                     _scorePopups[i].TimeLeft -= deltaTime;
 
                     if (_scorePopups[i].TimeLeft <= 0)
+                    {
                         _scorePopups.RemoveAt(i);
+                    }
                 }
 
                 HandleInput(InputManager);
@@ -422,6 +399,7 @@ namespace TheCure
             _supplySpawnTimer = 0f;
 
             var newSupply = new Supply();
+            newSupply.Load(_content);
             AddGameObject(newSupply);
             newSupply.RandomMove();
         }
@@ -449,12 +427,6 @@ namespace TheCure
                     new Rectangle(0, 0, Game.GraphicsDevice.Viewport.Width, Game.GraphicsDevice.Viewport.Height),
                     Color.White);
 
-                var quitBounds = _quitButton.Rectangle;
-
-                var spacing = 120f;
-
-                var textY = quitBounds.Y + quitBounds.Height + spacing;
-
                 var titleText = "The Cure";
                 var titleSize = _titleFont.MeasureString(titleText);
 
@@ -462,7 +434,6 @@ namespace TheCure
                     Game.GraphicsDevice.Viewport.Width / 2 - titleSize.X / 2,
                     Game.GraphicsDevice.Viewport.Height / 8f
                 );
-
 
                 spriteBatch.DrawString(_titleFont, titleText, titlePosition, Color.Red);
 
@@ -482,8 +453,7 @@ namespace TheCure
                 string pauseText = "Game gepauzeerd";
                 Vector2 pauseTextSize = _titleFont.MeasureString(pauseText);
                 float scale = 0.6f;
-                Vector2 pauseTextPosition =
-                    new Vector2(Game.GraphicsDevice.Viewport.Width / 2 - (pauseTextSize.X * scale) / 2, Game.GraphicsDevice.Viewport.Height / 8f);
+                Vector2 pauseTextPosition = new Vector2(Game.GraphicsDevice.Viewport.Width / 2 - (pauseTextSize.X * scale) / 2, Game.GraphicsDevice.Viewport.Height / 8f);
 
                 spriteBatch.DrawString(_titleFont, pauseText, pauseTextPosition, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
 
@@ -584,9 +554,7 @@ namespace TheCure
         public Vector2 RandomLocationOutsideView(int margin = 150, int padding = 0)
         {
             if (_camera == null)
-            {
                 return ClampToPlayableBounds(RandomScreenLocation(), padding);
-            }
 
             var playableBounds = GetPlayableBounds();
             var safePlayableBounds = new Rectangle(
@@ -606,9 +574,7 @@ namespace TheCure
                     RNG.Next(safePlayableBounds.Top, safePlayableBounds.Bottom));
 
                 if (!blockedViewBounds.Contains(candidate))
-                {
                     return candidate;
-                }
             }
 
             Vector2[] fallbackPoints =
@@ -626,6 +592,7 @@ namespace TheCure
             foreach (var point in fallbackPoints)
             {
                 var distance = Vector2.DistanceSquared(point, blockedViewBounds.Center.ToVector2());
+
                 if (distance > bestDistance)
                 {
                     bestDistance = distance;
@@ -689,9 +656,7 @@ namespace TheCure
         private void DrawTiledGameplayBackground(SpriteBatch spriteBatch)
         {
             if (_gameplayBackgroundTexture == null)
-            {
                 return;
-            }
 
             var worldBounds = GetWorldBounds();
 
@@ -710,7 +675,5 @@ namespace TheCure
                 }
             }
         }
-
-
     }
 }

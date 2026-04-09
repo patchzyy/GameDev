@@ -12,25 +12,15 @@ namespace TheCure.Collision
             switch (tmp)
             {
                 case RectangleCollider:
-                    {
-                        return Intersects((RectangleCollider)tmp);
-                    }
+                    return Intersects((RectangleCollider)tmp);
                 case CircleCollider:
-                    {
-                        return Intersects((CircleCollider)tmp);
-                    }
+                    return Intersects((CircleCollider)tmp);
                 case LinePieceCollider:
-                    {
-                        return Intersects((LinePieceCollider)tmp);
-                    }
+                    return Intersects((LinePieceCollider)tmp);
                 case null:
-                    {
-                        return false;
-                    }
+                    return false;
                 default:
-                    {
-                        throw new NotImplementedException();
-                    }
+                    throw new NotImplementedException();
             }
         }
 

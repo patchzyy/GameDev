@@ -20,8 +20,6 @@ namespace TheCure
             _graphics.IsFullScreen = true;
             _graphics.ApplyChanges();
 
-            
-
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
         }
@@ -29,33 +27,16 @@ namespace TheCure
         protected override void Initialize()
         {
             _gameManager = GameManager.GetGameManager();
+
             base.Initialize();
 
-            Player player =
-                new Player(new Point(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height / 2));
+            Player player = new Player(new Point(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height / 2));
 
             _gameManager.Initialize(Content, this, player);
             _gameManager.AddWorldWalls();
 
             _gameManager.AddGameObject(player);
             _gameManager.AddGameObject(new Zombie());
-            // _gameManager.AddGameObject(new Supply());
-
-            // Vector2 asteroidPosition1 = new Vector2(1000, 800);
-            // Vector2 asteroidPosition2 = new Vector2(-200, 200);
-            // Vector2 asteroidPosition3 = new Vector2(500, -400);
-
-            // Asteroid asteroid1 = new Asteroid(asteroidPosition1);
-            // Asteroid asteroid2 = new Asteroid(asteroidPosition2);
-            // Asteroid asteroid3 = new Asteroid(asteroidPosition3);
-
-            // _gameManager.AddGameObject(asteroid1);
-            // _gameManager.AddGameObject(asteroid2);
-            // _gameManager.AddGameObject(asteroid3);
-
-            // asteroid1.Load(Content);
-            // asteroid2.Load(Content);
-            // asteroid3.Load(Content);
         }
 
         protected override void LoadContent()

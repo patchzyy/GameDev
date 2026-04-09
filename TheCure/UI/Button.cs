@@ -7,16 +7,9 @@ namespace TheCure
 {
     public class Button
     {
-        public Rectangle Rectangle
-        {
-            get;
-            private set;
-        }
-        public string Text
-        {
-            get;
-            private set;
-        }
+        public Rectangle Rectangle { get; private set; }
+        public string Text { get; private set; }
+
         private SpriteFont _font;
         private bool _isHovering;
         public event EventHandler Clicked;

@@ -25,10 +25,8 @@ namespace TheCure
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             if (_texture == null)
-            {
                 return;
-            }
-            
+
             var area = _rectangleCollider.shape;
 
             for (var x = area.Left; x < area.Right; x += _texture.Width)
@@ -51,7 +49,7 @@ namespace TheCure
         {
             var wall = _rectangleCollider.shape;
             var current = mover.shape;
-            
+
             if (previousBounds.Bottom <= wall.Top)
             {
                 current.Y = wall.Top - current.Height;
@@ -110,7 +108,7 @@ namespace TheCure
         {
             var wall = _rectangleCollider.shape;
             var currentCenter = mover.Center;
-            
+
             if (previousCenter.Y + mover.Radius <= wall.Top)
             {
                 currentCenter.Y = wall.Top - mover.Radius;

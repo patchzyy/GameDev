@@ -27,7 +27,6 @@ namespace TheCure
 
         internal float _weaponBuffTimer = 0f;
 
-
         public Player(Point Position)
         {
             MoveSpeed = Settings.GetValue(SettingsConst.PLAYER.MOVE_SPEED);
@@ -144,12 +143,14 @@ namespace TheCure
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             Vector2 bodyOrigin = ship_body.Bounds.Size.ToVector2() / 2f;
+
             Rectangle shadowCore = new Rectangle(
                 _rectangleCollider.shape.Center.X - (int)(bodyOrigin.X * 0.55f),
                 _rectangleCollider.shape.Center.Y + (int)(bodyOrigin.Y * 0.38f),
                 (int)(bodyOrigin.X * 1.1f),
                 (int)(bodyOrigin.Y * 0.18f)
             );
+
             Rectangle shadowSoft = new Rectangle(
                 _rectangleCollider.shape.Center.X - (int)(bodyOrigin.X * 0.65f),
                 _rectangleCollider.shape.Center.Y + (int)(bodyOrigin.Y * 0.42f),

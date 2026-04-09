@@ -57,15 +57,16 @@ namespace TheCure
         public override void Update(GameTime gameTime)
         {
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
-            var gm = GameManager.GetGameManager();
-            Vector2 playerPosition = gm.Player.GetPosition().Center.ToVector2();
+            var gameManager = GameManager.GetGameManager();
+            Vector2 playerPosition = gameManager.Player.GetPosition().Center.ToVector2();
             _previousCenter = _collider.Center;
 
-            int count = gm.Friendlies.Count;
-            if (count == 0) return;
+            int count = gameManager.Friendlies.Count;
 
-            int index = gm.Friendlies.IndexOf(this);
+            if (count == 0)
+                return;
 
+            int index = gameManager.Friendlies.IndexOf(this);
 
             int ringSize = 6;
             float baseRadius = 130f;
@@ -86,24 +87,25 @@ namespace TheCure
                 (float)Math.Sin(angle)
             ) * orbitRadius;
 
-            Vector2 targetPos = playerPosition + offset;
+            Vector2 targetPosition = playerPosition + offset;
 
-            foreach (var other in gm.Friendlies)
+            foreach (var other in gameManager.Friendlies)
             {
-                if (other == this) continue;
+                if (other == this)
+                    continue;
 
-                float dist = Vector2.Distance(targetPos, other._collider.Center);
-                float minDist = _radius * 2;
+                float distance = Vector2.Distance(targetPosition, other._collider.Center);
+                float minimalDistance = _radius * 2;
 
-                if (dist < minDist && dist > 0)
+                if (distance < minimalDistance && distance > 0)
                 {
-                    Vector2 push = targetPos - other._collider.Center;
+                    Vector2 push = targetPosition - other._collider.Center;
                     push.Normalize();
-                    targetPos += push * (minDist - dist);
+                    targetPosition += push * (minimalDistance - distance);
                 }
             }
 
-            _collider.Center = Vector2.Lerp(_collider.Center, targetPos, 5f * deltaTime);
+            _collider.Center = Vector2.Lerp(_collider.Center, targetPosition, 5f * deltaTime);
             Attack(gameTime);
 
             Vector2 movement = _collider.Center - _previousCenter;
@@ -139,8 +141,8 @@ namespace TheCure
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             Color tint = Color.LightBlue;
-            Rectangle destRect = GetAnimatedSpriteDestinationRectangle();
-            DrawShadow(spriteBatch, destRect);
+            Rectangle destinationRectangle = GetAnimatedSpriteDestinationRectangle();
+            DrawShadow(spriteBatch, destinationRectangle);
             DrawAnimatedSprite(spriteBatch, tint, _facingDirection);
 
             base.Draw(gameTime, spriteBatch);
@@ -169,6 +171,7 @@ namespace TheCure
                         nearestZombiePosition);
 
                 float distance = Vector2.Distance(nearestZombiePosition, _collider.Center);
+
                 if (distance < 300f)
                 {
                     _weapon.Fire(_collider.Center, aimDirection, this);
@@ -187,10 +190,12 @@ namespace TheCure
 
             foreach (var zombie in zombies)
             {
-                if (zombie.LastHealed < 3f) continue;
+                if (zombie.LastHealed < 3f)
+                    continue;
 
                 var zombieLocation = zombie._collider.Center;
                 var distance = Vector2.Distance(zombieLocation, _collider.Center);
+
                 if (distance < closestDistance)
                 {
                     closest = zombie;
@@ -198,7 +203,8 @@ namespace TheCure
                 }
             }
 
-            if (closest == null) return Vector2.Zero;
+            if (closest == null)
+                return Vector2.Zero;
 
             return closest._collider.Center;
         }

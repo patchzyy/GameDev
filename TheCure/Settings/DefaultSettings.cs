@@ -19,7 +19,6 @@ namespace TheCure
             { SettingsConst.ZOMBIE.START_HEALTH, 3f },
             { SettingsConst.ZOMBIE.MAX_HEALTH, 10f },
 
-
             // FRIENDLY
             { SettingsConst.FRIENDLY.FOLLOW_DISTANCE, 60f },
             { SettingsConst.FRIENDLY.MOVE_SPEED, 80f },
