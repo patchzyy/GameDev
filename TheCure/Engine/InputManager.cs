@@ -6,26 +6,10 @@ namespace TheCure
 {
     public class InputManager
     {
-        public KeyboardState LastKeyboardState
-        {
-            get;
-            private set;
-        }
-        public KeyboardState CurrentKeyboardState
-        {
-            get;
-            private set;
-        }
-        public MouseState LastMouseState
-        {
-            get;
-            private set;
-        }
-        public MouseState CurrentMouseState
-        {
-            get;
-            private set;
-        }
+        public KeyboardState LastKeyboardState { get; private set; }
+        public KeyboardState CurrentKeyboardState { get; private set; }
+        public MouseState LastMouseState { get; private set; }
+        public MouseState CurrentMouseState { get; private set; }
 
         public InputManager()
         {

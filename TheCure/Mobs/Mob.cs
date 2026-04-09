@@ -20,8 +20,7 @@ public class Mob : GameObject
     protected readonly bool _isLooping;
     protected readonly float _scale;
 
-    public Mob(string textureName, float speed, float startHealth, float maxHealth, int frameCount = 1,
-        float frameRate = 1f, bool isLooping = true, float scale = 1f)
+    public Mob(string textureName, float speed, float startHealth, float maxHealth, int frameCount = 1, float frameRate = 1f, bool isLooping = true, float scale = 1f)
     {
         _textureName = textureName;
         _speed = speed;
@@ -36,16 +35,20 @@ public class Mob : GameObject
     public override void Load(ContentManager content)
     {
         _texture = content.Load<Texture2D>(_textureName);
+
         int frameWidth = _texture.Width / _frameCount;
+
         _animatedSprite = new AnimatedSprite(_texture, frameWidth, _texture.Height, _frameCount, _frameRate, _isLooping);
         _font = content.Load<SpriteFont>("HudFont");
         _collider = new CircleCollider(Vector2.Zero, _animatedSprite.FrameWidth * _scale / 2f);
+
         SetCollider(_collider);
     }
 
     public override void Update(GameTime gameTime)
     {
         _animatedSprite?.Update(gameTime);
+
         base.Update(gameTime);
     }
 
@@ -62,8 +65,7 @@ public class Mob : GameObject
         );
     }
 
-    protected void DrawShadow(SpriteBatch spriteBatch, Rectangle destRect,
-        float coreAlpha = 0.14f, float softAlpha = 0.08f)
+    protected void DrawShadow(SpriteBatch spriteBatch, Rectangle destRect, float coreAlpha = 0.14f, float softAlpha = 0.08f)
     {
         Rectangle shadowCore = new Rectangle(
             destRect.X + destRect.Width / 8,
@@ -71,6 +73,7 @@ public class Mob : GameObject
             destRect.Width - destRect.Width / 4,
             4
         );
+
         Rectangle shadowSoft = new Rectangle(
             destRect.X + destRect.Width / 6,
             destRect.Y + destRect.Height - 4,
@@ -90,13 +93,13 @@ public class Mob : GameObject
     protected void DrawAnimatedSprite(SpriteBatch spriteBatch, Color color, Vector2 facingDirection)
     {
         if (_animatedSprite == null)
-        {
             return;
-        }
 
         SpriteEffects effects = facingDirection.X < 0f ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
-        var destRect = GetAnimatedSpriteDestinationRectangle();
-        var position = destRect.Center.ToVector2();
+
+        var destinationRectangle = GetAnimatedSpriteDestinationRectangle();
+        var position = destinationRectangle.Center.ToVector2();
+
         _animatedSprite.Draw(spriteBatch, position, color, 0f, _scale, effects, 0f);
     }
 }

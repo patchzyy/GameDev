@@ -4,14 +4,8 @@ namespace TheCure.Weapons
 {
     public interface IWeapon
     {
-        float FireRate
-        {
-            get;
-        }
-        bool CanFire
-        {
-            get;
-        }
+        float FireRate { get; }
+        bool CanFire { get; }
 
         void UpdateCoolDown(float deltaTime)
         {

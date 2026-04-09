@@ -30,48 +30,47 @@ namespace TheCure
             _menuButton.Update(mouse);
         }
 
-        public void Draw(SpriteBatch spriteBatch, GameManager gm)
+        public void Draw(SpriteBatch spriteBatch, GameManager gameManager)
         {
-            if (gm.CurrentGameState == GameState.Playing)
+            if (gameManager.CurrentGameState == GameState.Playing)
             {
                 _menuButton.Draw(spriteBatch);
             }
 
-            if (gm.CurrentGameState == GameState.Playing || gm.CurrentGameState == GameState.Paused)
+            if (gameManager.CurrentGameState == GameState.Playing || gameManager.CurrentGameState == GameState.Paused)
             {
-                DrawHealthBar(spriteBatch, gm);
-                DrawTimer(spriteBatch, gm);
-                DrawScore(spriteBatch, gm);
-
+                DrawHealthBar(spriteBatch, gameManager);
+                DrawTimer(spriteBatch, gameManager);
+                DrawScore(spriteBatch, gameManager);
             }
 
-            DrawStatsPanel(spriteBatch, gm);
-            DrawScorePopups(spriteBatch, gm);
+            DrawStatsPanel(spriteBatch, gameManager);
+            DrawScorePopups(spriteBatch, gameManager);
         }
 
-        private void DrawHealthBar(SpriteBatch spriteBatch, GameManager gm)
+        private void DrawHealthBar(SpriteBatch spriteBatch, GameManager gameManager)
         {
             Vector2 barPosition = new Vector2(10, 60);
             int barWidth = 150;
             int barHeight = 15;
 
-            if (gm.CurrentGameState == GameState.Paused)
+            if (gameManager.CurrentGameState == GameState.Paused)
             {
                 barPosition = new Vector2(10, 10);
             }
 
-            spriteBatch.Draw(gm.DummyTexture,
+            spriteBatch.Draw(gameManager.DummyTexture,
                 new Rectangle((int)barPosition.X, (int)barPosition.Y, barWidth, barHeight), Color.Gray);
-            float healthRatio = gm.Player.CurrentHealth() / gm.Player.MaxHealth;
+            float healthRatio = gameManager.Player.CurrentHealth() / gameManager.Player.MaxHealth;
 
-            spriteBatch.Draw(gm.DummyTexture,
+            spriteBatch.Draw(gameManager.DummyTexture,
                 new Rectangle((int)barPosition.X, (int)barPosition.Y, (int)(barWidth * healthRatio), barHeight),
                 Color.Green);
         }
 
-        private void DrawTimer(SpriteBatch spriteBatch, GameManager gm)
+        private void DrawTimer(SpriteBatch spriteBatch, GameManager gameManager)
         {
-            float time = gm.GetGameTime();
+            float time = gameManager.GetGameTime();
 
             int minutes = (int)time / 60;
             int seconds = (int)time % 60;
@@ -79,24 +78,24 @@ namespace TheCure
             string text = $"{minutes:00}:{seconds:00}";
             Vector2 size = _font.MeasureString(text);
 
-            Vector2 position = new Vector2(gm.Game.GraphicsDevice.Viewport.Width / 2 - size.X / 2, 10);
+            Vector2 position = new Vector2(gameManager.Game.GraphicsDevice.Viewport.Width / 2 - size.X / 2, 10);
 
             spriteBatch.DrawString(_font, text, position, Color.White);
         }
 
-        private void DrawScore(SpriteBatch spriteBatch, GameManager gm)
+        private void DrawScore(SpriteBatch spriteBatch, GameManager gameManager)
         {
-            string text = $"Score: {gm.GetScore()}";
+            string text = $"Score: {gameManager.GetScore()}";
             Vector2 size = _font.MeasureString(text);
 
-            Vector2 position = new Vector2(gm.Game.GraphicsDevice.Viewport.Width - size.X - 10, 10);
+            Vector2 position = new Vector2(gameManager.Game.GraphicsDevice.Viewport.Width - size.X - 10, 10);
 
             spriteBatch.DrawString(_font, text, position, Color.White);
         }
 
-        private void DrawScorePopups(SpriteBatch spriteBatch, GameManager gm)
+        private void DrawScorePopups(SpriteBatch spriteBatch, GameManager gameManager)
         {
-            var popups = gm.GetScorePopups();
+            var popups = gameManager.GetScorePopups();
 
             int startY = 40;
             int spacing = 20;
@@ -110,7 +109,7 @@ namespace TheCure
                 Color color = Color.Lerp(Color.Transparent, Color.Green, alpha);
                 Vector2 textSize = _font.MeasureString(popup.Text) * 0.9f;
 
-                Vector2 position = new Vector2(gm.Game.GraphicsDevice.Viewport.Width - textSize.X - 10,
+                Vector2 position = new Vector2(gameManager.Game.GraphicsDevice.Viewport.Width - textSize.X - 10,
                     startY + i * spacing
                 );
 
@@ -118,9 +117,9 @@ namespace TheCure
             }
         }
 
-        private void DrawStatsPanel(SpriteBatch spriteBatch, GameManager gm)
+        private void DrawStatsPanel(SpriteBatch spriteBatch, GameManager gameManager)
         {
-            var stats = gm.GetStats();
+            var stats = gameManager.GetStats();
 
             int panelWidth = 200;
             int padding = 10;
@@ -129,8 +128,8 @@ namespace TheCure
 
             int panelHeight = stats.Count * lineHeight + padding * 2;
 
-            int screenWidth = gm.Game.GraphicsDevice.Viewport.Width;
-            int screenHeight = gm.Game.GraphicsDevice.Viewport.Height;
+            int screenWidth = gameManager.Game.GraphicsDevice.Viewport.Width;
+            int screenHeight = gameManager.Game.GraphicsDevice.Viewport.Height;
 
             Rectangle panelRect = new Rectangle(
                 screenWidth - panelWidth - 10,
@@ -139,7 +138,7 @@ namespace TheCure
                 panelHeight
             );
 
-            spriteBatch.Draw(gm.DummyTexture, panelRect, new Color(20, 20, 20, 200));
+            spriteBatch.Draw(gameManager.DummyTexture, panelRect, new Color(20, 20, 20, 200));
 
             foreach (var stat in stats)
             {

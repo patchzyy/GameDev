@@ -121,9 +121,7 @@ namespace TheCure
             float determine = (p1.X - p2.X) * (p3.Y - p4.Y) - (p1.Y - p2.Y) * (p3.X - p4.X);
 
             if (determine == 0)
-            {
                 return false;
-            }
 
             float t = ((p1.X - p3.X) * (p3.Y - p4.Y) - (p1.Y - p3.Y) * (p3.X - p4.X)) / determine;
             float u = -((p1.X - p2.X) * (p1.Y - p3.Y) - (p1.Y - p2.Y) * (p1.X - p3.X)) / determine;
@@ -144,9 +142,7 @@ namespace TheCure
             float determine = a1 * b2 - a2 * b1;
 
             if (determine == 0)
-            {
                 return Vector2.Zero;
-            }
 
             float x = (b1 * c2 - b2 * c1) / determine;
             float y = (a2 * c1 - a1 * c2) / determine;
@@ -181,9 +177,7 @@ namespace TheCure
                 coordinates.X > Math.Max(Start.X, End.X) + tolerance ||
                 coordinates.Y < Math.Min(Start.Y, End.Y) - tolerance ||
                 coordinates.Y > Math.Max(Start.Y, End.Y) + tolerance)
-            {
                 return false;
-            }
 
             float crossProduct = (coordinates.Y - Start.Y) * (End.X - Start.X) - (coordinates.X - Start.X) * (End.Y - Start.Y);
 

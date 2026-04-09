@@ -38,40 +38,26 @@ namespace TheCure
         public AnimatedSprite(Texture2D texture, int frameWidth, int frameHeight, int frameCount, float frameRate, bool isLooping = true)
         {
             if (texture == null)
-            {
                 throw new ArgumentNullException(nameof(texture));
-            }
 
             if (frameWidth <= 0 || frameHeight <= 0)
-            {
                 throw new ArgumentOutOfRangeException(nameof(frameWidth), "Frame size must be greater than zero.");
-            }
 
             if (frameRate <= 0f)
-            {
                 throw new ArgumentOutOfRangeException(nameof(frameRate), "Frame rate must be greater than zero.");
-            }
 
             if (frameCount <= 0)
-            {
                 throw new ArgumentOutOfRangeException(nameof(frameCount), "Frame count must be greater than zero.");
-            }
 
             if (frameWidth > texture.Width || frameHeight > texture.Height)
-            {
-                throw new ArgumentException(
-                    $"Frame size ({frameWidth}x{frameHeight}) cannot be larger than texture size ({texture.Width}x{texture.Height}).");
-            }
+                throw new ArgumentException($"Frame size ({frameWidth}x{frameHeight}) cannot be larger than texture size ({texture.Width}x{texture.Height}).");
 
             _columns = texture.Width / frameWidth;
             int rows = texture.Height / frameHeight;
             int maxFrameCount = _columns * rows;
 
             if (frameCount > maxFrameCount)
-            {
-                throw new ArgumentOutOfRangeException(nameof(frameCount),
-                    $"Frame count ({frameCount}) exceeds maximum possible frames ({maxFrameCount}) for {_columns}x{rows} grid.");
-            }
+                throw new ArgumentOutOfRangeException(nameof(frameCount), $"Frame count ({frameCount}) exceeds maximum possible frames ({maxFrameCount}) for {_columns}x{rows} grid.");
 
             _texture = texture;
             FrameWidth = frameWidth;
@@ -86,9 +72,7 @@ namespace TheCure
         public void Update(GameTime gameTime)
         {
             if (!IsPlaying || FrameCount == 1)
-            {
                 return;
-            }
 
             _frameTimer -= (float)gameTime.ElapsedGameTime.TotalSeconds;
 
@@ -98,9 +82,7 @@ namespace TheCure
                 AdvanceFrame();
 
                 if (!IsPlaying)
-                {
                     break;
-                }
 
                 _frameTimer += SecondsPerFrame;
             }

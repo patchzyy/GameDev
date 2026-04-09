@@ -52,49 +52,31 @@ namespace TheCure
         public override bool Intersects(RectangleCollider tmp)
         {
             if (IsPointInsideCircle(tmp.shape.Location.ToVector2()))
-            {
                 return true;
-            }
 
             if (IsPointInsideCircle(new Vector2(tmp.shape.Right, tmp.shape.Top)))
-            {
                 return true;
-            }
 
             if (IsPointInsideCircle(new Vector2(tmp.shape.Left, tmp.shape.Bottom)))
-            {
                 return true;
-            }
 
             if (IsPointInsideCircle(tmp.shape.Location.ToVector2() + tmp.shape.Size.ToVector2()))
-            {
                 return true;
-            }
 
             if (IsLineIntersectingCircle(tmp.shape.Top, tmp.shape.Left, tmp.shape.Top, tmp.shape.Right))
-            {
                 return true;
-            }
 
             if (IsLineIntersectingCircle(tmp.shape.Bottom, tmp.shape.Left, tmp.shape.Bottom, tmp.shape.Right))
-            {
                 return true;
-            }
 
             if (IsLineIntersectingCircle(tmp.shape.Left, tmp.shape.Top, tmp.shape.Left, tmp.shape.Bottom))
-            {
                 return true;
-            }
 
             if (IsLineIntersectingCircle(tmp.shape.Right, tmp.shape.Top, tmp.shape.Right, tmp.shape.Bottom))
-            {
                 return true;
-            }
 
             if (tmp.shape.Contains(Center))
-            {
                 return true;
-            }
 
             return false;
         }

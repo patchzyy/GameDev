@@ -9,7 +9,7 @@ namespace TheCure
     public class Zombie : Mob
     {
         // constants
-        private float _attackCooldown;
+        private float _attackCoolDown;
         private float _stagger;
         private int _attackDamage;
 
@@ -34,7 +34,7 @@ namespace TheCure
         {
             _stagger = Settings.GetValue(SettingsConst.ZOMBIE.STAGGER);
             _attackDamage = Settings.GetValue(SettingsConst.ZOMBIE.ATTACK_DAMAGE);
-            _attackCooldown = Settings.GetValue(SettingsConst.ZOMBIE.ATTACK_COOLDOWN);
+            _attackCoolDown = Settings.GetValue(SettingsConst.ZOMBIE.ATTACK_COOLDOWN);
         }
 
         public override void Load(ContentManager content)
@@ -90,13 +90,13 @@ namespace TheCure
 
         private void BecomeFriendly()
         {
-            GameManager gm = GameManager.GetGameManager();
+            GameManager gameManager = GameManager.GetGameManager();
 
             // turn into friendly at same position
-            gm.AddGameObject(new Friendly(FriendlyWeapons.HandGun, _collider.Center));
-            gm.RemoveGameObject(this);
+            gameManager.AddGameObject(new Friendly(FriendlyWeapons.HandGun, _collider.Center));
+            gameManager.RemoveGameObject(this);
 
-            gm.AddScore(100, "Zombie Healed"); // Add score for converting a zombie to friendly
+            gameManager.AddScore(100, "Zombie Healed"); // Add score for converting a zombie to friendly
         }
 
         private void Attack(float deltaTime)
@@ -109,7 +109,7 @@ namespace TheCure
 
             _currentTarget.LoseHealth(_attackDamage);
             _attackNextCombat = false;
-            _attackTimer = _attackCooldown;
+            _attackTimer = _attackCoolDown;
             _currentTarget = null;
         }
 
@@ -152,8 +152,8 @@ namespace TheCure
 
         public void RandomMove()
         {
-            var game = GameManager.GetGameManager();
-            _collider.Center = game.RandomLocationOutsideView((int)_collider.Radius);
+            var gameManager = GameManager.GetGameManager();
+            _collider.Center = gameManager.RandomLocationOutsideView((int)_collider.Radius);
         }
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
