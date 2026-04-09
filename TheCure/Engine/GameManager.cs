@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using TheCure.Weapons;
 using TheCure.Mobs;
 using TheCure.World;
 
@@ -175,8 +176,7 @@ namespace TheCure
             scoreManager.Reset();
 
             Player.GainHealth((int)Player.MaxHealth);
-            Player._currentWeapon = Player._bulletWeapon;
-            Player._weaponBuffTimer = 0f;
+            Player.WeaponsSystem = new WeaponsSystem();
             Player._rectangleCollider.shape.Location = new Point(Game.GraphicsDevice.Viewport.Width / 2,
                 Game.GraphicsDevice.Viewport.Height / 2);
             Player._velocity = Vector2.Zero;
