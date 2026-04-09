@@ -9,16 +9,25 @@ namespace TheCure
 {
     public class Friendly : Mob
     {
-        private float _followDistance = 60f;
+        private float _followDistance;
         private Vector2 _startPosition;
         private float _angleOffset;
-        private float _radius = 20f;
+        private float _radius;
         private Vector2 _previousCenter;
         private Vector2 _facingDirection = Vector2.UnitX;
 
         private BaseWeapon _weapon;
-        public Friendly(FriendlyWeapons friendlyWeapon) : base("player", 60f, 3, 10, frameCount: 5, frameRate: 5f, scale: 0.35f)
+
+        public Friendly(FriendlyWeapons friendlyWeapon) : base(
+        "player", 
+        Settings.GetValue(SettingsConst.FRIENDLY.MOVE_SPEED),
+        Settings.GetValue(SettingsConst.FRIENDLY.START_HEALTH),
+        Settings.GetValue(SettingsConst.FRIENDLY.MAX_HEALTH)
+        frameCount: 5, frameRate: 5f, scale: 0.35f)
         {
+            _followDistance = Settings.GetValue(SettingsConst.FRIENDLY.FOLLOW_DISTANCE);
+            _radius = Settings.GetValue(SettingsConst.FRIENDLY.RADIUS);
+
             switch (friendlyWeapon)
             {
                 case FriendlyWeapons.HandGun:

@@ -29,6 +29,12 @@ namespace TheCure
             _isHovering = false;
         }
 
+        public void SetPosition(int x, int y)
+        {
+            Rectangle = new Rectangle(x, y, Rectangle.Width, Rectangle.Height);
+        }
+
+
         public void Update(MouseState mouseState)
         {
             if (Rectangle.Contains(mouseState.X, mouseState.Y))

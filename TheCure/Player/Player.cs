@@ -10,7 +10,8 @@ namespace TheCure
 {
     public class Player : GameObject
     {
-        public const float MoveSpeed = 300f;
+        public float MoveSpeed;
+        public float MaxHealth;
 
         private Texture2D ship_body;
         private Texture2D base_turret;
@@ -28,10 +29,12 @@ namespace TheCure
 
         internal float _weaponBuffTimer = 0f;
 
-        public const float MaxHealth = 10;
 
         public Player(Point Position)
         {
+            MoveSpeed = Settings.GetValue(SettingsConst.PLAYER.MOVE_SPEED);
+            MaxHealth = Settings.GetValue(SettingsConst.PLAYER.MAX_HEALTH);
+
             _rectangleCollider = new RectangleCollider(new Rectangle(Position, Point.Zero));
 
             SetCollider(_rectangleCollider);

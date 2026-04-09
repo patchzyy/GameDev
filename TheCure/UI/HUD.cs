@@ -21,10 +21,7 @@ namespace TheCure
                 _font
             );
 
-            _menuButton.Clicked += (s, e) =>
-            {
-                GameManager.GetGameManager().SetGameState(GameState.Paused);
-            };
+            _menuButton.Clicked += (s, e) => { GameManager.GetGameManager().SetGameState(GameState.Paused); };
         }
 
         public void Update()
@@ -35,22 +32,33 @@ namespace TheCure
 
         public void Draw(SpriteBatch spriteBatch, GameManager gm)
         {
-            _menuButton.Draw(spriteBatch);
-            DrawHealthBar(spriteBatch, gm);
-            DrawTimer(spriteBatch, gm);
-            DrawScore(spriteBatch, gm);
+            if (gm.CurrentGameState == GameState.Playing)
+            {
+                _menuButton.Draw(spriteBatch);
+            }
+            if (gm.CurrentGameState == GameState.Playing || gm.CurrentGameState == GameState.Paused)
+            {
+                DrawHealthBar(spriteBatch, gm);
+                DrawTimer(spriteBatch, gm);
+                DrawScore(spriteBatch, gm);
+
+            }
             DrawStatsPanel(spriteBatch, gm);
             DrawScorePopups(spriteBatch, gm);
         }
 
         private void DrawHealthBar(SpriteBatch spriteBatch, GameManager gm)
         {
+            Vector2 barPosition = new Vector2(10, 60);
             int barWidth = 150;
             int barHeight = 15;
-            Vector2 barPosition = new Vector2(10, 60);
+            if (gm.CurrentGameState == GameState.Paused)
+            {
+                barPosition = new Vector2(10, 10);
+            }
             spriteBatch.Draw(gm.DummyTexture,
                 new Rectangle((int)barPosition.X, (int)barPosition.Y, barWidth, barHeight), Color.Gray);
-            float healthRatio = gm.Player.CurrentHealth() / Player.MaxHealth;
+            float healthRatio = gm.Player.CurrentHealth() / gm.Player.MaxHealth;
 
             spriteBatch.Draw(gm.DummyTexture,
                 new Rectangle((int)barPosition.X, (int)barPosition.Y, (int)(barWidth * healthRatio), barHeight),
@@ -132,14 +140,14 @@ namespace TheCure
             foreach (var stat in stats)
             {
                 spriteBatch.DrawString(
-                    _font, 
-                    stat.Label, 
-                    new Vector2(panelRect.X + padding, panelRect.Y + offsetY), 
+                    _font,
+                    stat.Label,
+                    new Vector2(panelRect.X + padding, panelRect.Y + offsetY),
                     Color.LightGray);
                 spriteBatch.DrawString(
-                    _font, 
-                    stat.Value, 
-                    new Vector2(panelRect.X + panelWidth - _font.MeasureString(stat.Value).X, panelRect.Y + offsetY), 
+                    _font,
+                    stat.Value,
+                    new Vector2(panelRect.X + panelWidth - _font.MeasureString(stat.Value).X, panelRect.Y + offsetY),
                     Color.White);
                 offsetY += lineHeight;
             }

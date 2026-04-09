@@ -59,18 +59,18 @@ namespace TheCure
             GameManager.GetGameManager().RemoveGameObject(this);
         }
 
-        public void SetHealthBar(Texture2D texture, int maxHealth, int startHealth, Action onDeath,
+        public void SetHealthBar(Texture2D texture, float maxHealth, float startHealth, Action onDeath,
             Action onMaxHealth, bool hide = false)
         {
             _healthBar = new HealthBar(texture, maxHealth, startHealth, onDeath, onMaxHealth, hide);
         }
 
-        public void SetHealthBar(Texture2D texture, int maxHealth, int startHealth, Action onDeath)
+        public void SetHealthBar(Texture2D texture, float maxHealth, float startHealth, Action onDeath)
         {
             SetHealthBar(texture, maxHealth, startHealth, onDeath, null);
         }
 
-        public void SetHealthBar(Texture2D texture, int maxHealth, int startHealth, Action onDeath, bool hide)
+        public void SetHealthBar(Texture2D texture, float maxHealth, float startHealth, Action onDeath, bool hide)
         {
             SetHealthBar(texture, maxHealth, startHealth, onDeath, null, hide);
         }

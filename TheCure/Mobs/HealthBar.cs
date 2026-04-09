@@ -22,7 +22,7 @@ namespace TheCure
 
         public float CurrentHealth => _currentHealth;
 
-        public HealthBar(Texture2D texture, int maxHealth, int startHealth, Action onDeath, Action? onMaxHealth,
+        public HealthBar(Texture2D texture, float maxHealth, float startHealth, Action onDeath, Action? onMaxHealth,
             bool hide = false)
         {
             _maxHealth = maxHealth;
