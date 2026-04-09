@@ -1,11 +1,14 @@
-public class Stat
+namespace TheCure
 {
-    public string Label { get; set; }
-    public string Value { get; set; }
-
-    public Stat(string label, string value)
+    public class Stat
     {
-        Label = label;
-        Value = value;
+        public string Label { get; set; }
+        public string Value { get; set; }
+
+        public Stat(string label, string value)
+        {
+            Label = label;
+            Value = value;
+        }
     }
 }

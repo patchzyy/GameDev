@@ -36,6 +36,7 @@ namespace TheCure
             {
                 _menuButton.Draw(spriteBatch);
             }
+
             if (gm.CurrentGameState == GameState.Playing || gm.CurrentGameState == GameState.Paused)
             {
                 DrawHealthBar(spriteBatch, gm);
@@ -43,6 +44,7 @@ namespace TheCure
                 DrawScore(spriteBatch, gm);
 
             }
+
             DrawStatsPanel(spriteBatch, gm);
             DrawScorePopups(spriteBatch, gm);
         }
@@ -52,10 +54,12 @@ namespace TheCure
             Vector2 barPosition = new Vector2(10, 60);
             int barWidth = 150;
             int barHeight = 15;
+
             if (gm.CurrentGameState == GameState.Paused)
             {
                 barPosition = new Vector2(10, 10);
             }
+
             spriteBatch.Draw(gm.DummyTexture,
                 new Rectangle((int)barPosition.X, (int)barPosition.Y, barWidth, barHeight), Color.Gray);
             float healthRatio = gm.Player.CurrentHealth() / gm.Player.MaxHealth;
@@ -101,7 +105,7 @@ namespace TheCure
             {
                 var popup = popups[i];
 
-                float alpha = popup.TimeLeft / 1.5f; // fade out
+                float alpha = popup.TimeLeft / 1.5f;
 
                 Color color = Color.Lerp(Color.Transparent, Color.Green, alpha);
                 Vector2 textSize = _font.MeasureString(popup.Text) * 0.9f;
@@ -144,6 +148,7 @@ namespace TheCure
                     stat.Label,
                     new Vector2(panelRect.X + padding, panelRect.Y + offsetY),
                     Color.LightGray);
+
                 spriteBatch.DrawString(
                     _font,
                     stat.Value,

@@ -15,8 +15,6 @@ namespace TheCure
 
         private Texture2D ship_body;
         private Texture2D base_turret;
-        private Texture2D laser_turret;
-        private Texture2D double_turret;
 
         internal readonly RectangleCollider _rectangleCollider;
 
@@ -49,21 +47,10 @@ namespace TheCure
         {
             ship_body = content.Load<Texture2D>("ship_body");
             base_turret = content.Load<Texture2D>("base_turret");
-            laser_turret = content.Load<Texture2D>("laser_turret");
 
             SetHealthBar(ship_body, (int)MaxHealth, (int)MaxHealth,
                 () => GameManager.GetGameManager().SetGameState(GameState.GameOver),
                 null, true);
-            try
-            {
-                double_turret = content.Load<Texture2D>("double_turret");
-            }
-            catch (ContentLoadException)
-            {
-                System.Diagnostics.Debug.WriteLine(
-                    "Waarschuwing: Kon textuur 'double_turret' niet laden. 'base_turret' wordt gebruikt als fallback.");
-                double_turret = base_turret;
-            }
 
             _rectangleCollider.shape.Size = ship_body.Bounds.Size;
             _rectangleCollider.shape.Location -= new Point(ship_body.Width / 2, ship_body.Height / 2);
@@ -151,18 +138,7 @@ namespace TheCure
 
         private Texture2D GetCurrentTurretTexture()
         {
-            if (_currentWeapon is LaserWeapon)
-            {
-                return laser_turret;
-            }
-            else if (_currentWeapon is DoubleBarrelWeapon)
-            {
-                return double_turret;
-            }
-            else
-            {
-                return base_turret;
-            }
+            return base_turret;
         }
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)

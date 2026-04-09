@@ -1,11 +1,14 @@
-public class ScorePopup
+namespace TheCure
 {
-    public string Text;
-    public float TimeLeft;
-
-    public ScorePopup(string text, float duration = 2f)
+    public class ScorePopup
     {
-        Text = text;
-        TimeLeft = duration;
+        public string Text;
+        public float TimeLeft;
+
+        public ScorePopup(string text, float duration = 2f)
+        {
+            Text = text;
+            TimeLeft = duration;
+        }
     }
 }
