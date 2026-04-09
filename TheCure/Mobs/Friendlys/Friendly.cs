@@ -19,11 +19,14 @@ namespace TheCure
         private BaseWeapon _weapon;
 
         public Friendly(FriendlyWeapons friendlyWeapon) : base(
-        "player", 
-        Settings.GetValue(SettingsConst.FRIENDLY.MOVE_SPEED),
-        Settings.GetValue(SettingsConst.FRIENDLY.START_HEALTH),
-        Settings.GetValue(SettingsConst.FRIENDLY.MAX_HEALTH)
-        frameCount: 5, frameRate: 5f, scale: 0.35f)
+            textureName: "player",
+            speed: Settings.GetValue(SettingsConst.FRIENDLY.MOVE_SPEED),
+            startHealth: Settings.GetValue(SettingsConst.FRIENDLY.START_HEALTH),
+            maxHealth: Settings.GetValue(SettingsConst.FRIENDLY.MAX_HEALTH),
+            frameCount: 5,
+            frameRate: 5f,
+            scale: 0.35f
+        )
         {
             _followDistance = Settings.GetValue(SettingsConst.FRIENDLY.FOLLOW_DISTANCE);
             _radius = Settings.GetValue(SettingsConst.FRIENDLY.RADIUS);

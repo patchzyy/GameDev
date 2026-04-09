@@ -23,14 +23,14 @@ namespace TheCure
         public float LastHealed;
 
         public Zombie() : base(
-          "Zombie",
-          Settings.GetValue(SettingsConst.ZOMBIE.SPEED),
-          Settings.GetValue(SettingsConst.ZOMBIE.START_HEALTH),
-          Settings.GetValue(SettingsConst.ZOMBIE.MAX_HEALTH),
-          frameCount: 5, 
-          frameRate: 5f, 
-          scale: 0.35f
-          )
+            textureName: "Zombie",
+            speed: Settings.GetValue(SettingsConst.ZOMBIE.SPEED),
+            startHealth: Settings.GetValue(SettingsConst.ZOMBIE.START_HEALTH),
+            maxHealth: Settings.GetValue(SettingsConst.ZOMBIE.MAX_HEALTH),
+            frameCount: 5,
+            frameRate: 5f,
+            scale: 0.35f
+        )
         {
             _stagger = Settings.GetValue(SettingsConst.ZOMBIE.STAGGER);
             _attackDamage = Settings.GetValue(SettingsConst.ZOMBIE.ATTACK_DAMAGE);

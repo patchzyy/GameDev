@@ -129,10 +129,8 @@ namespace TheCure
         private void PositionButtons()
         {
             int buttonWidth = 200;
-            int buttonHeight = 50;
             int centerX = Game.GraphicsDevice.Viewport.Width / 2;
             int centerY = Game.GraphicsDevice.Viewport.Height / 2;
-            int spacing = 20;
 
             _startButton.SetPosition(centerX - buttonWidth / 2, (int)(Game.GraphicsDevice.Viewport.Height * 0.54f));
             _quitButton.SetPosition(centerX - buttonWidth / 2, (int)(Game.GraphicsDevice.Viewport.Height * 0.68f));
