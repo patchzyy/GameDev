@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -28,7 +29,8 @@ namespace TheCure
             _gameManager = GameManager.GetGameManager();
             base.Initialize();
 
-            Player player = new Player(new Point(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height / 2));
+            Player player =
+                new Player(new Point(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height / 2));
 
             _gameManager.Initialize(Content, this, player);
             _gameManager.AddWorldWalls();
