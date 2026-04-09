@@ -8,19 +8,19 @@ namespace TheCure.Mobs;
 public class Mob : GameObject
 {
     public CircleCollider _collider;
+    public string _textureName;
     public Texture2D _texture;
     public AnimatedSprite _animatedSprite;
     public SpriteFont _font;
     public float _speed;
-    public int _maxHealth;
-    public int _startHealth;
-    protected readonly string _textureName;
+    public float _maxHealth;
+    public float _startHealth;
     protected readonly int _frameCount;
     protected readonly float _frameRate;
     protected readonly bool _isLooping;
     protected readonly float _scale;
 
-    public Mob(string textureName, float speed, int startHealth, int maxHealth, int frameCount = 1,
+    public Mob(string textureName, float speed, float startHealth, float maxHealth, int frameCount = 1,
         float frameRate = 1f, bool isLooping = true, float scale = 1f)
     {
         _textureName = textureName;
