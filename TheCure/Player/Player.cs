@@ -27,6 +27,8 @@ namespace TheCure
 
         internal float _weaponBuffTimer = 0f;
 
+        public WeaponMode CurrentWeaponMode = WeaponMode.Shoot;
+
         public Player(Point Position)
         {
             MoveSpeed = Settings.GetValue(SettingsConst.PLAYER.MOVE_SPEED);

@@ -10,6 +10,7 @@ namespace TheCure
     {
         private SpriteFont _font;
         private Button _menuButton;
+        private PlayerInteractionsHUD _playerInteractionsHUD;
 
         public void Load(ContentManager content)
         {
@@ -21,17 +22,21 @@ namespace TheCure
                 _font
             );
 
+            _playerInteractionsHUD = new PlayerInteractionsHUD(_font);
+            _playerInteractionsHUD.Load(content);
             _menuButton.Clicked += (s, e) => { GameManager.GetGameManager().SetGameState(GameState.Paused); };
         }
 
-        public void Update()
+        public void Update(GameTime gameTime)
         {
             MouseState mouse = Mouse.GetState();
             _menuButton.Update(mouse);
+            _playerInteractionsHUD.Update(gameTime);
         }
 
         public void Draw(SpriteBatch spriteBatch, GameManager gameManager)
         {
+            _playerInteractionsHUD.Draw(spriteBatch, gameManager);
             if (gameManager.CurrentGameState == GameState.Playing)
             {
                 _menuButton.Draw(spriteBatch);
@@ -106,14 +111,15 @@ namespace TheCure
 
                 float alpha = popup.TimeLeft / 1.5f;
 
-                Color color = Color.Lerp(Color.Transparent, Color.Green, alpha);
+                Color color = Color.Lerp(Color.Transparent, Color.Red, alpha);
                 Vector2 textSize = _font.MeasureString(popup.Text) * 0.9f;
 
                 Vector2 position = new Vector2(gameManager.Game.GraphicsDevice.Viewport.Width - textSize.X - 10,
                     startY + i * spacing
                 );
 
-                spriteBatch.DrawString(_font, popup.Text, position, color, 0f, Vector2.Zero, 0.9f, SpriteEffects.None, 0f);
+                spriteBatch.DrawString(_font, popup.Text, position, color, 0f, Vector2.Zero, 0.9f, SpriteEffects.None,
+                    0f);
             }
         }
 
