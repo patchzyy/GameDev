@@ -14,13 +14,19 @@ namespace TheCure
         private float _angleOffset;
         private float _radius;
         private Vector2 _previousCenter;
+        private Vector2 _facingDirection = Vector2.UnitX;
 
         private BaseWeapon _weapon;
 
-        public Friendly(FriendlyWeapons friendlyWeapon) : base("Alien",
-            Settings.GetValue(SettingsConst.FRIENDLY.MOVE_SPEED),
-            Settings.GetValue(SettingsConst.FRIENDLY.START_HEALTH),
-            Settings.GetValue(SettingsConst.FRIENDLY.MAX_HEALTH))
+        public Friendly(FriendlyWeapons friendlyWeapon) : base(
+            textureName: "player",
+            speed: Settings.GetValue(SettingsConst.FRIENDLY.MOVE_SPEED),
+            startHealth: Settings.GetValue(SettingsConst.FRIENDLY.START_HEALTH),
+            maxHealth: Settings.GetValue(SettingsConst.FRIENDLY.MAX_HEALTH),
+            frameCount: 5,
+            frameRate: 5f,
+            scale: 0.35f
+        )
         {
             _followDistance = Settings.GetValue(SettingsConst.FRIENDLY.FOLLOW_DISTANCE);
             _radius = Settings.GetValue(SettingsConst.FRIENDLY.RADIUS);
@@ -100,6 +106,12 @@ namespace TheCure
             _collider.Center = Vector2.Lerp(_collider.Center, targetPos, 5f * deltaTime);
             Attack(gameTime);
 
+            Vector2 movement = _collider.Center - _previousCenter;
+            if (movement.LengthSquared() > 0.0001f)
+            {
+                _facingDirection = Vector2.Normalize(movement);
+            }
+
             base.Update(gameTime);
         }
 
@@ -127,14 +139,9 @@ namespace TheCure
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             Color tint = Color.LightBlue;
-            spriteBatch.Draw(_texture, _collider.GetBoundingBox(), tint);
-
-
-            string text = "Friendly";
-            Vector2 textSize = _font.MeasureString(text);
-            Vector2 textPos = new Vector2(_collider.Center.X - (textSize.X / 2),
-                _collider.Center.Y - (_texture.Height / 2) - 20);
-            spriteBatch.DrawString(_font, text, textPos, Color.LimeGreen);
+            Rectangle destRect = GetAnimatedSpriteDestinationRectangle();
+            DrawShadow(spriteBatch, destRect);
+            DrawAnimatedSprite(spriteBatch, tint, _facingDirection);
 
             base.Draw(gameTime, spriteBatch);
         }

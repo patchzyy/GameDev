@@ -33,7 +33,6 @@ namespace TheCure
         private HUD _hud;
         private int _score = 0;
         private List<ScorePopup> _scorePopups = new List<ScorePopup>();
-        private Texture2D _buttonTexture;
 
         private float _gameTimeElapsed = 0f;
         private float _spawnTimer = 0f;
@@ -130,10 +129,8 @@ namespace TheCure
         private void PositionButtons()
         {
             int buttonWidth = 200;
-            int buttonHeight = 50;
             int centerX = Game.GraphicsDevice.Viewport.Width / 2;
             int centerY = Game.GraphicsDevice.Viewport.Height / 2;
-            int spacing = 20;
 
             _startButton.SetPosition(centerX - buttonWidth / 2, (int)(Game.GraphicsDevice.Viewport.Height * 0.54f));
             _quitButton.SetPosition(centerX - buttonWidth / 2, (int)(Game.GraphicsDevice.Viewport.Height * 0.68f));
@@ -431,7 +428,7 @@ namespace TheCure
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            spriteBatch.Begin(transformMatrix: _camera.GetViewMatrix());
+            spriteBatch.Begin(transformMatrix: _camera.GetViewMatrix(), samplerState: SamplerState.LinearClamp);
 
             if (CurrentGameState == GameState.Playing || CurrentGameState == GameState.Paused)
             {
@@ -548,7 +545,7 @@ namespace TheCure
         {
             return _scorePopups;
         }
-        
+
         public void AddScore(int pointsToAdd, string reason = "")
         {
             scoreManager.AddScore(pointsToAdd);
@@ -613,7 +610,7 @@ namespace TheCure
                     return candidate;
                 }
             }
-            
+
             Vector2[] fallbackPoints =
             {
                 new (safePlayableBounds.Left, safePlayableBounds.Top),
@@ -666,13 +663,13 @@ namespace TheCure
         {
             // boven
             AddWorldWall(new(_playableBounds.Left - WallThickness, _playableBounds.Top - WallThickness, _playableBounds.Width + WallThickness * 2, WallThickness));
-            
+
             // onder
             AddWorldWall(new(_playableBounds.Left - WallThickness, _playableBounds.Bottom, _playableBounds.Width + WallThickness * 2, WallThickness));
-            
+
             // links
             AddWorldWall(new(_playableBounds.Left - WallThickness, _playableBounds.Top, WallThickness, _playableBounds.Height));
-            
+
             // rechts
             AddWorldWall(new(_playableBounds.Right, _playableBounds.Top, WallThickness, _playableBounds.Height));
         }
@@ -695,7 +692,7 @@ namespace TheCure
             {
                 return;
             }
-            
+
             var worldBounds = GetWorldBounds();
 
             for (var x = worldBounds.Left; x < worldBounds.Right; x += _gameplayBackgroundTexture.Width)

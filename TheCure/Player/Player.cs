@@ -141,7 +141,7 @@ namespace TheCure
                     System.Diagnostics.Debug.WriteLine("Wapen-buff verlopen. Teruggeschakeld naar BulletWeapon.");
                 }
             }
-            
+
             _previousBounds = _rectangleCollider.shape;
             _rectangleCollider.shape.X += (int)(_velocity.X * deltaTime);
             _rectangleCollider.shape.Y += (int)(_velocity.Y * deltaTime);
@@ -168,6 +168,22 @@ namespace TheCure
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             Vector2 bodyOrigin = ship_body.Bounds.Size.ToVector2() / 2f;
+            Rectangle shadowCore = new Rectangle(
+                _rectangleCollider.shape.Center.X - (int)(bodyOrigin.X * 0.55f),
+                _rectangleCollider.shape.Center.Y + (int)(bodyOrigin.Y * 0.38f),
+                (int)(bodyOrigin.X * 1.1f),
+                (int)(bodyOrigin.Y * 0.18f)
+            );
+            Rectangle shadowSoft = new Rectangle(
+                _rectangleCollider.shape.Center.X - (int)(bodyOrigin.X * 0.65f),
+                _rectangleCollider.shape.Center.Y + (int)(bodyOrigin.Y * 0.42f),
+                (int)(bodyOrigin.X * 1.3f),
+                (int)(bodyOrigin.Y * 0.12f)
+            );
+
+            spriteBatch.Draw(GameManager.GetGameManager().DummyTexture, shadowSoft, Color.Black * 0.08f);
+            spriteBatch.Draw(GameManager.GetGameManager().DummyTexture, shadowCore, Color.Black * 0.16f);
+
             spriteBatch.Draw(ship_body, _rectangleCollider.shape.Center.ToVector2(), null, Color.White, _rotation,
                 bodyOrigin, 1f, SpriteEffects.None, 0);
 

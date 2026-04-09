@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.IO;
 using System.Text.Json;
@@ -7,7 +8,7 @@ namespace TheCure
     public static class JsonHelper
     {
         private const string DefaultFileName = "Settings.json";
-        
+
         public static void Save<T>(T data, string fileName = DefaultFileName)
         {
             string path = GetPath(fileName);

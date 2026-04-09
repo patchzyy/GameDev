@@ -42,7 +42,7 @@ namespace TheCure
         {
             if (_healthBar != null)
             {
-                _healthBar.UpdateHealthBar(collider.GetBoundingBox().Center, _healthBar._texture);
+                _healthBar.UpdateHealthBar(collider.GetBoundingBox().Center, collider.GetBoundingBox().Height);
             }
         }
 
@@ -84,7 +84,7 @@ namespace TheCure
             }
             else
             {
-                Console.WriteLine("No healthbar set");
+                System.Diagnostics.Debug.WriteLine("No healthbar set");
             }
         }
 
@@ -96,7 +96,7 @@ namespace TheCure
             }
             else
             {
-                Console.WriteLine("No healthbar set");
+                System.Diagnostics.Debug.WriteLine("No healthbar set");
             }
         }
 

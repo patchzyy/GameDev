@@ -18,14 +18,19 @@ namespace TheCure
         private float _attackTimer;
         private GameObject _currentTarget;
         private Vector2 _previousCenter;
+        private Vector2 _facingDirection = Vector2.UnitX;
 
         public float LastHealed;
 
         public Zombie() : base(
-            "Alien",
-            Settings.GetValue(SettingsConst.ZOMBIE.SPEED),
-            Settings.GetValue(SettingsConst.ZOMBIE.START_HEALTH),
-            Settings.GetValue(SettingsConst.ZOMBIE.MAX_HEALTH))
+            textureName: "Zombie",
+            speed: Settings.GetValue(SettingsConst.ZOMBIE.SPEED),
+            startHealth: Settings.GetValue(SettingsConst.ZOMBIE.START_HEALTH),
+            maxHealth: Settings.GetValue(SettingsConst.ZOMBIE.MAX_HEALTH),
+            frameCount: 5,
+            frameRate: 5f,
+            scale: 0.35f
+        )
         {
             _stagger = Settings.GetValue(SettingsConst.ZOMBIE.STAGGER);
             _attackDamage = Settings.GetValue(SettingsConst.ZOMBIE.ATTACK_DAMAGE);
@@ -53,6 +58,12 @@ namespace TheCure
             else
             {
                 Move(deltaTime);
+            }
+
+            Vector2 movement = _collider.Center - _previousCenter;
+            if (movement.LengthSquared() > 0.0001f)
+            {
+                _facingDirection = Vector2.Normalize(movement);
             }
 
             LastHealed += deltaTime;
@@ -148,7 +159,9 @@ namespace TheCure
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             Color tint = Color.White;
-            spriteBatch.Draw(_texture, _collider.GetBoundingBox(), tint);
+            Rectangle destRect = GetAnimatedSpriteDestinationRectangle();
+            DrawShadow(spriteBatch, destRect);
+            DrawAnimatedSprite(spriteBatch, tint, _facingDirection);
 
             base.Draw(gameTime, spriteBatch);
         }
