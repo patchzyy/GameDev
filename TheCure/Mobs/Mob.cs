@@ -11,10 +11,10 @@ public class Mob : GameObject
     public Texture2D _texture;
     public SpriteFont _font;
     public float _speed;
-    public int _maxHealth;
-    public int _startHealth;
+    public float _maxHealth;
+    public float _startHealth;
 
-    public Mob(string textureName, float speed, int startHealth, int maxHealth)
+    public Mob(string textureName, float speed, float startHealth, float maxHealth)
     {
         _textureName = textureName;
         _speed = speed;
