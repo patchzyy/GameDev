@@ -20,6 +20,13 @@ namespace TheCure
             { SettingsConst.ZOMBIE.START_HEALTH, 3f },
             { SettingsConst.ZOMBIE.MAX_HEALTH, 10f },
 
+            // SPAWNING
+            { SettingsConst.SPAWNING.ZOMBIE_SPAWN_INTERVAL, 2f },
+            { SettingsConst.SPAWNING.ENEMIES_PER_WAVE, 5 },
+            { SettingsConst.SPAWNING.MAX_ENEMIES_ON_SCREEN, 20 },
+            { SettingsConst.SPAWNING.BRUTE_SPAWN_CHANCE, 0.1f },
+            { SettingsConst.SPAWNING.MAX_BRUTES, 0 },
+
             // FRIENDLY
             { SettingsConst.FRIENDLY.FOLLOW_DISTANCE, 60f },
             { SettingsConst.FRIENDLY.MOVE_SPEED, 80f },

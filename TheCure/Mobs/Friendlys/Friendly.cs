@@ -165,48 +165,47 @@ namespace TheCure
         {
             if (_weapon.CanFire)
             {
-                Vector2 nearestZombiePosition = GetNearestZombiePosition();
-                Vector2 aimDirection =
-                    LinePieceCollider.GetDirection(_collider.Center,
-                        nearestZombiePosition);
-
-                float distance = Vector2.Distance(nearestZombiePosition, _collider.Center);
-
-                if (distance < 300f)
+                Mob nearestEnemy = GetNearestEnemyPosition();
+                if (nearestEnemy != null)
                 {
-                    _weapon.Fire(_collider.Center, aimDirection, this);
+                    Vector2 targetPosition = nearestEnemy._collider.Center;
+                    Vector2 aimDirection = LinePieceCollider.GetDirection(_collider.Center, targetPosition);
+                    float distance = Vector2.Distance(targetPosition, _collider.Center);
+
+                    if (distance < 300f)
+                    {
+                        _weapon.Fire(_collider.Center, aimDirection, this);
+                    }
                 }
             }
 
             _weapon.UpdateCoolDown(gameTime);
         }
 
-        private Vector2 GetNearestZombiePosition()
+        private Mob GetNearestEnemyPosition()
         {
-            var zombies = GameManager.GetGameManager().Zombies;
+            var enemies = GameManager.GetGameManager().Enemies;
 
-            Zombie closest = null;
+            Mob closest = null;
             float closestDistance = float.MaxValue;
 
-            foreach (var zombie in zombies)
+            foreach (var enemy in enemies)
             {
-                if (zombie.LastHealed < 3f)
-                    continue;
+                if (enemy == null) continue;
 
-                var zombieLocation = zombie._collider.Center;
-                var distance = Vector2.Distance(zombieLocation, _collider.Center);
+                if (enemy is Zombie zombie && zombie.LastHealed < 3f) continue;
 
+                var enemyLocation = enemy._collider.Center;
+                var distance = Vector2.Distance(enemyLocation, _collider.Center);
+                
                 if (distance < closestDistance)
                 {
-                    closest = zombie;
+                    closest = enemy;
                     closestDistance = distance;
                 }
             }
 
-            if (closest == null)
-                return Vector2.Zero;
-
-            return closest._collider.Center;
+            return closest;
         }
     }
 }
