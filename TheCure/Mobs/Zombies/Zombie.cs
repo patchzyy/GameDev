@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using TheCure.Mobs;
@@ -8,28 +9,30 @@ namespace TheCure
 {
     public class Zombie : Mob
     {
-        // constants
         private float _attackCoolDown;
         private float _stagger;
         private int _attackDamage;
 
-        // states
         private bool _attackNextCombat;
         private float _attackTimer;
         private GameObject _currentTarget;
         private Vector2 _previousCenter;
         private Vector2 _facingDirection = Vector2.UnitX;
 
+        private ZombieAnimationState _currentState;
+        private bool _isDying = false;
+        private Action _onDeathComplete;
+
         public float LastHealed;
 
         public Zombie() : base(
-            textureName: "Zombie",
+            textureName: "Zombie-Walk",
             speed: Settings.GetValue(SettingsConst.ZOMBIE.SPEED),
             startHealth: Settings.GetValue(SettingsConst.ZOMBIE.START_HEALTH),
             maxHealth: Settings.GetValue(SettingsConst.ZOMBIE.MAX_HEALTH),
-            frameCount: 5,
+            frameCount: 7,
             frameRate: 5f,
-            scale: 0.35f
+            scale: 2f
         )
         {
             _stagger = Settings.GetValue(SettingsConst.ZOMBIE.STAGGER);
@@ -49,24 +52,42 @@ namespace TheCure
         public override void Update(GameTime gameTime)
         {
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
             _previousCenter = _collider.Center;
 
+            // 💀 Death animatie afspelen
+            if (_isDying)
+            {
+                _animatedSprite.Update(gameTime);
+
+                if (_animatedSprite.IsFinished)
+                {
+                    _onDeathComplete?.Invoke();
+
+                    if (_onDeathComplete == null)
+                    {
+                        GameManager.GetGameManager().AddScore(50, "Zombie Killed");
+                        base.Destroy();
+                    }
+                }
+
+                return;
+            }
+
+            // Movement / attack logic
             if (_attackNextCombat)
-            {
                 Attack(deltaTime);
-            }
             else
-            {
                 Move(deltaTime);
-            }
 
             Vector2 movement = _collider.Center - _previousCenter;
+
             if (movement.LengthSquared() > 0.0001f)
-            {
                 _facingDirection = Vector2.Normalize(movement);
-            }
 
             LastHealed += deltaTime;
+
+            UpdateAnimation();
 
             base.Update(gameTime);
         }
@@ -82,21 +103,13 @@ namespace TheCure
             Vector2 targetPosition = _currentTarget == null
                 ? GameManager.GetGameManager().Player.GetPosition().Center.ToVector2()
                 : _currentTarget.GetCollider().GetBoundingBox().Center.ToVector2();
+
             Vector2 direction = targetPosition - _collider.Center;
 
-            direction.Normalize();
+            if (direction != Vector2.Zero)
+                direction.Normalize();
+
             _collider.Center += direction * (_speed / 2f) * deltaTime;
-        }
-
-        private void BecomeFriendly()
-        {
-            GameManager gameManager = GameManager.GetGameManager();
-
-            // turn into friendly at same position
-            gameManager.AddGameObject(new Friendly(FriendlyWeapons.HandGun, _collider.Center));
-            gameManager.RemoveGameObject(this);
-
-            gameManager.AddScore(100, "Zombie Healed"); // Add score for converting a zombie to friendly
         }
 
         private void Attack(float deltaTime)
@@ -108,16 +121,49 @@ namespace TheCure
             }
 
             _currentTarget.LoseHealth(_attackDamage);
+
             _attackNextCombat = false;
             _attackTimer = _attackCoolDown;
             _currentTarget = null;
         }
 
+        private void BecomeFriendly()
+        {
+            if (_isDying)
+                return;
+
+            _isDying = true;
+
+            SwitchAnimation("Zombie-Dead", 8, 3f, false);
+            _currentState = ZombieAnimationState.Dead;
+
+            _onDeathComplete = () =>
+            {
+                var gm = GameManager.GetGameManager();
+                gm.AddGameObject(new Friendly(FriendlyWeapons.HandGun, _collider.Center));
+                gm.RemoveGameObject(this);
+                gm.AddScore(100, "Zombie Healed");
+            };
+        }
+
+        public override void Destroy()
+        {
+            if (_isDying)
+                return;
+
+            _isDying = true;
+
+            SwitchAnimation("Zombie-Dead", 8, 3f, false);
+            _currentState = ZombieAnimationState.Dead;
+
+            _onDeathComplete = null; // gewone death (geen friendly)
+        }
+
         public override void OnCollision(GameObject tmp)
         {
-            if (tmp is Bullet)
+            if (tmp is Bullet bullet)
             {
-                if ((tmp as Bullet).IsHealing)
+                if (bullet.IsHealing)
                 {
                     GainHealth(1);
                     LastHealed = 0f;
@@ -127,7 +173,7 @@ namespace TheCure
                     LoseHealth(1);
                 }
 
-                tmp.Destroy();
+                bullet.Destroy();
             }
 
             if ((tmp is Friendly || tmp is Player) && _currentTarget == null)
@@ -144,26 +190,78 @@ namespace TheCure
             base.OnCollision(tmp);
         }
 
-        public override void Destroy()
+        private void UpdateAnimation()
         {
-            GameManager.GetGameManager().AddScore(50, "Zombie Killed");
-            base.Destroy();
+            if (_isDying)
+                return;
+
+            if (_attackNextCombat)
+            {
+                if (_currentState != ZombieAnimationState.Attack)
+                {
+                    SwitchAnimation("Zombie-Atk", 7, 8f, true);
+                    _currentState = ZombieAnimationState.Attack;
+                }
+            }
+            else
+            {
+                if (_currentState != ZombieAnimationState.Walk)
+                {
+                    SwitchAnimation("Zombie-Walk", 7, 5f, true);
+                    _currentState = ZombieAnimationState.Walk;
+                }
+            }
+        }
+
+        private void SwitchAnimation(string name, int frames, float fps, bool loop)
+        {
+            var texture = GameManager.GetGameManager().Content.Load<Texture2D>(name);
+            int frameWidth = texture.Width / frames;
+
+            _animatedSprite = new AnimatedSprite(texture, frameWidth, texture.Height, frames, fps, loop);
         }
 
         public void RandomMove()
         {
             var gameManager = GameManager.GetGameManager();
-            _collider.Center = gameManager.RandomLocationOutsideView((int)_collider.Radius);
+            var viewport = gameManager.Game.GraphicsDevice.Viewport;
+            var rng = gameManager.RNG;
+
+            Vector2 playerPos = gameManager.Player.GetPosition().Center.ToVector2();
+
+            Vector2 spawn;
+            float minDistance = 100f;
+
+            do
+            {
+                spawn = new Vector2(
+                    rng.Next(0, viewport.Width),
+                    rng.Next(0, viewport.Height)
+                );
+            }
+            while (Vector2.Distance(spawn, playerPos) < minDistance);
+
+            _collider.Center = spawn;
         }
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             Color tint = Color.White;
+
             Rectangle destRect = GetAnimatedSpriteDestinationRectangle();
+
             DrawShadow(spriteBatch, destRect);
+
             DrawAnimatedSprite(spriteBatch, tint, _facingDirection);
 
             base.Draw(gameTime, spriteBatch);
         }
+    }
+
+    enum ZombieAnimationState
+    {
+        Walk,
+        Attack,
+        Dead
     }
 }

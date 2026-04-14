@@ -29,6 +29,12 @@ namespace TheCure
 
         public WeaponMode CurrentWeaponMode = WeaponMode.Shoot;
 
+        private float _hitTimer = 0f;
+
+        private PlayerAnimationState _currentState;
+        private AnimatedSprite _animatedSprite;
+        private Vector2 _facingDirection = Vector2.UnitX;
+
         public Player(Point Position)
         {
             MoveSpeed = Settings.GetValue(SettingsConst.PLAYER.MOVE_SPEED);
@@ -46,15 +52,21 @@ namespace TheCure
 
         public override void Load(ContentManager content)
         {
-            ship_body = content.Load<Texture2D>("ship_body");
-            base_turret = content.Load<Texture2D>("base_turret");
+            SwitchAnimation("Character-Joe-Idle", 6, 6f, true);
 
-            SetHealthBar(ship_body, (int)MaxHealth, (int)MaxHealth,
+            SetHealthBar(content.Load<Texture2D>("Character-Joe-Idle"), (int)MaxHealth, (int)MaxHealth,
                 () => GameManager.GetGameManager().SetGameState(GameState.GameOver),
                 null, true);
 
-            _rectangleCollider.shape.Size = ship_body.Bounds.Size;
-            _rectangleCollider.shape.Location -= new Point(ship_body.Width / 2, ship_body.Height / 2);
+            _rectangleCollider.shape.Size = new Point(
+                _animatedSprite.FrameWidth,
+                _animatedSprite.FrameHeight
+            );
+
+            _rectangleCollider.shape.Location -= new Point(
+                _animatedSprite.FrameWidth / 2,
+                _animatedSprite.FrameHeight / 2
+            );
 
             base.Load(content);
         }
@@ -73,9 +85,8 @@ namespace TheCure
                     Vector2 aimDirection =
                         LinePieceCollider.GetDirection(GetPosition().Center.ToVector2(), worldMousePosition);
 
-                    Texture2D currentTurretTexture = GetCurrentTurretTexture();
                     Vector2 turretExit = _rectangleCollider.shape.Center.ToVector2() +
-                                         aimDirection * (currentTurretTexture.Height / 2f);
+                     aimDirection * 20f;
 
                     _currentWeapon.Fire(turretExit, aimDirection, this);
                 }
@@ -117,6 +128,20 @@ namespace TheCure
         {
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
+            _animatedSprite.Update(gameTime);
+
+            if (_hitTimer > 0)
+            {
+                _hitTimer -= deltaTime;
+
+                if (_hitTimer <= 0)
+                {
+                    SetState(PlayerAnimationState.Idle);
+                }
+            }
+
+            UpdateState();
+
             _currentWeapon?.UpdateCoolDown(gameTime);
 
             if (_weaponBuffTimer > 0)
@@ -134,6 +159,9 @@ namespace TheCure
             _rectangleCollider.shape.X += (int)(_velocity.X * deltaTime);
             _rectangleCollider.shape.Y += (int)(_velocity.Y * deltaTime);
 
+            if (_velocity.LengthSquared() > 0.0001f)
+                _facingDirection = Vector2.Normalize(_velocity);
+
             base.Update(gameTime);
         }
 
@@ -144,41 +172,15 @@ namespace TheCure
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            Vector2 bodyOrigin = ship_body.Bounds.Size.ToVector2() / 2f;
+            DrawShadow(spriteBatch, _rectangleCollider.shape);
 
-            Rectangle shadowCore = new Rectangle(
-                _rectangleCollider.shape.Center.X - (int)(bodyOrigin.X * 0.55f),
-                _rectangleCollider.shape.Center.Y + (int)(bodyOrigin.Y * 0.38f),
-                (int)(bodyOrigin.X * 1.1f),
-                (int)(bodyOrigin.Y * 0.18f)
+            _animatedSprite.Draw(
+                spriteBatch,
+                _rectangleCollider.shape.Center.ToVector2(),
+                Color.White,
+                0,
+                2f
             );
-
-            Rectangle shadowSoft = new Rectangle(
-                _rectangleCollider.shape.Center.X - (int)(bodyOrigin.X * 0.65f),
-                _rectangleCollider.shape.Center.Y + (int)(bodyOrigin.Y * 0.42f),
-                (int)(bodyOrigin.X * 1.3f),
-                (int)(bodyOrigin.Y * 0.12f)
-            );
-
-            spriteBatch.Draw(GameManager.GetGameManager().DummyTexture, shadowSoft, Color.Black * 0.08f);
-            spriteBatch.Draw(GameManager.GetGameManager().DummyTexture, shadowCore, Color.Black * 0.16f);
-
-            spriteBatch.Draw(ship_body, _rectangleCollider.shape.Center.ToVector2(), null, Color.White, _rotation,
-                bodyOrigin, 1f, SpriteEffects.None, 0);
-
-            Texture2D texture = GetCurrentTurretTexture();
-
-            Point screenMouse = Mouse.GetState().Position;
-
-            Vector2 mouse = GameManager.GetGameManager().ScreenToWorld(screenMouse.ToVector2());
-            Vector2 direction = LinePieceCollider.GetDirection(GetPosition().Center.ToVector2(), mouse);
-
-            float angle = LinePieceCollider.GetAngle(direction);
-
-            Vector2 position = _rectangleCollider.shape.Center.ToVector2();
-            Vector2 origin = texture.Bounds.Size.ToVector2() / 2f;
-
-            spriteBatch.Draw(texture, position, null, Color.White, angle, origin, 1f, SpriteEffects.None, 0);
 
             base.Draw(gameTime, spriteBatch);
         }
@@ -223,5 +225,77 @@ namespace TheCure
         {
             return _rectangleCollider.shape;
         }
+
+        private void SwitchAnimation(string name, int frames, float fps, bool loop)
+        {
+            var texture = GameManager.GetGameManager().Content.Load<Texture2D>(name);
+
+            int frameWidth = texture.Width / frames;
+
+            _animatedSprite = new AnimatedSprite(texture, frameWidth, texture.Height, frames, fps, loop);
+        }
+
+        private void UpdateState()
+        {
+            if (_currentState == PlayerAnimationState.Hit)
+                return;
+
+            if (_velocity.LengthSquared() > 0.01f)
+                SetState(PlayerAnimationState.Run);
+            else
+                SetState(PlayerAnimationState.Idle);
+        }
+
+        private void SetState(PlayerAnimationState newState)
+        {
+            if (_currentState == newState)
+                return;
+
+            _currentState = newState;
+
+            switch (newState)
+            {
+                case PlayerAnimationState.Run:
+                    SwitchAnimation("Character-Joe-Run", 6, 8f, true);
+                    break;
+
+                case PlayerAnimationState.Hit:
+                    SwitchAnimation("Character-Joe-Idle-Shot", 4, 10f, false);
+                    break;
+
+                default:
+                    SwitchAnimation("Character-Joe-Idle", 6, 6f, true);
+                    break;
+            }
+        }
+
+        public void TakeHit()
+        {
+            SetState(PlayerAnimationState.Hit);
+            _hitTimer = 0.4f;
+        }
+
+        private void DrawShadow(SpriteBatch spriteBatch, Rectangle destRect)
+        {
+            Rectangle shadowCore = new Rectangle(
+                destRect.Center.X - (int)(destRect.Width * 0.25f),
+                destRect.Bottom - (int)(destRect.Height * 0.1f),
+                (int)(destRect.Width * 0.5f),
+                (int)(destRect.Height * 0.2f)
+            );
+
+            spriteBatch.Draw(
+                GameManager.GetGameManager().DummyTexture,
+                shadowCore,
+                Color.Black * 0.2f
+            );
+        }
+    }
+
+    enum PlayerAnimationState
+    {
+        Idle,
+        Run,
+        Hit
     }
 }

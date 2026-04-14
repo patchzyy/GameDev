@@ -18,14 +18,25 @@ namespace TheCure
 
         private BaseWeapon _weapon;
 
+        private AnimatedSprite _animatedSprite;
+
+        private FriendlyState _currentState;
+
+        private enum FriendlyState
+        {
+            Idle,
+            Run,
+            Hit
+        }
+
         public Friendly(FriendlyWeapons friendlyWeapon) : base(
-            textureName: "player",
+            textureName: "Character-Unknown-Idle", // alleen fallback voor Mob system
             speed: Settings.GetValue(SettingsConst.FRIENDLY.MOVE_SPEED),
             startHealth: Settings.GetValue(SettingsConst.FRIENDLY.START_HEALTH),
             maxHealth: Settings.GetValue(SettingsConst.FRIENDLY.MAX_HEALTH),
-            frameCount: 5,
-            frameRate: 5f,
-            scale: 0.35f
+            frameCount: 6,
+            frameRate: 6f,
+            scale: 2f
         )
         {
             _followDistance = Settings.GetValue(SettingsConst.FRIENDLY.FOLLOW_DISTANCE);
@@ -43,31 +54,48 @@ namespace TheCure
         {
             _startPosition = position;
             _angleOffset = (float)(GameManager.GetGameManager().RNG.NextDouble() * MathHelper.TwoPi);
+
             GameManager.GetGameManager().Friendlies.Add(this);
         }
 
         public override void Load(ContentManager content)
         {
-            base.Load(content);
-            _collider.Center = _startPosition;
+            SwitchAnimation("Character-Unknown-Idle", 6, 6f, true);
 
-            SetHealthBar(_texture, _maxHealth, _startHealth, Destroy, null);
+            SetHealthBar(
+                content.Load<Texture2D>("Character-Unknown-Idle"),
+                _maxHealth,
+                _startHealth,
+                Destroy,
+                null
+            );
+
+            base.Load(content);
+
+            _collider.Center = _startPosition;
+        }
+
+        private void SwitchAnimation(string name, int frames, float fps, bool loop)
+        {
+            var texture = GameManager.GetGameManager().Content.Load<Texture2D>(name);
+
+            int frameWidth = texture.Width / frames;
+
+            _animatedSprite = new AnimatedSprite(texture, frameWidth, texture.Height, frames, fps, loop);
         }
 
         public override void Update(GameTime gameTime)
         {
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
-            var gameManager = GameManager.GetGameManager();
-            Vector2 playerPosition = gameManager.Player.GetPosition().Center.ToVector2();
+
             _previousCenter = _collider.Center;
 
-            int count = gameManager.Friendlies.Count;
+            _animatedSprite.Update(gameTime);
 
-            if (count == 0)
-                return;
+            var gameManager = GameManager.GetGameManager();
+            Vector2 playerPosition = gameManager.Player.GetPosition().Center.ToVector2();
 
             int index = gameManager.Friendlies.IndexOf(this);
-
             int ringSize = 6;
             float baseRadius = 130f;
             float ringSpacing = 80f;
@@ -76,10 +104,9 @@ namespace TheCure
             int indexInRing = index % ringSize;
 
             float orbitRadius = baseRadius + ringNumber * ringSpacing;
-
             float angleStep = MathHelper.TwoPi / ringSize;
-            float time = (float)gameTime.TotalGameTime.TotalSeconds;
 
+            float time = (float)gameTime.TotalGameTime.TotalSeconds;
             float angle = angleStep * indexInRing + time + _angleOffset;
 
             Vector2 offset = new Vector2(
@@ -91,7 +118,7 @@ namespace TheCure
 
             foreach (var other in gameManager.Friendlies)
             {
-                if (other == this)
+                if (other == this || other == null || other._collider == null)
                     continue;
 
                 float distance = Vector2.Distance(targetPosition, other._collider.Center);
@@ -106,20 +133,56 @@ namespace TheCure
             }
 
             _collider.Center = Vector2.Lerp(_collider.Center, targetPosition, 5f * deltaTime);
+
             Attack(gameTime);
 
             Vector2 movement = _collider.Center - _previousCenter;
+
             if (movement.LengthSquared() > 0.0001f)
-            {
                 _facingDirection = Vector2.Normalize(movement);
-            }
+
+            UpdateState();
 
             base.Update(gameTime);
         }
 
+        private void UpdateState()
+        {
+            if (_currentState == FriendlyState.Hit)
+                return;
+
+            if ((_collider.Center - _previousCenter).LengthSquared() > 0.01f)
+                SetState(FriendlyState.Run);
+            else
+                SetState(FriendlyState.Idle);
+        }
+
+        private void SetState(FriendlyState newState)
+        {
+            if (_currentState == newState)
+                return;
+
+            _currentState = newState;
+
+            switch (newState)
+            {
+                case FriendlyState.Run:
+                    SwitchAnimation("Character-Unknown-Run", 6, 8f, true);
+                    break;
+
+                case FriendlyState.Hit:
+                    SwitchAnimation("Character-Unknown-Idle-Shot", 4, 10f, false);
+                    break;
+
+                default:
+                    SwitchAnimation("Character-Unknown-Idle", 6, 6f, true);
+                    break;
+            }
+        }
+
         public override void OnCollision(GameObject tmp)
         {
-            if (tmp is Bullet && tmp is Bullet bullet && bullet.IsHealing)
+            if (tmp is Bullet bullet && bullet.IsHealing)
             {
                 if (!_healthBar.IsMaxHealth)
                 {
@@ -130,8 +193,6 @@ namespace TheCure
 
             if (tmp is Wall wall)
             {
-                // todo: dit is buggy en ziet er slecht uit maar geen tijd om te fixen nu
-                // gebeurd wel alleen bij friendly, misschien omdat ze persee rondje wille maken
                 wall.ResolveCircleCollision(_collider, _previousCenter);
             }
 
@@ -141,24 +202,15 @@ namespace TheCure
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             Color tint = Color.LightBlue;
+
             Rectangle destinationRectangle = GetAnimatedSpriteDestinationRectangle();
+
             DrawShadow(spriteBatch, destinationRectangle);
-            DrawAnimatedSprite(spriteBatch, tint, _facingDirection);
+
+            //_animatedSprite.Draw(spriteBatch, tint);
+            DrawAnimatedSprite(spriteBatch, Color.LightBlue, _facingDirection);
 
             base.Draw(gameTime, spriteBatch);
-        }
-
-        private void Move(GameTime gameTime)
-        {
-            Vector2 playerPosition = GameManager.GetGameManager().Player.GetPosition().Center.ToVector2();
-            Vector2 direction = playerPosition - _collider.Center;
-            float distance = Vector2.Distance(_collider.Center, playerPosition);
-
-            if (distance > _followDistance)
-            {
-                direction.Normalize();
-                _collider.Center += direction * (_speed + 20f) * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            }
         }
 
         private void Attack(GameTime gameTime)
@@ -166,9 +218,11 @@ namespace TheCure
             if (_weapon.CanFire)
             {
                 Vector2 nearestZombiePosition = GetNearestZombiePosition();
-                Vector2 aimDirection =
-                    LinePieceCollider.GetDirection(_collider.Center,
-                        nearestZombiePosition);
+
+                Vector2 aimDirection = LinePieceCollider.GetDirection(
+                    _collider.Center,
+                    nearestZombiePosition
+                );
 
                 float distance = Vector2.Distance(nearestZombiePosition, _collider.Center);
 
@@ -193,8 +247,7 @@ namespace TheCure
                 if (zombie.LastHealed < 3f)
                     continue;
 
-                var zombieLocation = zombie._collider.Center;
-                var distance = Vector2.Distance(zombieLocation, _collider.Center);
+                float distance = Vector2.Distance(zombie._collider.Center, _collider.Center);
 
                 if (distance < closestDistance)
                 {
@@ -203,10 +256,9 @@ namespace TheCure
                 }
             }
 
-            if (closest == null)
-                return Vector2.Zero;
-
-            return closest._collider.Center;
+            return closest == null
+                ? Vector2.Zero
+                : closest._collider.Center;
         }
     }
 }

@@ -54,6 +54,8 @@ public class Mob : GameObject
 
     protected Rectangle GetAnimatedSpriteDestinationRectangle()
     {
+        if (_animatedSprite == null)
+            return new Rectangle(0, 0, 0, 0);
         int scaledWidth = (int)(_animatedSprite.FrameWidth * _scale);
         int scaledHeight = (int)(_animatedSprite.FrameHeight * _scale);
 
