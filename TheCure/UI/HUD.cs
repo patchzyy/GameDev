@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using TheCure.PlayerActions;
 
 namespace TheCure
 {
@@ -33,6 +34,8 @@ namespace TheCure
             _menuButton.Update(mouse);
             _playerInteractionsHUD.Update(gameTime);
         }
+
+        public Dash GetDash() => _playerInteractionsHUD.GetDash();
 
         public void Draw(SpriteBatch spriteBatch, GameManager gameManager)
         {
