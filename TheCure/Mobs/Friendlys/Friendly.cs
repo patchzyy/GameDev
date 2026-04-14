@@ -125,6 +125,7 @@ namespace TheCure
                     {
                         _velocity -= collisionNormal * velocityIntoWall;
                     }
+                }
             }
 
             base.OnCollision(tmp);
