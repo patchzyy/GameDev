@@ -24,7 +24,6 @@ namespace TheCure
         private const float AnchorCatchupSpeed = 3.5f;
         private const float SteeringResponsiveness = 6f;
         private const float SlowRadius = 90f;
-        private const float PlayerAvoidanceRadius = 85f;
         private const float FriendlySeparationStrength = 36f;
 
         public Friendly(FriendlyWeapons friendlyWeapon) : base(
@@ -84,8 +83,25 @@ namespace TheCure
             _formationAnchor = Vector2.Lerp(_formationAnchor, playerPosition, anchorBlend);
 
             Vector2 formationTarget = GetFormationTarget(gameManager, _formationAnchor);
-            formationTarget += GetPlayerAvoidanceOffset(gameManager.Player);
+            formationTarget = KeepPositionOutsidePlayer(gameManager.Player, formationTarget, _radius + 18f);
             formationTarget += GetFriendlySeparationOffset(gameManager);
+
+            Vector2 correctedPosition = KeepPositionOutsidePlayer(gameManager.Player, _collider.Center, _radius + 4f);
+            if (correctedPosition != _collider.Center)
+            {
+                Vector2 correction = correctedPosition - _collider.Center;
+                _collider.Center = correctedPosition;
+
+                if (correction.LengthSquared() > 0.0001f)
+                {
+                    Vector2 correctionNormal = Vector2.Normalize(correction);
+                    float velocityIntoPlayer = Vector2.Dot(_velocity, correctionNormal);
+                    if (velocityIntoPlayer > 0f)
+                    {
+                        _velocity -= correctionNormal * velocityIntoPlayer;
+                    }
+                }
+            }
 
             MoveTowards(formationTarget, deltaTime);
             Attack(gameTime);
@@ -108,11 +124,6 @@ namespace TheCure
                     GainHealth(1);
                     tmp.Destroy();
                 }
-            }
-
-            if (tmp is Player player)
-            {
-                ResolvePlayerCollision(player);
             }
 
             if (tmp is Wall wall)
@@ -164,37 +175,42 @@ namespace TheCure
             return anchorPosition + slotOffset;
         }
 
-        private Vector2 GetPlayerAvoidanceOffset(Player player)
+        private Vector2 KeepPositionOutsidePlayer(Player player, Vector2 position, float padding)
         {
             Rectangle bounds = player.GetPosition();
-            Vector2 closestPoint = new Vector2(
-                MathHelper.Clamp(_collider.Center.X, bounds.Left, bounds.Right),
-                MathHelper.Clamp(_collider.Center.Y, bounds.Top, bounds.Bottom)
-            );
+            float left = bounds.Left - padding;
+            float right = bounds.Right + padding;
+            float top = bounds.Top - padding;
+            float bottom = bounds.Bottom + padding;
 
-            Vector2 awayFromPlayer = _collider.Center - closestPoint;
-            if (awayFromPlayer.LengthSquared() < 0.0001f)
+            if (position.X < left || position.X > right || position.Y < top || position.Y > bottom)
             {
-                awayFromPlayer = _collider.Center - bounds.Center.ToVector2();
+                return position;
             }
 
-            if (awayFromPlayer.LengthSquared() < 0.0001f)
+            float distanceToLeft = position.X - left;
+            float distanceToRight = right - position.X;
+            float distanceToTop = position.Y - top;
+            float distanceToBottom = bottom - position.Y;
+
+            if (distanceToLeft <= distanceToRight && distanceToLeft <= distanceToTop && distanceToLeft <= distanceToBottom)
             {
-                awayFromPlayer = Vector2.UnitY;
+                position.X = left;
+            }
+            else if (distanceToRight <= distanceToTop && distanceToRight <= distanceToBottom)
+            {
+                position.X = right;
+            }
+            else if (distanceToTop <= distanceToBottom)
+            {
+                position.Y = top;
+            }
+            else
+            {
+                position.Y = bottom;
             }
 
-            float distance = awayFromPlayer.Length();
-            float influenceRadius = _radius + PlayerAvoidanceRadius;
-
-            if (distance >= influenceRadius)
-            {
-                return Vector2.Zero;
-            }
-
-            awayFromPlayer /= Math.Max(distance, 0.001f);
-            float strength = 1f - MathHelper.Clamp(distance / influenceRadius, 0f, 1f);
-
-            return awayFromPlayer * (strength * influenceRadius);
+            return position;
         }
 
         private Vector2 GetFriendlySeparationOffset(GameManager gameManager)
@@ -254,43 +270,6 @@ namespace TheCure
             if (distance < 2f && _velocity.LengthSquared() < 9f)
             {
                 _velocity = Vector2.Zero;
-            }
-        }
-
-        private void ResolvePlayerCollision(Player player)
-        {
-            Rectangle bounds = player.GetPosition();
-            Vector2 closestPoint = new Vector2(
-                MathHelper.Clamp(_collider.Center.X, bounds.Left, bounds.Right),
-                MathHelper.Clamp(_collider.Center.Y, bounds.Top, bounds.Bottom)
-            );
-
-            Vector2 pushDirection = _collider.Center - closestPoint;
-            float distance = pushDirection.Length();
-
-            if (distance < 0.0001f)
-            {
-                pushDirection = _collider.Center - bounds.Center.ToVector2();
-                if (pushDirection.LengthSquared() < 0.0001f)
-                {
-                    pushDirection = Vector2.UnitY;
-                }
-
-                distance = pushDirection.Length();
-            }
-
-            pushDirection /= Math.Max(distance, 0.001f);
-            float overlap = _radius - distance;
-
-            if (overlap > 0f)
-            {
-                _collider.Center += pushDirection * (overlap + 2f);
-            }
-
-            float velocityIntoPlayer = Vector2.Dot(_velocity, pushDirection);
-            if (velocityIntoPlayer < 0f)
-            {
-                _velocity -= pushDirection * velocityIntoPlayer;
             }
         }
 
