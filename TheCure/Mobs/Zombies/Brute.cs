@@ -1,47 +1,43 @@
-﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using TheCure.Mobs;
-using TheCure.Weapons;
 
 namespace TheCure
 {
-    public class Zombie : Mob
+    public class Brute : Mob
     {
-        // constants
-        private float _attackCoolDown;
+        private float _attackCooldown;
         private float _stagger;
         private int _attackDamage;
 
-        // states
         private bool _attackNextCombat;
         private float _attackTimer;
         private GameObject _currentTarget;
         private Vector2 _previousCenter;
         private Vector2 _facingDirection = Vector2.UnitX;
 
-        public float LastHealed;
-
-        public Zombie() : base(
+        public Brute() : base(
             textureName: "Zombie",
-            speed: Settings.GetValue(SettingsConst.ZOMBIE.SPEED),
-            startHealth: Settings.GetValue(SettingsConst.ZOMBIE.START_HEALTH),
-            maxHealth: Settings.GetValue(SettingsConst.ZOMBIE.MAX_HEALTH),
+            speed: 30f,
+            startHealth: 15f,
+            maxHealth: 15f,
             frameCount: 5,
-            frameRate: 5f,
-            scale: 0.35f
+            frameRate: 2.5f,
+            scale: 0.55f
         )
         {
-            _stagger = Settings.GetValue(SettingsConst.ZOMBIE.STAGGER);
-            _attackDamage = Settings.GetValue(SettingsConst.ZOMBIE.ATTACK_DAMAGE);
-            _attackCoolDown = Settings.GetValue(SettingsConst.ZOMBIE.ATTACK_COOLDOWN);
+            _stagger = 1.2f;
+            _attackDamage = 3;
+            _attackCooldown = 2f;
         }
 
         public override void Load(ContentManager content)
         {
             base.Load(content);
 
-            SetHealthBar(_texture, _maxHealth, _startHealth, Destroy, BecomeFriendly);
+            // no BecomeFriendly here, brute cannot be healed
+            SetHealthBar(_texture, _maxHealth, _startHealth, Destroy, null);
         }
 
         public override void Update(GameTime gameTime)
@@ -64,8 +60,6 @@ namespace TheCure
                 _facingDirection = Vector2.Normalize(movement);
             }
 
-            LastHealed += deltaTime;
-
             base.Update(gameTime);
         }
 
@@ -80,21 +74,14 @@ namespace TheCure
             Vector2 targetPosition = _currentTarget == null
                 ? GameManager.GetGameManager().Player.GetPosition().Center.ToVector2()
                 : _currentTarget.GetCollider().GetBoundingBox().Center.ToVector2();
+
             Vector2 direction = targetPosition - _collider.Center;
 
-            direction.Normalize();
-            _collider.Center += direction * (_speed / 2f) * deltaTime;
-        }
-
-        private void BecomeFriendly()
-        {
-            GameManager gameManager = GameManager.GetGameManager();
-
-            // turn into friendly at same position
-            gameManager.AddGameObject(new Friendly(FriendlyWeapons.HandGun, _collider.Center));
-            gameManager.RemoveGameObject(this);
-
-            gameManager.AddScore(100, "Zombie Healed"); // Add score for converting a zombie to friendly
+            if (direction.LengthSquared() > 0.0001f)
+            {
+                direction.Normalize();
+                _collider.Center += direction * (_speed / 2f) * deltaTime;
+            }
         }
 
         private void Attack(float deltaTime)
@@ -105,22 +92,22 @@ namespace TheCure
                 return;
             }
 
-            _currentTarget.LoseHealth(_attackDamage);
+            if (_currentTarget != null)
+            {
+                _currentTarget.LoseHealth(_attackDamage);
+            }
+
             _attackNextCombat = false;
-            _attackTimer = _attackCoolDown;
+            _attackTimer = _attackCooldown;
             _currentTarget = null;
         }
 
         public override void OnCollision(GameObject tmp)
         {
-            if (tmp is Bullet)
+            if (tmp is Bullet bullet)
             {
-                if ((tmp as Bullet).IsHealing)
-                {
-                    GainHealth(1);
-                    LastHealed = 0f;
-                }
-                else
+                // brute ignores healing bullets
+                if (!bullet.IsHealing)
                 {
                     LoseHealth(1);
                 }
@@ -144,22 +131,21 @@ namespace TheCure
 
         public override void Destroy()
         {
-            GameManager.GetGameManager().AddScore(50, "Zombie Killed");
+            GameManager.GetGameManager().AddScore(75, "Brute Killed");
             base.Destroy();
         }
 
         public void RandomMove()
         {
-            var gameManager = GameManager.GetGameManager();
-            _collider.Center = gameManager.RandomLocationOutsideView((int)_collider.Radius);
+            var game = GameManager.GetGameManager();
+            _collider.Center = game.RandomLocationOutsideView((int)_collider.Radius);
         }
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            Color tint = Color.White;
             Rectangle destRect = GetAnimatedSpriteDestinationRectangle();
-            DrawShadow(spriteBatch, destRect);
-            DrawAnimatedSprite(spriteBatch, tint, _facingDirection);
+            DrawShadow(spriteBatch, destRect, 0.18f, 0.10f);
+            DrawAnimatedSprite(spriteBatch, Color.White, _facingDirection);
 
             base.Draw(gameTime, spriteBatch);
         }
