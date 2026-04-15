@@ -45,6 +45,8 @@ namespace TheCure
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
             _previousCenter = _collider.Center;
 
+            UpdateKnockback(deltaTime);
+
             if (_attackNextCombat)
             {
                 Attack(deltaTime);

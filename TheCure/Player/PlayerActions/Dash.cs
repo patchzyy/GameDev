@@ -81,6 +81,9 @@ public class Dash : PlayerAction
         if (gameManager.Enemies == null)
             return;
 
+        const float KnockBackForce = 600f;
+        const float KnockBackDuration = 0.3f;
+
         foreach (Mob enemy in gameManager.Enemies)
         {
             if (_hitEnemies.Contains(enemy))
@@ -88,7 +91,14 @@ public class Dash : PlayerAction
 
             if (player.CheckCollision(enemy))
             {
-                System.Diagnostics.Debug.WriteLine($"Dash hit enemy!");
+                Vector2 knockBackDir = enemy.GetCollider().GetBoundingBox().Center.ToVector2() -
+                                      player.GetPosition().Center.ToVector2();
+
+                enemy.ApplyKnockback(knockBackDir, KnockBackForce, KnockBackDuration);
+
+                _hitEnemies.Add(enemy);
+
+                System.Diagnostics.Debug.WriteLine($"Dash hit enemy! Applied knockback.");
             }
         }
     }

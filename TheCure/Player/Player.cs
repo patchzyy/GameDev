@@ -207,6 +207,20 @@ namespace TheCure
             }
         }
 
+        public override void LoseHealth(int amount)
+        {
+            var hud = GameManager.GetGameManager().HUD;
+            var dash = hud?.GetDash();
+
+            if (dash != null && dash.IsDashing)
+            {
+                System.Diagnostics.Debug.WriteLine("Player is protected by dash - no damage taken!");
+                return;
+            }
+
+            base.LoseHealth(amount);
+        }
+
         public void Reset()
         {
             _healthBar.ResetHealth();
