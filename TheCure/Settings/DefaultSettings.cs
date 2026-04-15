@@ -29,7 +29,7 @@ namespace TheCure
 
             // FRIENDLY
             { SettingsConst.FRIENDLY.FOLLOW_DISTANCE, 60f },
-            { SettingsConst.FRIENDLY.MOVE_SPEED, 80f },
+            { SettingsConst.FRIENDLY.MOVE_SPEED, 50f },
             { SettingsConst.FRIENDLY.START_HEALTH, 10f },
             { SettingsConst.FRIENDLY.MAX_HEALTH, 10f },
             { SettingsConst.FRIENDLY.RADIUS, 20f },
