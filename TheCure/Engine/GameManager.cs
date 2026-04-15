@@ -32,7 +32,6 @@ namespace TheCure
         private Button _pauseQuitButton;
         private Button _restartButton;
         private Camera _camera;
-        private HUD _hud;
         private int _score = 0;
         private List<ScorePopup> _scorePopups = new List<ScorePopup>();
 
@@ -64,6 +63,7 @@ namespace TheCure
         public Game Game { get; private set; }
         public Texture2D DummyTexture { get; private set; }
         public GameState CurrentGameState { get; private set; }
+        public HUD HUD { get; private set; }
         public List<Mob> Enemies;
 
 
@@ -210,7 +210,7 @@ namespace TheCure
             _backgroundGameOverTexture = content.Load<Texture2D>("GameOverBackground");
             _titleFont = content.Load<SpriteFont>("TitleFont");
             _buttonFont = content.Load<SpriteFont>("ButtonFont");
-            _hud = new HUD();
+            HUD = new HUD();
             scoreManager = new ScoreManager();
 
             foreach (var gameObject in _gameObjects)
@@ -218,7 +218,7 @@ namespace TheCure
                 gameObject.Load(content);
             }
 
-            _hud.Load(content);
+            HUD.Load(content);
         }
 
         public void HandleInput(InputManager inputManager)
@@ -312,7 +312,7 @@ namespace TheCure
                 }
 
                 _camera.Update(Player.GetPosition().Center.ToVector2(), GetWorldBounds());
-                _hud.Update(gameTime);
+                HUD.Update(gameTime);
 
                 CheckCollision();
 
@@ -540,7 +540,7 @@ namespace TheCure
             if (CurrentGameState == GameState.Playing || CurrentGameState == GameState.Paused ||
                 CurrentGameState == GameState.GameOver)
             {
-                _hud.Draw(spriteBatch, this);
+                HUD.Draw(spriteBatch, this);
             }
 
             spriteBatch.End();
@@ -623,7 +623,7 @@ namespace TheCure
 
                 if (blockedViewBounds.Contains(candidate))
                     continue;
-                
+
                 if (Vector2.Distance(candidate, playerPos) < minDistanceFromPlayer)
                     continue;
 

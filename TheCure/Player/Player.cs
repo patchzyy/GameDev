@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using TheCure.Collision;
 using TheCure.Weapons;
+using TheCure.PlayerActions;
 
 namespace TheCure
 {
@@ -110,7 +111,13 @@ namespace TheCure
                 _rotation = LinePieceCollider.GetAngle(moveDirection);
             }
 
-            _velocity = moveDirection * MoveSpeed;
+            var hud = GameManager.GetGameManager().HUD;
+            var dash = hud?.GetDash();
+
+            if (dash == null || !dash.IsDashing)
+            {
+                _velocity = moveDirection * MoveSpeed;
+            }
         }
 
         public override void Update(GameTime gameTime)
@@ -128,6 +135,14 @@ namespace TheCure
                     _currentWeapon = _bulletWeapon;
                     System.Diagnostics.Debug.WriteLine("Wapen-buff verlopen. Teruggeschakeld naar BulletWeapon.");
                 }
+            }
+
+            var hud = GameManager.GetGameManager().HUD;
+            var dash = hud?.GetDash();
+
+            if (dash != null)
+            {
+                dash.UpdateDash(gameTime, GameManager.GetGameManager());
             }
 
             _previousBounds = _rectangleCollider.shape;
@@ -190,6 +205,20 @@ namespace TheCure
                 // speler netjes terugduwen uit de muur
                 wall.ResolveRectangleCollision(_rectangleCollider, _previousBounds, ref _velocity);
             }
+        }
+
+        public override void LoseHealth(int amount)
+        {
+            var hud = GameManager.GetGameManager().HUD;
+            var dash = hud?.GetDash();
+
+            if (dash != null && dash.IsDashing)
+            {
+                System.Diagnostics.Debug.WriteLine("Player is protected by dash - no damage taken!");
+                return;
+            }
+
+            base.LoseHealth(amount);
         }
 
         public void Reset()

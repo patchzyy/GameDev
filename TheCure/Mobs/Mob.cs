@@ -20,6 +20,9 @@ public class Mob : GameObject
     protected readonly bool _isLooping;
     protected readonly float _scale;
 
+    protected Vector2 _knockbackVelocity = Vector2.Zero;
+    protected float _knockbackDuration = 0f;
+
     public Mob(string textureName, float speed, float startHealth, float maxHealth, int frameCount = 1, float frameRate = 1f, bool isLooping = true, float scale = 1f)
     {
         _textureName = textureName;
@@ -50,6 +53,23 @@ public class Mob : GameObject
         _animatedSprite?.Update(gameTime);
 
         base.Update(gameTime);
+    }
+
+    public void ApplyKnockback(Vector2 direction, float force, float duration)
+    {
+        direction.Normalize();
+        _knockbackVelocity = direction * force;
+        _knockbackDuration = duration;
+    }
+
+    protected void UpdateKnockback(float deltaTime, float knockbackDamping = 0.85f)
+    {
+        if (_knockbackDuration > 0f)
+        {
+            _collider.Center += _knockbackVelocity * deltaTime;
+            _knockbackVelocity *= knockbackDamping;
+            _knockbackDuration -= deltaTime;
+        }
     }
 
     protected Rectangle GetAnimatedSpriteDestinationRectangle()
