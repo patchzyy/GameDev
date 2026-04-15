@@ -10,7 +10,6 @@ public class Dash : PlayerAction
 {
     private const float DashSpeed = 800f;
     private const float DashDuration = 0.4f;
-    private const int DashDamage = 20;
 
     private float _dashTimer = 0f;
     private bool _isDashing = false;
@@ -89,9 +88,7 @@ public class Dash : PlayerAction
 
             if (player.CheckCollision(enemy))
             {
-                _hitEnemies.Add(enemy);
-                enemy.LoseHealth(DashDamage);
-                System.Diagnostics.Debug.WriteLine($"Dash hit enemy! Dealt {DashDamage} damage");
+                System.Diagnostics.Debug.WriteLine($"Dash hit enemy!");
             }
         }
     }
