@@ -9,7 +9,7 @@ public abstract class Throwable : GameObject
 {
     private Texture2D _texture;
     private Vector2 _startPosition;
-    private Vector2 _targetPosition;
+    public Vector2 _targetPosition;
     private Vector2 _position;
     private string _textureName;
     private float _rotation;
