@@ -212,7 +212,7 @@ namespace TheCure
 
         private void SwitchAnimation(string name, int frames, float fps, bool loop)
         {
-            var texture = GameManager.GetGameManager().Content.Load<Texture2D>(name);
+            var texture = GameManager.GetGameManager()._content.Load<Texture2D>(name);
             int frameWidth = texture.Width / frames;
 
             _animatedSprite = new AnimatedSprite(texture, frameWidth, texture.Height, frames, fps, loop);

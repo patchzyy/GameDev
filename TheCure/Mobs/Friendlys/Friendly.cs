@@ -10,7 +10,6 @@ namespace TheCure
     public class Friendly : Mob
     {
         private Vector2 _startPosition;
-        private float _radius;
         private Vector2 _previousCenter;
         private Vector2 _velocity;
         private Vector2 _formationAnchor;
@@ -18,6 +17,8 @@ namespace TheCure
         private Vector2 _facingDirection = Vector2.UnitX;
 
         private BaseWeapon _weapon;
+
+        // ===== FORMATION SETTINGS (VERSION 1) =====
         private const int RingSize = 6;
         private const float BaseRadius = 130f;
         private const float RingSpacing = 80f;
@@ -26,8 +27,8 @@ namespace TheCure
         private const float SlowRadius = 90f;
         private const float FriendlySeparationStrength = 36f;
 
+        // ===== ANIMATION (VERSION 2) =====
         private AnimatedSprite _animatedSprite;
-
         private FriendlyState _currentState;
 
         private enum FriendlyState
@@ -38,30 +39,32 @@ namespace TheCure
         }
 
         public Friendly(FriendlyWeapons friendlyWeapon) : base(
-            textureName: "Character-Unknown-Idle", // alleen fallback voor Mob system
+            textureName: "Character-Unknown-Idle",
             speed: Settings.GetValue(SettingsConst.FRIENDLY.MOVE_SPEED),
             startHealth: Settings.GetValue(SettingsConst.FRIENDLY.START_HEALTH),
             maxHealth: Settings.GetValue(SettingsConst.FRIENDLY.MAX_HEALTH),
             frameCount: 6,
             frameRate: 6f,
-            scale: 2f
+            scale: 1.7f
         )
         {
-            _radius = Settings.GetValue(SettingsConst.FRIENDLY.RADIUS);
-            _velocity = Vector2.Zero;
-
+            _collider = new CircleCollider(Vector2.Zero, BaseRadius);
             switch (friendlyWeapon)
             {
                 case FriendlyWeapons.HandGun:
                     _weapon = new Handgun();
                     break;
             }
+
+            _velocity = Vector2.Zero;
         }
 
-        public Friendly(FriendlyWeapons friendlyWeapons, Vector2 position) : this(friendlyWeapons)
+        public Friendly(FriendlyWeapons friendlyWeapons, Vector2 position)
+            : this(friendlyWeapons)
         {
             _startPosition = position;
-            _angleOffset = (float)(GameManager.GetGameManager().RNG.NextDouble() * MathHelper.TwoPi);
+            _formationAnchor = position;
+            _hasFormationAnchor = true;
 
             GameManager.GetGameManager().Friendlies.Add(this);
         }
@@ -78,15 +81,15 @@ namespace TheCure
                 null
             );
 
-            base.Load(content);
-
             _collider.Center = _startPosition;
+
+            base.Load(content);
         }
 
+        // ===== ANIMATION SWITCH =====
         private void SwitchAnimation(string name, int frames, float fps, bool loop)
         {
-            var texture = GameManager.GetGameManager().Content.Load<Texture2D>(name);
-
+            var texture = GameManager.GetGameManager()._content.Load<Texture2D>(name);
             int frameWidth = texture.Width / frames;
 
             _animatedSprite = new AnimatedSprite(texture, frameWidth, texture.Height, frames, fps, loop);
@@ -95,66 +98,178 @@ namespace TheCure
         public override void Update(GameTime gameTime)
         {
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            var gm = GameManager.GetGameManager();
+
+            Vector2 playerPos = gm.Player.GetPosition().Center.ToVector2();
 
             _previousCenter = _collider.Center;
 
-            _animatedSprite.Update(gameTime);
+            if (gm.Friendlies.Count == 0)
+                return;
 
-            var gameManager = GameManager.GetGameManager();
-            Vector2 playerPosition = gameManager.Player.GetPosition().Center.ToVector2();
-
-            int index = gameManager.Friendlies.IndexOf(this);
-            int ringSize = 6;
-            float baseRadius = 130f;
-            float ringSpacing = 80f;
-
-            int ringNumber = index / ringSize;
-            int indexInRing = index % ringSize;
-
-            float orbitRadius = baseRadius + ringNumber * ringSpacing;
-            float angleStep = MathHelper.TwoPi / ringSize;
-
-            float time = (float)gameTime.TotalGameTime.TotalSeconds;
-            float angle = angleStep * indexInRing + time + _angleOffset;
-
-            Vector2 formationTarget = GetFormationTarget(gameManager, _formationAnchor);
-            formationTarget = KeepPositionOutsidePlayer(gameManager.Player, formationTarget, _radius + 18f);
-            formationTarget += GetFriendlySeparationOffset(gameManager);
-
-            Vector2 correctedPosition = KeepPositionOutsidePlayer(gameManager.Player, _collider.Center, _radius + 4f);
-            if (correctedPosition != _collider.Center)
+            // ===== FORMATION ANCHOR (VERSION 1) =====
+            if (!_hasFormationAnchor)
             {
-                if (other == this || other == null || other._collider == null)
-                    continue;
-
-                float distance = Vector2.Distance(targetPosition, other._collider.Center);
-                float minimalDistance = _radius * 2;
-
-                if (correction.LengthSquared() > 0.0001f)
-                {
-                    Vector2 correctionNormal = Vector2.Normalize(correction);
-                    float velocityIntoPlayer = Vector2.Dot(_velocity, correctionNormal);
-                    if (velocityIntoPlayer > 0f)
-                    {
-                        _velocity -= correctionNormal * velocityIntoPlayer;
-                    }
-                }
+                _formationAnchor = playerPos;
+                _hasFormationAnchor = true;
             }
 
-            _collider.Center = Vector2.Lerp(_collider.Center, targetPosition, 5f * deltaTime);
+            float anchorBlend = MathHelper.Clamp(AnchorCatchupSpeed * deltaTime, 0f, 1f);
+            _formationAnchor = Vector2.Lerp(_formationAnchor, playerPos, anchorBlend);
+
+            Vector2 formationTarget = GetFormationTarget(gm, _formationAnchor);
+
+            formationTarget = KeepOutsidePlayer(gm.Player, formationTarget, 18f);
+            formationTarget += GetSeparationOffset(gm);
+
+            MoveTowards(formationTarget, deltaTime);
 
             Attack(gameTime);
 
+            // ===== FACING =====
             Vector2 movement = _collider.Center - _previousCenter;
-
             if (movement.LengthSquared() > 0.0001f)
                 _facingDirection = Vector2.Normalize(movement);
 
             UpdateState();
 
+            _animatedSprite?.Update(gameTime);
+
             base.Update(gameTime);
         }
 
+        // ===== FORMATION (VERSION 1) =====
+        private Vector2 GetFormationTarget(GameManager gm, Vector2 anchor)
+        {
+            int index = gm.Friendlies.IndexOf(this);
+            if (index < 0) return anchor;
+
+            int ringNumber = index / RingSize;
+            int indexInRing = index % RingSize;
+
+            float angleStep = MathHelper.TwoPi / RingSize;
+            float ringOffset = ringNumber % 2 == 0 ? 0f : angleStep * 0.5f;
+
+            float angle = indexInRing * angleStep + ringOffset - MathHelper.PiOver2;
+            float radius = BaseRadius + ringNumber * RingSpacing;
+
+            Vector2 offset = new Vector2(
+                (float)Math.Cos(angle),
+                (float)Math.Sin(angle)
+            ) * radius;
+
+            return anchor + offset;
+        }
+
+        private Vector2 KeepOutsidePlayer(Player player, Vector2 pos, float padding)
+        {
+            Rectangle b = player.GetPosition();
+
+            float left = b.Left - padding;
+            float right = b.Right + padding;
+            float top = b.Top - padding;
+            float bottom = b.Bottom + padding;
+
+            if (pos.X < left) pos.X = left;
+            if (pos.X > right) pos.X = right;
+            if (pos.Y < top) pos.Y = top;
+            if (pos.Y > bottom) pos.Y = bottom;
+
+            return pos;
+        }
+
+        private Vector2 GetSeparationOffset(GameManager gm)
+        {
+            Vector2 offset = Vector2.Zero;
+            float desired = 40f;
+
+            foreach (var other in gm.Friendlies)
+            {
+                if (other == this) continue;
+
+                Vector2 away = _collider.Center - other._collider.Center;
+                if (away.LengthSquared() < 0.0001f) continue;
+
+                float dist = away.Length();
+                if (dist >= desired) continue;
+
+                away /= dist;
+                float strength = 1f - (dist / desired);
+
+                offset += away * (strength * FriendlySeparationStrength);
+            }
+
+            return offset;
+        }
+
+        private void MoveTowards(Vector2 target, float dt)
+        {
+            Vector2 dir = target - _collider.Center;
+            float dist = dir.Length();
+
+            Vector2 desired = Vector2.Zero;
+
+            if (dist > 0.5f)
+            {
+                dir /= dist;
+                float speed = MathHelper.Clamp(dist / SlowRadius, 0f, 1f);
+                desired = dir * (_speed * speed);
+            }
+
+            float blend = MathHelper.Clamp(SteeringResponsiveness * dt, 0f, 1f);
+            _velocity = Vector2.Lerp(_velocity, desired, blend);
+
+            _collider.Center += _velocity * dt;
+        }
+
+        // ===== ATTACK (VERSION 1) =====
+        private void Attack(GameTime gameTime)
+        {
+            if (!_weapon.CanFire)
+                return;
+
+            Mob enemy = GetNearestEnemy();
+
+            if (enemy == null) return;
+
+            Vector2 target = enemy._collider.Center;
+            float dist = Vector2.Distance(target, _collider.Center);
+
+            if (dist < 300f)
+            {
+                Vector2 dir = LinePieceCollider.GetDirection(_collider.Center, target);
+                _weapon.Fire(_collider.Center, dir);
+            }
+
+            _weapon.UpdateCoolDown(gameTime);
+        }
+
+        private Mob GetNearestEnemy()
+        {
+            var enemies = GameManager.GetGameManager().Enemies;
+
+            Mob closest = null;
+            float best = float.MaxValue;
+
+            foreach (var e in enemies)
+            {
+                if (e == null) continue;
+
+                if (e is Zombie z && z.LastHealed < 3f) continue;
+
+                float d = Vector2.Distance(e._collider.Center, _collider.Center);
+
+                if (d < best)
+                {
+                    best = d;
+                    closest = e;
+                }
+            }
+
+            return closest;
+        }
+
+        // ===== ANIMATION STATE =====
         private void UpdateState()
         {
             if (_currentState == FriendlyState.Hit)
@@ -166,14 +281,13 @@ namespace TheCure
                 SetState(FriendlyState.Idle);
         }
 
-        private void SetState(FriendlyState newState)
+        private void SetState(FriendlyState state)
         {
-            if (_currentState == newState)
-                return;
+            if (_currentState == state) return;
 
-            _currentState = newState;
+            _currentState = state;
 
-            switch (newState)
+            switch (state)
             {
                 case FriendlyState.Run:
                     SwitchAnimation("Character-Unknown-Run", 6, 8f, true);
@@ -210,192 +324,15 @@ namespace TheCure
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            Color tint = Color.LightBlue;
-
-            Rectangle destinationRectangle = GetAnimatedSpriteDestinationRectangle();
-
-            DrawShadow(spriteBatch, destinationRectangle);
-
-            //_animatedSprite.Draw(spriteBatch, tint);
-            DrawAnimatedSprite(spriteBatch, Color.LightBlue, _facingDirection);
+            _animatedSprite?.Draw(
+                spriteBatch,
+                _collider.Center,
+                Color.LightBlue,
+                0,
+                2f
+            );
 
             base.Draw(gameTime, spriteBatch);
-        private Vector2 GetFormationTarget(GameManager gameManager, Vector2 anchorPosition)
-        {
-            int index = gameManager.Friendlies.IndexOf(this);
-            if (index < 0)
-            {
-                return anchorPosition;
-            }
-
-            int ringNumber = index / RingSize;
-            int indexInRing = index % RingSize;
-            float angleStep = MathHelper.TwoPi / RingSize;
-            float ringOffset = ringNumber % 2 == 0 ? 0f : angleStep * 0.5f;
-            float angle = indexInRing * angleStep + ringOffset - MathHelper.PiOver2;
-            float radius = BaseRadius + ringNumber * RingSpacing;
-
-            Vector2 slotOffset = new Vector2(
-                (float)Math.Cos(angle),
-                (float)Math.Sin(angle)
-            ) * radius;
-
-            return anchorPosition + slotOffset;
-        }
-
-        private Vector2 KeepPositionOutsidePlayer(Player player, Vector2 position, float padding)
-        {
-            Rectangle bounds = player.GetPosition();
-            float left = bounds.Left - padding;
-            float right = bounds.Right + padding;
-            float top = bounds.Top - padding;
-            float bottom = bounds.Bottom + padding;
-
-            if (position.X < left || position.X > right || position.Y < top || position.Y > bottom)
-            {
-                return position;
-            }
-
-            float distanceToLeft = position.X - left;
-            float distanceToRight = right - position.X;
-            float distanceToTop = position.Y - top;
-            float distanceToBottom = bottom - position.Y;
-
-            if (distanceToLeft <= distanceToRight && distanceToLeft <= distanceToTop && distanceToLeft <= distanceToBottom)
-            {
-                position.X = left;
-            }
-            else if (distanceToRight <= distanceToTop && distanceToRight <= distanceToBottom)
-            {
-                position.X = right;
-            }
-            else if (distanceToTop <= distanceToBottom)
-            {
-                position.Y = top;
-            }
-            else
-            {
-                position.Y = bottom;
-            }
-
-            return position;
-        }
-
-        private Vector2 GetFriendlySeparationOffset(GameManager gameManager)
-        {
-            Vector2 totalOffset = Vector2.Zero;
-            float desiredDistance = _radius * 2.15f;
-
-            foreach (var other in gameManager.Friendlies)
-            {
-                if (other == this)
-                    continue;
-
-                Vector2 away = _collider.Center - other._collider.Center;
-                if (away.LengthSquared() < 0.0001f)
-                {
-                    continue;
-                }
-
-                float distance = away.Length();
-                if (distance >= desiredDistance)
-                {
-                    continue;
-                }
-
-                away /= distance;
-                float strength = 1f - MathHelper.Clamp(distance / desiredDistance, 0f, 1f);
-                totalOffset += away * (strength * FriendlySeparationStrength);
-            }
-
-            return totalOffset;
-        }
-
-        private void MoveTowards(Vector2 targetPosition, float deltaTime)
-        {
-            Vector2 toTarget = targetPosition - _collider.Center;
-            float distance = toTarget.Length();
-            float maxSpeed = _speed;
-            Vector2 desiredVelocity = Vector2.Zero;
-
-            if (distance > 0.5f)
-            {
-                Vector2 direction = toTarget / distance;
-                float speedFactor = MathHelper.Clamp(distance / SlowRadius, 0f, 1f);
-                desiredVelocity = direction * (maxSpeed * speedFactor);
-            }
-
-            float steeringBlend = MathHelper.Clamp(SteeringResponsiveness * deltaTime, 0f, 1f);
-            _velocity = Vector2.Lerp(_velocity, desiredVelocity, steeringBlend);
-
-            if (_velocity.LengthSquared() > maxSpeed * maxSpeed)
-            {
-                _velocity = Vector2.Normalize(_velocity) * maxSpeed;
-            }
-
-            _collider.Center += _velocity * deltaTime;
-
-            if (distance < 2f && _velocity.LengthSquared() < 9f)
-            {
-                _velocity = Vector2.Zero;
-            }
-        }
-
-        private void Attack(GameTime gameTime)
-        {
-            if (_weapon.CanFire)
-            {
-                Vector2 nearestZombiePosition = GetNearestZombiePosition();
-
-                Vector2 aimDirection = LinePieceCollider.GetDirection(
-                    _collider.Center,
-                    nearestZombiePosition
-                );
-
-                float distance = Vector2.Distance(nearestZombiePosition, _collider.Center);
-
-                if (distance < 300f)
-                {
-                    Vector2 targetPosition = nearestEnemy._collider.Center;
-                    Vector2 aimDirection = LinePieceCollider.GetDirection(_collider.Center, targetPosition);
-                    float distance = Vector2.Distance(targetPosition, _collider.Center);
-
-                    if (distance < 300f)
-                    {
-                        _weapon.Fire(_collider.Center, aimDirection);
-                    }
-                }
-            }
-
-            _weapon.UpdateCoolDown(gameTime);
-        }
-
-        private Mob GetNearestEnemyPosition()
-        {
-            var enemies = GameManager.GetGameManager().Enemies;
-
-            Mob closest = null;
-            float closestDistance = float.MaxValue;
-
-            foreach (var enemy in enemies)
-            {
-                if (enemy == null) continue;
-
-                float distance = Vector2.Distance(zombie._collider.Center, _collider.Center);
-
-                var enemyLocation = enemy._collider.Center;
-                var distance = Vector2.Distance(enemyLocation, _collider.Center);
-                
-                if (distance < closestDistance)
-                {
-                    closest = enemy;
-                    closestDistance = distance;
-                }
-            }
-
-            return closest == null
-                ? Vector2.Zero
-                : closest._collider.Center;
         }
     }
 }

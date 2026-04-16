@@ -20,7 +20,7 @@ namespace TheCure
         private List<GameObject> _gameObjects;
         private List<GameObject> _toBeRemoved;
         private List<GameObject> _toBeAdded;
-        public ContentManager Content;
+        public ContentManager _content;
         private Texture2D _backgroundTexture;
         private Texture2D _backgroundPauseTexture;
         private Texture2D _backgroundGameOverTexture;
@@ -97,7 +97,7 @@ namespace TheCure
         public void Initialize(ContentManager content, Game game, Player player)
         {
             Game = game;
-            Content = content;
+            _content = content;
             Player = player;
             _camera = new Camera(Game.GraphicsDevice.Viewport);
 
@@ -334,7 +334,7 @@ namespace TheCure
                         Enemies.Add(brute);
                     }
 
-                    gameObject.Load(Content);
+                    gameObject.Load(_content);
                     _gameObjects.Add(gameObject);
                 }
 
@@ -422,7 +422,7 @@ namespace TheCure
         private void SpawnZombie()
         {
             var newZombie = new Zombie();
-            newZombie.Load(Content);
+            newZombie.Load(_content);
             AddGameObject(newZombie);
         }
 
@@ -440,7 +440,7 @@ namespace TheCure
             _supplySpawnTimer = 0f;
 
             var newSupply = new Supply();
-            newSupply.Load(Content);
+            newSupply.Load(_content);
             AddGameObject(newSupply);
             newSupply.RandomMove();
         }
@@ -714,9 +714,9 @@ namespace TheCure
         {
             var wall = new Wall(bounds);
 
-            if (Content != null && _backgroundTexture != null)
+            if (_content != null && _backgroundTexture != null)
             {
-                wall.Load(Content);
+                wall.Load(_content);
             }
 
             _gameObjects.Add(wall);
