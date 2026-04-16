@@ -187,6 +187,8 @@ namespace TheCure
             _supplySpawnTimer = 0f;
             _currentSpawnInterval = _initialSpawnInterval;
             _enemiesToSpawn = 1;
+            
+            HUD.Reset();
 
             AddWorldWalls();
             _gameObjects.Add(Player);

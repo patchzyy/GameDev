@@ -1,11 +1,9 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using TheCure.Collision;
 using TheCure.Weapons;
-using TheCure.PlayerActions;
 
 namespace TheCure
 {
@@ -135,14 +133,6 @@ namespace TheCure
                     _currentWeapon = _bulletWeapon;
                     System.Diagnostics.Debug.WriteLine("Wapen-buff verlopen. Teruggeschakeld naar BulletWeapon.");
                 }
-            }
-
-            var hud = GameManager.GetGameManager().HUD;
-            var dash = hud?.GetDash();
-
-            if (dash != null)
-            {
-                dash.UpdateDash(gameTime, GameManager.GetGameManager());
             }
 
             _previousBounds = _rectangleCollider.shape;

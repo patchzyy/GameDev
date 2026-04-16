@@ -1,4 +1,3 @@
-using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -54,6 +53,11 @@ namespace TheCure
 
             DrawStatsPanel(spriteBatch, gameManager);
             DrawScorePopups(spriteBatch, gameManager);
+        }
+
+        public void Reset()
+        {
+            _playerInteractionsHUD.Reset();
         }
 
         private void DrawHealthBar(SpriteBatch spriteBatch, GameManager gameManager)

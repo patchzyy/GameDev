@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
-using TheCure.Collision;
 using TheCure.Mobs;
 
 namespace TheCure.PlayerActions;
@@ -52,10 +51,13 @@ public class Dash : PlayerAction
         System.Diagnostics.Debug.WriteLine($"Dash started! Direction: {_dashDirection}");
     }
 
-    public void UpdateDash(GameTime gameTime, GameManager gameManager)
+    public override void Update(GameTime gameTime)
     {
+        base.Update(gameTime);
         if (!_isDashing)
             return;
+
+        var gameManager = GameManager.GetGameManager();
 
         Player player = gameManager.Player;
         if (player == null)
@@ -92,7 +94,7 @@ public class Dash : PlayerAction
             if (player.CheckCollision(enemy))
             {
                 Vector2 knockBackDir = enemy.GetCollider().GetBoundingBox().Center.ToVector2() -
-                                      player.GetPosition().Center.ToVector2();
+                                       player.GetPosition().Center.ToVector2();
 
                 enemy.ApplyKnockback(knockBackDir, KnockBackForce, KnockBackDuration);
 
