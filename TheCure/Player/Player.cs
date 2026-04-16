@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -21,13 +20,8 @@ namespace TheCure
         internal Vector2 _velocity;
         internal float _rotation;
         private Rectangle _previousBounds;
-
-        internal BaseWeapon _currentWeapon;
-        internal readonly SingleBulletWeapon _bulletWeapon = new SingleBulletWeapon();
-
-        internal float _weaponBuffTimer = 0f;
-
-        public WeaponMode CurrentWeaponMode = WeaponMode.Shoot;
+        
+        public WeaponsSystem WeaponsSystem = new WeaponsSystem();
 
         private float _hitTimer = 0f;
 
@@ -46,7 +40,6 @@ namespace TheCure
 
             _velocity = Vector2.Zero;
             _rotation = 0f;
-            _currentWeapon = _bulletWeapon;
             _previousBounds = _rectangleCollider.shape;
         }
 
@@ -74,9 +67,6 @@ namespace TheCure
         public override void HandleInput(InputManager inputManager)
         {
             base.HandleInput(inputManager);
-
-            Point mousePosition = inputManager.CurrentMouseState.Position;
-            Vector2 worldMousePosition = GameManager.GetGameManager().ScreenToWorld(mousePosition.ToVector2());
 
             if (inputManager.CurrentMouseState.LeftButton == ButtonState.Pressed)
             {
@@ -121,7 +111,13 @@ namespace TheCure
                 _rotation = LinePieceCollider.GetAngle(moveDirection);
             }
 
-            _velocity = moveDirection * MoveSpeed;
+            var hud = GameManager.GetGameManager().HUD;
+            var dash = hud?.GetDash();
+
+            if (dash == null || !dash.IsDashing)
+            {
+                _velocity = moveDirection * MoveSpeed;
+            }
         }
 
         public override void Update(GameTime gameTime)
@@ -194,31 +190,29 @@ namespace TheCure
             }
         }
 
+        public override void LoseHealth(int amount)
+        {
+            var hud = GameManager.GetGameManager().HUD;
+            var dash = hud?.GetDash();
+
+            if (dash != null && dash.IsDashing)
+            {
+                System.Diagnostics.Debug.WriteLine("Player is protected by dash - no damage taken!");
+                return;
+            }
+
+            base.LoseHealth(amount);
+        }
+
         public void Reset()
         {
             _healthBar.ResetHealth();
-            _currentWeapon = _bulletWeapon;
-            _weaponBuffTimer = 0f;
+            WeaponsSystem.SetShootWeapon(ShootWeapons.SingleBullet);
             _rectangleCollider.shape.Location =
                 new Point(GameManager.GetGameManager().Game.GraphicsDevice.Viewport.Width / 2,
                     GameManager.GetGameManager().Game.GraphicsDevice.Viewport.Height / 2);
             _velocity = Vector2.Zero;
             _rotation = 0f;
-        }
-
-        public void SetWeapon(string weaponName)
-        {
-            switch (weaponName)
-            {
-                default:
-                    _currentWeapon = _bulletWeapon;
-                    break;
-            }
-        }
-
-        public void SetWeaponBuffTimer(float time)
-        {
-            _weaponBuffTimer = time;
         }
 
         public Rectangle GetPosition()

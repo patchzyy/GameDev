@@ -6,6 +6,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using TheCure.Weapons;
+using TheCure.Mobs;
 using TheCure.World;
 
 namespace TheCure
@@ -31,7 +33,6 @@ namespace TheCure
         private Button _pauseQuitButton;
         private Button _restartButton;
         private Camera _camera;
-        private HUD _hud;
         private int _score = 0;
         private List<ScorePopup> _scorePopups = new List<ScorePopup>();
 
@@ -43,6 +44,8 @@ namespace TheCure
 
         private int _enemiesToSpawn = 1;
         private int _maxEnemiesOnScreen;
+        private int _maxBrutesOnScreen;
+        private float _bruteSpawnChance;
 
         private float _supplySpawnTimer = 0f;
         private float _supplySpawnInterval = 15.0f;
@@ -61,7 +64,8 @@ namespace TheCure
         public Game Game { get; private set; }
         public Texture2D DummyTexture { get; private set; }
         public GameState CurrentGameState { get; private set; }
-        public List<Zombie> Zombies;
+        public HUD HUD { get; private set; }
+        public List<Mob> Enemies;
 
 
         public List<Friendly> Friendlies { get; private set; } = new List<Friendly>();
@@ -81,7 +85,7 @@ namespace TheCure
             _gameObjects = new List<GameObject>();
             _toBeRemoved = new List<GameObject>();
             _toBeAdded = new List<GameObject>();
-            Zombies = new List<Zombie>();
+            Enemies = new List<Mob>();
 
             InputManager = new InputManager();
             RNG = new Random();
@@ -172,8 +176,7 @@ namespace TheCure
             scoreManager.Reset();
 
             Player.GainHealth((int)Player.MaxHealth);
-            Player._currentWeapon = Player._bulletWeapon;
-            Player._weaponBuffTimer = 0f;
+            Player.WeaponsSystem = new WeaponsSystem();
             Player._rectangleCollider.shape.Location = new Point(Game.GraphicsDevice.Viewport.Width / 2,
                 Game.GraphicsDevice.Viewport.Height / 2);
             Player._velocity = Vector2.Zero;
@@ -184,13 +187,15 @@ namespace TheCure
             _supplySpawnTimer = 0f;
             _currentSpawnInterval = _initialSpawnInterval;
             _enemiesToSpawn = 1;
+            
+            HUD.Reset();
 
             AddWorldWalls();
             _gameObjects.Add(Player);
 
             for (var i = 0; i < 1; i++)
             {
-                SpawnAlien();
+                SpawnZombie();
             }
         }
 
@@ -207,7 +212,7 @@ namespace TheCure
             _backgroundGameOverTexture = content.Load<Texture2D>("GameOverBackground");
             _titleFont = content.Load<SpriteFont>("TitleFont");
             _buttonFont = content.Load<SpriteFont>("ButtonFont");
-            _hud = new HUD();
+            HUD = new HUD();
             scoreManager = new ScoreManager();
 
             foreach (var gameObject in _gameObjects)
@@ -215,7 +220,7 @@ namespace TheCure
                 gameObject.Load(content);
             }
 
-            _hud.Load(content);
+            HUD.Load(content);
         }
 
         public void HandleInput(InputManager inputManager)
@@ -309,15 +314,24 @@ namespace TheCure
                 }
 
                 _camera.Update(Player.GetPosition().Center.ToVector2(), GetWorldBounds());
-                _hud.Update(gameTime);
+                HUD.Update(gameTime);
 
                 CheckCollision();
 
                 foreach (var gameObject in _toBeAdded)
                 {
-                    if (gameObject is Zombie)
+                    gameObject.Load(_content);
+
+                    if (gameObject is Zombie zombie)
                     {
-                        Zombies.Add(gameObject as Zombie);
+                        zombie.RandomMove();
+                        Enemies.Add(zombie);
+                    }
+
+                    if (gameObject is Brute brute)
+                    {
+                        brute.RandomMove();
+                        Enemies.Add(brute);
                     }
 
                     gameObject.Load(Content);
@@ -328,9 +342,9 @@ namespace TheCure
 
                 foreach (var gameObject in _toBeRemoved)
                 {
-                    if (gameObject is Zombie)
+                    if (gameObject is Mob)
                     {
-                        Zombies.Remove(gameObject as Zombie);
+                        Enemies.Remove(gameObject as Mob);
                     }
 
 
@@ -350,21 +364,27 @@ namespace TheCure
         {
             if (_gameTimeElapsed < 60f) // early game
             {
-                _currentSpawnInterval = 3.0f;
-                _enemiesToSpawn = 1;
-                _maxEnemiesOnScreen = 20;
+                _currentSpawnInterval = Settings.GetValue(SettingsConst.SPAWNING.ZOMBIE_SPAWN_INTERVAL);
+                _enemiesToSpawn = Settings.GetValue(SettingsConst.SPAWNING.ENEMIES_PER_WAVE);
+                _maxEnemiesOnScreen = Settings.GetValue(SettingsConst.SPAWNING.MAX_ENEMIES_ON_SCREEN);
+                _maxBrutesOnScreen = Settings.GetValue(SettingsConst.SPAWNING.MAX_BRUTES);
+                _bruteSpawnChance = Settings.GetValue(SettingsConst.SPAWNING.BRUTE_SPAWN_CHANCE);
             }
             else if (_gameTimeElapsed < 180f) // mid game
             {
                 _currentSpawnInterval = 2.0f;
                 _enemiesToSpawn = 2;
                 _maxEnemiesOnScreen = 35;
+                _maxBrutesOnScreen = 2;
+                _bruteSpawnChance = 0.15f;
             }
             else // late game
             {
                 _currentSpawnInterval = 1.2f;
                 _enemiesToSpawn = 3;
                 _maxEnemiesOnScreen = 50;
+                _maxBrutesOnScreen = 5;
+                _bruteSpawnChance = 0.20f;
             }
         }
 
@@ -372,25 +392,44 @@ namespace TheCure
         {
             if (_spawnTimer < _currentSpawnInterval)
                 return;
+
             _spawnTimer = 0f;
 
-            var currentAlienCount = _gameObjects.OfType<Zombie>().Count();
+            int zombieCount = _gameObjects.OfType<Zombie>().Count();
+            int bruteCount = _gameObjects.OfType<Brute>().Count();
+            int totalEnemies = zombieCount + bruteCount;
 
-            if (currentAlienCount >= _maxEnemiesOnScreen)
+            if (totalEnemies >= _maxEnemiesOnScreen)
                 return;
 
-            _enemiesToSpawn = Math.Min(_enemiesToSpawn, _maxEnemiesOnScreen - currentAlienCount);
+            _enemiesToSpawn = Math.Min(_enemiesToSpawn, _maxEnemiesOnScreen - totalEnemies);
 
             for (var i = 0; i < _enemiesToSpawn; i++)
-                SpawnAlien();
+            {
+                if (bruteCount < _maxBrutesOnScreen && RNG.NextDouble() < _bruteSpawnChance)
+                {
+                    SpawnBrute();
+                    bruteCount++;
+                }
+                else
+                {
+                    SpawnZombie();
+                    zombieCount++;
+                }
+            }
         }
 
-        private void SpawnAlien()
+        private void SpawnZombie()
         {
             var newZombie = new Zombie();
             newZombie.Load(Content);
             AddGameObject(newZombie);
-            newZombie.RandomMove();
+        }
+
+        private void SpawnBrute()
+        {
+            Brute brute = new Brute();
+            AddGameObject(brute);
         }
 
         private void SpawnSupply()
@@ -505,7 +544,7 @@ namespace TheCure
             if (CurrentGameState == GameState.Playing || CurrentGameState == GameState.Paused ||
                 CurrentGameState == GameState.GameOver)
             {
-                _hud.Draw(spriteBatch, this);
+                HUD.Draw(spriteBatch, this);
             }
 
             spriteBatch.End();
@@ -576,23 +615,35 @@ namespace TheCure
             var blockedViewBounds = _camera.GetViewBounds();
             blockedViewBounds.Inflate(margin, margin);
 
+            Vector2 playerPos = Player.GetPosition().Center.ToVector2();
+            float minDistanceFromPlayer = margin;
+
             // todo: check of dit... niet random kan, heb dit van de les lol
-            for (var i = 0; i < 7; i++)
+            for (var i = 0; i < 20; i++)
             {
                 var candidate = new Vector2(
                     RNG.Next(safePlayableBounds.Left, safePlayableBounds.Right),
                     RNG.Next(safePlayableBounds.Top, safePlayableBounds.Bottom));
 
-                if (!blockedViewBounds.Contains(candidate))
-                    return candidate;
+                if (blockedViewBounds.Contains(candidate))
+                    continue;
+
+                if (Vector2.Distance(candidate, playerPos) < minDistanceFromPlayer)
+                    continue;
+
+                return candidate;
             }
 
             Vector2[] fallbackPoints =
             {
-                new(safePlayableBounds.Left, safePlayableBounds.Top),
-                new(safePlayableBounds.Right - 1, safePlayableBounds.Top),
-                new(safePlayableBounds.Left, safePlayableBounds.Bottom - 1),
-                new(safePlayableBounds.Right - 1, safePlayableBounds.Bottom - 1)
+                new (safePlayableBounds.Left, safePlayableBounds.Top),
+                new (safePlayableBounds.Right - 1, safePlayableBounds.Top),
+                new (safePlayableBounds.Left, safePlayableBounds.Bottom - 1),
+                new (safePlayableBounds.Right - 1, safePlayableBounds.Bottom - 1),
+                new (safePlayableBounds.Center.X, safePlayableBounds.Top),
+                new (safePlayableBounds.Center.X, safePlayableBounds.Bottom - 1),
+                new (safePlayableBounds.Left, safePlayableBounds.Center.Y),
+                new (safePlayableBounds.Right - 1, safePlayableBounds.Center.Y)
             };
 
             var bestPoint = fallbackPoints[0];
@@ -601,8 +652,13 @@ namespace TheCure
             // verste hoek
             foreach (var point in fallbackPoints)
             {
-                var distance = Vector2.DistanceSquared(point, blockedViewBounds.Center.ToVector2());
+                if (blockedViewBounds.Contains(point))
+                    continue;
 
+                if (Vector2.Distance(point, playerPos) < minDistanceFromPlayer)
+                    continue;
+
+                var distance = Vector2.DistanceSquared(point, playerPos);
                 if (distance > bestDistance)
                 {
                     bestDistance = distance;

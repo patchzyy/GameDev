@@ -20,7 +20,11 @@ public class Mob : GameObject
     protected readonly bool _isLooping;
     protected readonly float _scale;
 
-    public Mob(string textureName, float speed, float startHealth, float maxHealth, int frameCount = 1, float frameRate = 1f, bool isLooping = true, float scale = 1f)
+    protected Vector2 _knockbackVelocity = Vector2.Zero;
+    protected float _knockbackDuration = 0f;
+
+    public Mob(string textureName, float speed, float startHealth, float maxHealth, int frameCount = 1,
+        float frameRate = 1f, bool isLooping = true, float scale = 1f)
     {
         _textureName = textureName;
         _speed = speed;
@@ -38,7 +42,8 @@ public class Mob : GameObject
 
         int frameWidth = _texture.Width / _frameCount;
 
-        _animatedSprite = new AnimatedSprite(_texture, frameWidth, _texture.Height, _frameCount, _frameRate, _isLooping);
+        _animatedSprite =
+            new AnimatedSprite(_texture, frameWidth, _texture.Height, _frameCount, _frameRate, _isLooping);
         _font = content.Load<SpriteFont>("HudFont");
         _collider = new CircleCollider(Vector2.Zero, _animatedSprite.FrameWidth * _scale / 2f);
 
@@ -50,6 +55,23 @@ public class Mob : GameObject
         _animatedSprite?.Update(gameTime);
 
         base.Update(gameTime);
+    }
+
+    public void ApplyKnockback(Vector2 direction, float force, float duration)
+    {
+        direction.Normalize();
+        _knockbackVelocity = direction * force;
+        _knockbackDuration = duration;
+    }
+
+    protected void UpdateKnockback(float deltaTime, float knockbackDamping = 0.85f)
+    {
+        if (_knockbackDuration > 0f)
+        {
+            _collider.Center += _knockbackVelocity * deltaTime;
+            _knockbackVelocity *= knockbackDamping;
+            _knockbackDuration -= deltaTime;
+        }
     }
 
     protected Rectangle GetAnimatedSpriteDestinationRectangle()
@@ -67,7 +89,8 @@ public class Mob : GameObject
         );
     }
 
-    protected void DrawShadow(SpriteBatch spriteBatch, Rectangle destRect, float coreAlpha = 0.14f, float softAlpha = 0.08f)
+    protected void DrawShadow(SpriteBatch spriteBatch, Rectangle destRect, float coreAlpha = 0.14f,
+        float softAlpha = 0.08f)
     {
         Rectangle shadowCore = new Rectangle(
             destRect.X + destRect.Width / 8,

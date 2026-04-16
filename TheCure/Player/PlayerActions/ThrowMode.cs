@@ -1,5 +1,5 @@
 using Microsoft.Xna.Framework;
-using TheCure.Weapons;
+using TheCure.Weapons.Throw;
 
 namespace TheCure.PlayerActions;
 
@@ -12,6 +12,6 @@ public class ThrowMode : PlayerAction
 
     protected override void OnExecute(GameTime gameTime, GameManager gameManager)
     {
-        gameManager.Player.CurrentWeaponMode = WeaponMode.Throw;
+        gameManager.Player.WeaponsSystem.SetThrowWeapon(ThrowWeapons.HealBomb);
     }
 }

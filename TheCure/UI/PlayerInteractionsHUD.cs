@@ -16,6 +16,7 @@ public class PlayerInteractionsHUD
     private List<Keys> _actionKeys;
     private List<PlayerAction> _actions;
     private List<Texture2D> _icons;
+    private Dash _dash;
 
     public PlayerInteractionsHUD(SpriteFont font)
     {
@@ -31,11 +32,12 @@ public class PlayerInteractionsHUD
             Settings.GetValue(SettingsConst.KEYBINDS.ACTION_6),
         };
 
+        _dash = new Dash();
         _actions = new List<PlayerAction>
         {
             new ShootMode(),
             new ThrowMode(),
-            new Dash(),
+            _dash,
             new Build(),
             new Command(),
             new Boost(),
@@ -55,6 +57,14 @@ public class PlayerInteractionsHUD
         };
     }
 
+    public void Reset()
+    {
+        foreach (var action in _actions)
+        {
+            action.ResetCooldown();
+        }
+    }
+
 
     public void Update(GameTime gameTime)
     {
@@ -70,7 +80,14 @@ public class PlayerInteractionsHUD
                 break;
             }
         }
+
+        foreach (var action in _actions)
+        {
+            action.Update(gameTime);
+        }
     }
+
+    public Dash GetDash() => _dash;
 
     public void Draw(SpriteBatch spriteBatch, GameManager gameManager)
     {
@@ -150,8 +167,7 @@ public class PlayerInteractionsHUD
     private void CooldownPanel(SpriteBatch spriteBatch, GameManager gameManager, int x, int y, int panelWidth,
         int panelHeight, PlayerAction action)
     {
-        
-        float remaining = action.GetRemainingCooldown(gameManager);
+        float remaining = action.GetRemainingCooldown();
         if (remaining > 0)
         {
             var panelRect = new Rectangle(

@@ -45,8 +45,6 @@ namespace TheCure
             base.Load(content);
 
             SetHealthBar(_texture, _maxHealth, _startHealth, Destroy, BecomeFriendly);
-
-            RandomMove();
         }
 
         public override void Update(GameTime gameTime)
@@ -54,8 +52,7 @@ namespace TheCure
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             _previousCenter = _collider.Center;
-
-            // 💀 Death animatie afspelen
+            
             if (_isDying)
             {
                 _animatedSprite.Update(gameTime);

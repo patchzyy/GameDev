@@ -1,8 +1,8 @@
-using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using TheCure.PlayerActions;
 
 namespace TheCure
 {
@@ -34,6 +34,8 @@ namespace TheCure
             _playerInteractionsHUD.Update(gameTime);
         }
 
+        public Dash GetDash() => _playerInteractionsHUD.GetDash();
+
         public void Draw(SpriteBatch spriteBatch, GameManager gameManager)
         {
             _playerInteractionsHUD.Draw(spriteBatch, gameManager);
@@ -51,6 +53,11 @@ namespace TheCure
 
             DrawStatsPanel(spriteBatch, gameManager);
             DrawScorePopups(spriteBatch, gameManager);
+        }
+
+        public void Reset()
+        {
+            _playerInteractionsHUD.Reset();
         }
 
         private void DrawHealthBar(SpriteBatch spriteBatch, GameManager gameManager)

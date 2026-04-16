@@ -104,26 +104,31 @@ namespace TheCure
         }
 
         //todo: kijk hier extra naar voor de Friendly collision bug die we hebben, Ik weet niet of het hieraan ligt of aan de friendly logica zelf.
-        public void ResolveCircleCollision(CircleCollider mover, Vector2 previousCenter)
+        public Vector2 ResolveCircleCollision(CircleCollider mover, Vector2 previousCenter)
         {
             var wall = _rectangleCollider.shape;
             var currentCenter = mover.Center;
+            Vector2 collisionNormal;
 
             if (previousCenter.Y + mover.Radius <= wall.Top)
             {
                 currentCenter.Y = wall.Top - mover.Radius;
+                collisionNormal = -Vector2.UnitY;
             }
             else if (previousCenter.Y - mover.Radius >= wall.Bottom)
             {
                 currentCenter.Y = wall.Bottom + mover.Radius;
+                collisionNormal = Vector2.UnitY;
             }
             else if (previousCenter.X + mover.Radius <= wall.Left)
             {
                 currentCenter.X = wall.Left - mover.Radius;
+                collisionNormal = -Vector2.UnitX;
             }
             else if (previousCenter.X - mover.Radius >= wall.Right)
             {
                 currentCenter.X = wall.Right + mover.Radius;
+                collisionNormal = Vector2.UnitX;
             }
             else
             {
@@ -131,27 +136,30 @@ namespace TheCure
                 var overlapRight = wall.Right - (currentCenter.X - mover.Radius);
                 var overlapTop = currentCenter.Y + mover.Radius - wall.Top;
                 var overlapBottom = wall.Bottom - (currentCenter.Y - mover.Radius);
-                var smallestOverlap = Math.Min(Math.Min(overlapLeft, overlapRight), Math.Min(overlapTop, overlapBottom));
-
-                if (smallestOverlap == overlapLeft)
+                if (overlapLeft <= overlapRight && overlapLeft <= overlapTop && overlapLeft <= overlapBottom)
                 {
                     currentCenter.X = wall.Left - mover.Radius;
+                    collisionNormal = -Vector2.UnitX;
                 }
-                else if (smallestOverlap == overlapRight)
+                else if (overlapRight <= overlapTop && overlapRight <= overlapBottom)
                 {
                     currentCenter.X = wall.Right + mover.Radius;
+                    collisionNormal = Vector2.UnitX;
                 }
-                else if (smallestOverlap == overlapTop)
+                else if (overlapTop <= overlapBottom)
                 {
                     currentCenter.Y = wall.Top - mover.Radius;
+                    collisionNormal = -Vector2.UnitY;
                 }
                 else
                 {
                     currentCenter.Y = wall.Bottom + mover.Radius;
+                    collisionNormal = Vector2.UnitY;
                 }
             }
 
             mover.Center = currentCenter;
+            return collisionNormal;
         }
     }
 }
