@@ -10,7 +10,9 @@ namespace TheCure
     {
         protected Collider collider;
         protected HealthBar _healthBar;
-
+        
+        public float LastHealed;
+        
         public void SetCollider(Collider collider)
         {
             this.collider = collider;
@@ -90,6 +92,7 @@ namespace TheCure
             if (_healthBar != null)
             {
                 _healthBar.IncreaseHealth(amount);
+                LastHealed = 0f;
             }
             else
             {

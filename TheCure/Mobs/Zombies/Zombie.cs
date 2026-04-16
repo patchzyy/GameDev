@@ -20,7 +20,6 @@ namespace TheCure
         private Vector2 _previousCenter;
         private Vector2 _facingDirection = Vector2.UnitX;
 
-        public float LastHealed;
 
         public Zombie() : base(
             textureName: "Zombie",

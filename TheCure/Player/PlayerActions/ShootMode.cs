@@ -12,6 +12,6 @@ public class ShootMode : PlayerAction
 
     protected override void OnExecute(GameTime gameTime, GameManager gameManager)
     {
-        gameManager.Player.CurrentWeaponMode = WeaponMode.Shoot;
+        gameManager.Player.WeaponsSystem.SetShootWeapon(ShootWeapons.SingleBullet);
     }
 }

@@ -286,7 +286,7 @@ namespace TheCure
 
                     if (distance < 300f)
                     {
-                        _weapon.Fire(_collider.Center, aimDirection, this);
+                        _weapon.Fire(_collider.Center, aimDirection);
                     }
                 }
             }
