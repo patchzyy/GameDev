@@ -14,6 +14,11 @@ public class WeaponsSystem
 
     private readonly SingleBulletWeapon _singleBulletWeapon = new SingleBulletWeapon();
 
+    public WeaponsSystem()
+    {
+        SetShootWeapon(ShootWeapons.SingleBullet);
+    }
+
     public void Update(GameTime gameTime)
     {
         CurrentWeapon?.UpdateCoolDown(gameTime);
