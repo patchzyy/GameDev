@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using TheCure.Weapons;
 using TheCure.Mobs;
 using TheCure.World;
 
@@ -32,7 +33,6 @@ namespace TheCure
         private Button _pauseQuitButton;
         private Button _restartButton;
         private Camera _camera;
-        private int _score = 0;
         private List<ScorePopup> _scorePopups = new List<ScorePopup>();
 
         private float _gameTimeElapsed = 0f;
@@ -175,8 +175,7 @@ namespace TheCure
             scoreManager.Reset();
 
             Player.GainHealth((int)Player.MaxHealth);
-            Player._currentWeapon = Player._bulletWeapon;
-            Player._weaponBuffTimer = 0f;
+            Player.WeaponsSystem = new WeaponsSystem();
             Player._rectangleCollider.shape.Location = new Point(Game.GraphicsDevice.Viewport.Width / 2,
                 Game.GraphicsDevice.Viewport.Height / 2);
             Player._velocity = Vector2.Zero;
@@ -187,7 +186,7 @@ namespace TheCure
             _supplySpawnTimer = 0f;
             _currentSpawnInterval = _initialSpawnInterval;
             _enemiesToSpawn = 1;
-            
+
             HUD.Reset();
 
             AddWorldWalls();
@@ -523,9 +522,8 @@ namespace TheCure
 
                 spriteBatch.DrawString(_titleFont, gameOverText, gameOverTextPosition, Color.Red);
 
-                currentY += gameOverTextSize.Y + spacing;
 
-                string scoreText = $"Eindscore: {_score}";
+                string scoreText = $"Eindscore: {GetScore()}";
                 Vector2 scoreTextSize = _titleFont.MeasureString(scoreText);
                 float scale = 0.5f;
                 Vector2 scoreTextPosition =
@@ -634,14 +632,14 @@ namespace TheCure
 
             Vector2[] fallbackPoints =
             {
-                new (safePlayableBounds.Left, safePlayableBounds.Top),
-                new (safePlayableBounds.Right - 1, safePlayableBounds.Top),
-                new (safePlayableBounds.Left, safePlayableBounds.Bottom - 1),
-                new (safePlayableBounds.Right - 1, safePlayableBounds.Bottom - 1),
-                new (safePlayableBounds.Center.X, safePlayableBounds.Top),
-                new (safePlayableBounds.Center.X, safePlayableBounds.Bottom - 1),
-                new (safePlayableBounds.Left, safePlayableBounds.Center.Y),
-                new (safePlayableBounds.Right - 1, safePlayableBounds.Center.Y)
+                new(safePlayableBounds.Left, safePlayableBounds.Top),
+                new(safePlayableBounds.Right - 1, safePlayableBounds.Top),
+                new(safePlayableBounds.Left, safePlayableBounds.Bottom - 1),
+                new(safePlayableBounds.Right - 1, safePlayableBounds.Bottom - 1),
+                new(safePlayableBounds.Center.X, safePlayableBounds.Top),
+                new(safePlayableBounds.Center.X, safePlayableBounds.Bottom - 1),
+                new(safePlayableBounds.Left, safePlayableBounds.Center.Y),
+                new(safePlayableBounds.Right - 1, safePlayableBounds.Center.Y)
             };
 
             var bestPoint = fallbackPoints[0];

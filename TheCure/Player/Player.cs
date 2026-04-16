@@ -20,13 +20,8 @@ namespace TheCure
         internal Vector2 _velocity;
         internal float _rotation;
         private Rectangle _previousBounds;
-
-        internal BaseWeapon _currentWeapon;
-        internal readonly SingleBulletWeapon _bulletWeapon = new SingleBulletWeapon();
-
-        internal float _weaponBuffTimer = 0f;
-
-        public WeaponMode CurrentWeaponMode = WeaponMode.Shoot;
+        
+        public WeaponsSystem WeaponsSystem = new WeaponsSystem();
 
         public Player(Point Position)
         {
@@ -39,7 +34,6 @@ namespace TheCure
 
             _velocity = Vector2.Zero;
             _rotation = 0f;
-            _currentWeapon = _bulletWeapon;
             _previousBounds = _rectangleCollider.shape;
         }
 
@@ -62,22 +56,9 @@ namespace TheCure
         {
             base.HandleInput(inputManager);
 
-            Point mousePosition = inputManager.CurrentMouseState.Position;
-            Vector2 worldMousePosition = GameManager.GetGameManager().ScreenToWorld(mousePosition.ToVector2());
-
             if (inputManager.CurrentMouseState.LeftButton == ButtonState.Pressed)
             {
-                if (_currentWeapon != null && _currentWeapon.CanFire)
-                {
-                    Vector2 aimDirection =
-                        LinePieceCollider.GetDirection(GetPosition().Center.ToVector2(), worldMousePosition);
-
-                    Texture2D currentTurretTexture = GetCurrentTurretTexture();
-                    Vector2 turretExit = _rectangleCollider.shape.Center.ToVector2() +
-                                         aimDirection * (currentTurretTexture.Height / 2f);
-
-                    _currentWeapon.Fire(turretExit, aimDirection, this);
-                }
+                WeaponsSystem.Fire(inputManager);
             }
 
             KeyboardState keyState = Keyboard.GetState();
@@ -122,18 +103,7 @@ namespace TheCure
         {
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            _currentWeapon?.UpdateCoolDown(gameTime);
-
-            if (_weaponBuffTimer > 0)
-            {
-                _weaponBuffTimer -= deltaTime;
-
-                if (_weaponBuffTimer <= 0)
-                {
-                    _currentWeapon = _bulletWeapon;
-                    System.Diagnostics.Debug.WriteLine("Wapen-buff verlopen. Teruggeschakeld naar BulletWeapon.");
-                }
-            }
+            WeaponsSystem.Update(gameTime);
 
             _previousBounds = _rectangleCollider.shape;
             _rectangleCollider.shape.X += (int)(_velocity.X * deltaTime);
@@ -214,28 +184,12 @@ namespace TheCure
         public void Reset()
         {
             _healthBar.ResetHealth();
-            _currentWeapon = _bulletWeapon;
-            _weaponBuffTimer = 0f;
+            WeaponsSystem.SetShootWeapon(ShootWeapons.SingleBullet);
             _rectangleCollider.shape.Location =
                 new Point(GameManager.GetGameManager().Game.GraphicsDevice.Viewport.Width / 2,
                     GameManager.GetGameManager().Game.GraphicsDevice.Viewport.Height / 2);
             _velocity = Vector2.Zero;
             _rotation = 0f;
-        }
-
-        public void SetWeapon(string weaponName)
-        {
-            switch (weaponName)
-            {
-                default:
-                    _currentWeapon = _bulletWeapon;
-                    break;
-            }
-        }
-
-        public void SetWeaponBuffTimer(float time)
-        {
-            _weaponBuffTimer = time;
         }
 
         public Rectangle GetPosition()

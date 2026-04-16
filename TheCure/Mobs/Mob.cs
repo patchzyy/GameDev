@@ -23,7 +23,8 @@ public class Mob : GameObject
     protected Vector2 _knockbackVelocity = Vector2.Zero;
     protected float _knockbackDuration = 0f;
 
-    public Mob(string textureName, float speed, float startHealth, float maxHealth, int frameCount = 1, float frameRate = 1f, bool isLooping = true, float scale = 1f)
+    public Mob(string textureName, float speed, float startHealth, float maxHealth, int frameCount = 1,
+        float frameRate = 1f, bool isLooping = true, float scale = 1f)
     {
         _textureName = textureName;
         _speed = speed;
@@ -41,7 +42,8 @@ public class Mob : GameObject
 
         int frameWidth = _texture.Width / _frameCount;
 
-        _animatedSprite = new AnimatedSprite(_texture, frameWidth, _texture.Height, _frameCount, _frameRate, _isLooping);
+        _animatedSprite =
+            new AnimatedSprite(_texture, frameWidth, _texture.Height, _frameCount, _frameRate, _isLooping);
         _font = content.Load<SpriteFont>("HudFont");
         _collider = new CircleCollider(Vector2.Zero, _animatedSprite.FrameWidth * _scale / 2f);
 
@@ -85,7 +87,8 @@ public class Mob : GameObject
         );
     }
 
-    protected void DrawShadow(SpriteBatch spriteBatch, Rectangle destRect, float coreAlpha = 0.14f, float softAlpha = 0.08f)
+    protected void DrawShadow(SpriteBatch spriteBatch, Rectangle destRect, float coreAlpha = 0.14f,
+        float softAlpha = 0.08f)
     {
         Rectangle shadowCore = new Rectangle(
             destRect.X + destRect.Width / 8,
