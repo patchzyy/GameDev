@@ -57,6 +57,14 @@ public class PlayerInteractionsHUD
         };
     }
 
+    public void Reset()
+    {
+        foreach (var action in _actions)
+        {
+            action.ResetCooldown();
+        }
+    }
+
 
     public void Update(GameTime gameTime)
     {
@@ -71,6 +79,11 @@ public class PlayerInteractionsHUD
                 _actions[i]?.Execute(gameTime, gm);
                 break;
             }
+        }
+
+        foreach (var action in _actions)
+        {
+            action.Update(gameTime);
         }
     }
 
@@ -154,8 +167,7 @@ public class PlayerInteractionsHUD
     private void CooldownPanel(SpriteBatch spriteBatch, GameManager gameManager, int x, int y, int panelWidth,
         int panelHeight, PlayerAction action)
     {
-
-        float remaining = action.GetRemainingCooldown(gameManager);
+        float remaining = action.GetRemainingCooldown();
         if (remaining > 0)
         {
             var panelRect = new Rectangle(
