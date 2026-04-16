@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using TheCure.Weapons;
 using TheCure.Mobs;
+using TheCure.PlayerActions;
 using TheCure.World;
 
 namespace TheCure
@@ -34,6 +35,9 @@ namespace TheCure
         private Button _restartButton;
         private Camera _camera;
         private List<ScorePopup> _scorePopups = new List<ScorePopup>();
+
+        public PlayerInteractionsHUD PlayerInteractionsHud;
+
 
         private float _gameTimeElapsed = 0f;
         private float _spawnTimer = 0f;
@@ -188,7 +192,7 @@ namespace TheCure
             _currentSpawnInterval = _initialSpawnInterval;
             _enemiesToSpawn = 1;
 
-            HUD.Reset();
+            PlayerInteractionsHud.Reset();
 
             AddWorldWalls();
             _gameObjects.Add(Player);
@@ -212,6 +216,8 @@ namespace TheCure
             _backgroundGameOverTexture = content.Load<Texture2D>("GameOverBackground");
             _titleFont = content.Load<SpriteFont>("TitleFont");
             _buttonFont = content.Load<SpriteFont>("ButtonFont");
+
+            PlayerInteractionsHud = new PlayerInteractionsHUD();
             HUD = new HUD();
             scoreManager = new ScoreManager();
 
@@ -220,6 +226,7 @@ namespace TheCure
                 gameObject.Load(content);
             }
 
+            PlayerInteractionsHud.Load(content);
             HUD.Load(content);
         }
 
@@ -254,6 +261,7 @@ namespace TheCure
         public void Update(GameTime gameTime)
         {
             InputManager.Update();
+            PlayerInteractionsHud.Update(gameTime);
             var mouseState = Mouse.GetState();
 
             if (CurrentGameState == GameState.StartScreen)
@@ -545,6 +553,11 @@ namespace TheCure
                 HUD.Draw(spriteBatch, this);
             }
 
+            if (CurrentGameState == GameState.Playing)
+            {
+                PlayerInteractionsHud.Draw(spriteBatch, gameManager);
+            }
+
             spriteBatch.End();
         }
 
@@ -556,6 +569,11 @@ namespace TheCure
         public int GetScore()
         {
             return scoreManager.GetScore();
+        }
+
+        public void AddAction(PlayerAction action)
+        {
+            PlayerInteractionsHud.AddAction(action);
         }
 
         public List<ScorePopup> GetScorePopups()

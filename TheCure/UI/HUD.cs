@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using TheCure.PlayerActions;
 
 namespace TheCure
 {
@@ -11,7 +10,6 @@ namespace TheCure
     {
         private SpriteFont _font;
         private Button _menuButton;
-        private PlayerInteractionsHUD _playerInteractionsHUD;
 
         public void Load(ContentManager content)
         {
@@ -22,9 +20,7 @@ namespace TheCure
                 "Menu",
                 _font
             );
-
-            _playerInteractionsHUD = new PlayerInteractionsHUD(_font);
-            _playerInteractionsHUD.Load(content);
+            
             _menuButton.Clicked += (s, e) => { GameManager.GetGameManager().SetGameState(GameState.Paused); };
         }
 
@@ -32,14 +28,10 @@ namespace TheCure
         {
             MouseState mouse = Mouse.GetState();
             _menuButton.Update(mouse);
-            _playerInteractionsHUD.Update(gameTime);
         }
-
-        public Dash GetDash() => _playerInteractionsHUD.GetDash();
-
+        
         public void Draw(SpriteBatch spriteBatch, GameManager gameManager)
         {
-            _playerInteractionsHUD.Draw(spriteBatch, gameManager);
             if (gameManager.CurrentGameState == GameState.Playing)
             {
                 _menuButton.Draw(spriteBatch);
@@ -54,11 +46,6 @@ namespace TheCure
 
             DrawStatsPanel(spriteBatch, gameManager);
             DrawScorePopups(spriteBatch, gameManager);
-        }
-
-        public void Reset()
-        {
-            _playerInteractionsHUD.Reset();
         }
 
         private void DrawHealthBar(SpriteBatch spriteBatch, GameManager gameManager)

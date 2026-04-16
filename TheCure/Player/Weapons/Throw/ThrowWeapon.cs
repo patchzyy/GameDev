@@ -13,8 +13,8 @@ public class ThrowWeapon : BaseWeapon
         switch (_currentThrowWeapon)
         {
             case ThrowWeapons.HealBomb:
-                HealBomb healBomb = new HealBomb(position, direction, "Bullet");
-                GameManager.GetGameManager().AddGameObject(healBomb);
+                HealBombObject healBombObject = new HealBombObject(position, direction, "Bullet");
+                GameManager.GetGameManager().AddGameObject(healBombObject);
                 break;
         }
 

@@ -2,9 +2,9 @@ using Microsoft.Xna.Framework;
 
 namespace TheCure.Weapons.Throw;
 
-public class HealBomb : Throwable
+public class HealBombObject : Throwable
 {
-    public HealBomb(Vector2 position, Vector2 target, string textureName) : base(position, target, textureName,
+    public HealBombObject(Vector2 position, Vector2 target, string textureName) : base(position, target, textureName,
         Color.Green)
     {
     }
@@ -20,7 +20,6 @@ public class HealBomb : Throwable
 class HealBombExplosion : GameObject
 {
     private CircleCollider _collider;
-    private float _timer = 0;
 
     private int healsToGive = 5;
 
