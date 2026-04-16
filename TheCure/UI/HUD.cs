@@ -21,7 +21,7 @@ namespace TheCure
                 _font
             );
             
-            _menuButton.Clicked += (s, e) => { GameManager.GetGameManager().SetGameState(GameState.Paused); };
+            _menuButton.SetAction(() => GameManager.GetGameManager().SetGameState(GameState.Paused));
         }
 
         public void Update(GameTime gameTime)

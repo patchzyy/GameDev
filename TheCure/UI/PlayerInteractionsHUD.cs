@@ -4,7 +4,6 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using TheCure.PlayerActions;
-using TheCure.Weapons.Throw;
 
 namespace TheCure;
 
@@ -63,12 +62,6 @@ public class PlayerInteractionsHUD
         {
             action.Load(content);
         }
-
-        // TODO: Remove this with upgrade selection
-        AddAction(new Throw("Throw", ThrowWeapons.HealBomb));
-        AddAction(new Boost("Boost"));
-        AddAction(new Command("Command"));
-        AddAction(new Build("Build"));
     }
 
     public void AddAction(PlayerAction action)
