@@ -17,7 +17,7 @@ public class Dash : PlayerAction
 
     public Dash()
     {
-        Cooldown = 10f;
+        CoolDown = 10f;
     }
 
     protected override void OnExecute(GameTime gameTime, GameManager gameManager)
@@ -54,6 +54,7 @@ public class Dash : PlayerAction
     public override void Update(GameTime gameTime)
     {
         base.Update(gameTime);
+
         if (!_isDashing)
             return;
 
@@ -96,11 +97,11 @@ public class Dash : PlayerAction
                 Vector2 knockBackDir = enemy.GetCollider().GetBoundingBox().Center.ToVector2() -
                                        player.GetPosition().Center.ToVector2();
 
-                enemy.ApplyKnockback(knockBackDir, KnockBackForce, KnockBackDuration);
+                enemy.ApplyKnockBack(knockBackDir, KnockBackForce, KnockBackDuration);
 
                 _hitEnemies.Add(enemy);
 
-                System.Diagnostics.Debug.WriteLine($"Dash hit enemy! Applied knockback.");
+                System.Diagnostics.Debug.WriteLine($"Dash hit enemy! Applied knock back.");
             }
         }
     }

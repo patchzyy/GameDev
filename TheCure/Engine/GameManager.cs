@@ -66,6 +66,7 @@ namespace TheCure
         public GameState CurrentGameState { get; private set; }
         public HUD HUD { get; private set; }
         public List<Mob> Enemies;
+        public Camera Camera => _camera;
 
 
         public List<Friendly> Friendlies { get; private set; } = new List<Friendly>();
@@ -187,7 +188,7 @@ namespace TheCure
             _supplySpawnTimer = 0f;
             _currentSpawnInterval = _initialSpawnInterval;
             _enemiesToSpawn = 1;
-            
+
             HUD.Reset();
 
             AddWorldWalls();

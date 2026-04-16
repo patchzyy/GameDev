@@ -7,7 +7,7 @@ public class Build : PlayerAction
 {
     public Build()
     {
-        Cooldown = 15f;
+        CoolDown = 15f;
     }
 
     protected override void OnExecute(GameTime gameTime, GameManager gameManager)

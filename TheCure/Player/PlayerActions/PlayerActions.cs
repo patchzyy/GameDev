@@ -4,28 +4,28 @@ namespace TheCure.PlayerActions
 {
     public abstract class PlayerAction
     {
-        protected float Cooldown { get; set; }
-        private float _remainingCooldown;
+        protected float CoolDown { get; set; }
+        private float _remainingCoolDown;
 
-        public float GetRemainingCooldown() => _remainingCooldown;
+        public float GetRemainingCoolDown() => _remainingCoolDown;
 
         public virtual void Update(GameTime gameTime)
         {
-            _remainingCooldown -= (float)gameTime.ElapsedGameTime.TotalSeconds;
-            _remainingCooldown = _remainingCooldown < 0f ? 0f : _remainingCooldown;
+            _remainingCoolDown -= (float)gameTime.ElapsedGameTime.TotalSeconds;
+            _remainingCoolDown = _remainingCoolDown < 0f ? 0f : _remainingCoolDown;
         }
 
-        public void ResetCooldown()
+        public void ResetCoolDown()
         {
-            _remainingCooldown = 0f;
+            _remainingCoolDown = 0f;
         }
 
         public void Execute(GameTime gameTime, GameManager gameManager)
         {
-            if (_remainingCooldown > 0f)
+            if (_remainingCoolDown > 0f)
                 return;
 
-            _remainingCooldown = Cooldown;
+            _remainingCoolDown = CoolDown;
             OnExecute(gameTime, gameManager);
         }
 

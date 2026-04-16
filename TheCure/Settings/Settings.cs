@@ -37,17 +37,13 @@ namespace TheCure
             if (SettingsDictionary.TryGetValue(settingKey.Group, out var groupSettings))
             {
                 if (groupSettings.TryGetValue(settingKey.Name, out var value))
-                {
                     return value.Deserialize<T>()!;
-                }
             }
 
             foreach (var kvp in DefaultSettings.Values)
             {
                 if (kvp.Key.Group == settingKey.Group && kvp.Key.Name == settingKey.Name)
-                {
                     return (T)kvp.Value;
-                }
             }
 
             throw new Exception($"No value or default found for {settingKey.Group}.{settingKey.Name}");

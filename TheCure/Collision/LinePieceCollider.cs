@@ -186,7 +186,7 @@ namespace TheCure
 
         public bool Equals(LinePieceCollider tmp)
         {
-            return tmp.Start == this.Start && tmp.End == this.End;
+            return tmp.Start == Start && tmp.End == End;
         }
 
         public static Vector2 GetDirection(Point point1, Point point2)

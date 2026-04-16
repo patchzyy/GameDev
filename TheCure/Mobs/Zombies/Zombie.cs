@@ -33,7 +33,7 @@ namespace TheCure
         {
             _stagger = Settings.GetValue(SettingsConst.ZOMBIE.STAGGER);
             _attackDamage = Settings.GetValue(SettingsConst.ZOMBIE.ATTACK_DAMAGE);
-            _attackCoolDown = Settings.GetValue(SettingsConst.ZOMBIE.ATTACK_COOLDOWN);
+            _attackCoolDown = Settings.GetValue(SettingsConst.ZOMBIE.ATTACK_COOL_DOWN);
         }
 
         public override void Load(ContentManager content)
@@ -48,7 +48,7 @@ namespace TheCure
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
             _previousCenter = _collider.Center;
 
-            UpdateKnockback(deltaTime);
+            UpdateKnockBack(deltaTime);
 
             if (_attackNextCombat)
             {
