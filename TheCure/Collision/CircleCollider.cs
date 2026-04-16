@@ -17,23 +17,23 @@ namespace TheCure
 
             set
             {
-                this.X = value.X;
-                this.Y = value.Y;
+                X = value.X;
+                Y = value.Y;
             }
         }
         public float Radius;
 
         public CircleCollider(float x, float y, float radius)
         {
-            this.X = x;
-            this.Y = y;
-            this.Radius = radius;
+            X = x;
+            Y = y;
+            Radius = radius;
         }
 
         public CircleCollider(Vector2 center, float radius)
         {
-            this.Center = center;
-            this.Radius = radius;
+            Center = center;
+            Radius = radius;
         }
 
         public override bool Contains(Vector2 coordinates)

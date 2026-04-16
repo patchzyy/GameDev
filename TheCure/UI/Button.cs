@@ -46,19 +46,24 @@ namespace TheCure
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            Color color = Color.Green;
+            GameManager gameManager = GameManager.GetGameManager();
 
-            if (_isHovering)
-            {
-                color = Color.DarkGreen;
-            }
+            Color bgColor = _isHovering ? new Color(100, 200, 100, 255) : new Color(70, 150, 70, 255);
+            spriteBatch.Draw(gameManager.DummyTexture, Rectangle, bgColor);
 
-            spriteBatch.Draw(GameManager.GetGameManager().DummyTexture, Rectangle, color);
+            Color borderColor = _isHovering ? new Color(255, 200, 0, 255) : new Color(255, 255, 255, 150);
+            int borderThickness = 2;
+
+            spriteBatch.Draw(gameManager.DummyTexture, new Rectangle(Rectangle.X, Rectangle.Y, Rectangle.Width, borderThickness), borderColor);
+            spriteBatch.Draw(gameManager.DummyTexture, new Rectangle(Rectangle.X, Rectangle.Y + Rectangle.Height - borderThickness, Rectangle.Width, borderThickness), borderColor);
+            spriteBatch.Draw(gameManager.DummyTexture, new Rectangle(Rectangle.X, Rectangle.Y, borderThickness, Rectangle.Height), borderColor);
+            spriteBatch.Draw(gameManager.DummyTexture, new Rectangle(Rectangle.X + Rectangle.Width - borderThickness, Rectangle.Y, borderThickness, Rectangle.Height), borderColor);
 
             Vector2 size = _font.MeasureString(Text);
             Vector2 position = new Vector2(Rectangle.X + (Rectangle.Width - size.X) / 2, Rectangle.Y + (Rectangle.Height - size.Y) / 2);
 
-            spriteBatch.DrawString(_font, Text, position, Color.White);
+            Color textColor = _isHovering ? Color.Yellow : Color.White;
+            spriteBatch.DrawString(_font, Text, position, textColor);
         }
     }
 }

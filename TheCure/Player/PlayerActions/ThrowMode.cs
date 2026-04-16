@@ -7,7 +7,7 @@ public class ThrowMode : PlayerAction
 {
     public ThrowMode()
     {
-        Cooldown = 0;
+        CoolDown = 0;
     }
 
     protected override void OnExecute(GameTime gameTime, GameManager gameManager)

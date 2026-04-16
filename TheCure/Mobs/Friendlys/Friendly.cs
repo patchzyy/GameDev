@@ -156,9 +156,7 @@ namespace TheCure
         {
             int index = gameManager.Friendlies.IndexOf(this);
             if (index < 0)
-            {
                 return anchorPosition;
-            }
 
             int ringNumber = index / RingSize;
             int indexInRing = index % RingSize;
@@ -184,9 +182,7 @@ namespace TheCure
             float bottom = bounds.Bottom + padding;
 
             if (position.X < left || position.X > right || position.Y < top || position.Y > bottom)
-            {
                 return position;
-            }
 
             float distanceToLeft = position.X - left;
             float distanceToRight = right - position.X;
@@ -225,15 +221,11 @@ namespace TheCure
 
                 Vector2 away = _collider.Center - other._collider.Center;
                 if (away.LengthSquared() < 0.0001f)
-                {
                     continue;
-                }
 
                 float distance = away.Length();
                 if (distance >= desiredDistance)
-                {
                     continue;
-                }
 
                 away /= distance;
                 float strength = 1f - MathHelper.Clamp(distance / desiredDistance, 0f, 1f);
@@ -309,7 +301,7 @@ namespace TheCure
 
                 var enemyLocation = enemy._collider.Center;
                 var distance = Vector2.Distance(enemyLocation, _collider.Center);
-                
+
                 if (distance < closestDistance)
                 {
                     closest = enemy;

@@ -50,9 +50,7 @@ namespace TheCure
             KeyboardState currentKeyboardState = Keyboard.GetState();
 
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
-            {
                 Exit();
-            }
 
             if (currentKeyboardState.IsKeyDown(Keys.Escape) && !_isEscapeKeyPressed)
             {

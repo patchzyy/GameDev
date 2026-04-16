@@ -50,12 +50,12 @@ public class WeaponsSystem
     public void Fire(InputManager inputManager)
     {
         Point mousePosition = inputManager.CurrentMouseState.Position;
-        var gm = GameManager.GetGameManager();
-        Vector2 worldMousePosition = gm.ScreenToWorld(mousePosition.ToVector2());
+        var gameManager = GameManager.GetGameManager();
+        Vector2 worldMousePosition = gameManager.ScreenToWorld(mousePosition.ToVector2());
 
         if (CurrentWeapon != null && CurrentWeapon.CanFire)
         {
-            Vector2 position = gm.Player.GetPosition().Center.ToVector2();
+            Vector2 position = gameManager.Player.GetPosition().Center.ToVector2();
 
             if (_currentWeaponMode == WeaponMode.Throw)
             {

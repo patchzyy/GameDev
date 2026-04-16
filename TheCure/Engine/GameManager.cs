@@ -65,6 +65,7 @@ namespace TheCure
         public GameState CurrentGameState { get; private set; }
         public HUD HUD { get; private set; }
         public List<Mob> Enemies;
+        public Camera Camera => _camera;
 
 
         public List<Friendly> Friendlies { get; private set; } = new List<Friendly>();
