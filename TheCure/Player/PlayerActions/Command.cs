@@ -7,7 +7,7 @@ namespace TheCure.PlayerActions
     {
         public Command()
         {
-            Cooldown = 5f;
+            CoolDown = 5f;
         }
 
         protected override void OnExecute(GameTime gameTime, GameManager gameManager)

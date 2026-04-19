@@ -11,7 +11,7 @@ namespace TheCure
 
             public static readonly SettingKey<float> MAX_HEALTH = new(_group, "MAX_HEALTH");
             public static readonly SettingKey<float> MOVE_SPEED = new(_group, "MOVE_SPEED");
-            
+
         }
 
         public static class ZOMBIE
@@ -21,7 +21,7 @@ namespace TheCure
             public static readonly SettingKey<float> SPEED = new(_group, "MOVE_SPEED");
             public static readonly SettingKey<float> STAGGER = new(_group, "STAGGER");
             public static readonly SettingKey<int> ATTACK_DAMAGE = new(_group, "ATTACK_DAMAGE");
-            public static readonly SettingKey<float> ATTACK_COOLDOWN = new(_group, "ATTACK_COOLDOWN");
+            public static readonly SettingKey<float> ATTACK_COOL_DOWN = new(_group, "ATTACK_COOL_DOWN");
             public static readonly SettingKey<float> START_HEALTH = new(_group, "START_HEALTH");
             public static readonly SettingKey<float> MAX_HEALTH = new(_group, "MAX_HEALTH");
         }
@@ -49,9 +49,9 @@ namespace TheCure
             public static readonly SettingKey<float> RADIUS = new(_group, "RADIUS");
         }
 
-        public static class KEYBINDS
+        public static class KEY_BINDS
         {
-            private static string _group = "KEYBINDS";
+            private static string _group = "KEY_BINDS";
 
             // PLAYER ACTIONS
             public static readonly SettingKey<Keys> ACTION_1 = new(_group, "ACTION_1");

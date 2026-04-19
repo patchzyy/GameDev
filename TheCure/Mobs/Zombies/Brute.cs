@@ -7,7 +7,7 @@ namespace TheCure
 {
     public class Brute : Mob
     {
-        private float _attackCooldown;
+        private float _attackCoolDown;
         private float _stagger;
         private int _attackDamage;
 
@@ -29,7 +29,7 @@ namespace TheCure
         {
             _stagger = 1.2f;
             _attackDamage = 3;
-            _attackCooldown = 2f;
+            _attackCoolDown = 2f;
         }
 
         public override void Load(ContentManager content)
@@ -45,7 +45,7 @@ namespace TheCure
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
             _previousCenter = _collider.Center;
 
-            UpdateKnockback(deltaTime);
+            UpdateKnockBack(deltaTime);
 
             if (_attackNextCombat)
             {
@@ -100,7 +100,7 @@ namespace TheCure
             }
 
             _attackNextCombat = false;
-            _attackTimer = _attackCooldown;
+            _attackTimer = _attackCoolDown;
             _currentTarget = null;
         }
 

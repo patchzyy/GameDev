@@ -10,9 +10,9 @@ namespace TheCure
     {
         protected Collider collider;
         protected HealthBar _healthBar;
-        
+
         public float LastHealed;
-        
+
         public void SetCollider(Collider collider)
         {
             this.collider = collider;
@@ -83,7 +83,7 @@ namespace TheCure
             }
             else
             {
-                System.Diagnostics.Debug.WriteLine("No healthbar set");
+                System.Diagnostics.Debug.WriteLine("No health bar set");
             }
         }
 
@@ -96,7 +96,7 @@ namespace TheCure
             }
             else
             {
-                System.Diagnostics.Debug.WriteLine("No healthbar set");
+                System.Diagnostics.Debug.WriteLine("No health bar set");
             }
         }
 

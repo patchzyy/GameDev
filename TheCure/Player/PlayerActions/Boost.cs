@@ -7,7 +7,7 @@ public class Boost : PlayerAction
 {
     public Boost()
     {
-        Cooldown = 10f;
+        CoolDown = 10f;
     }
 
 

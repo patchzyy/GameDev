@@ -33,7 +33,6 @@ namespace TheCure
         private Button _pauseQuitButton;
         private Button _restartButton;
         private Camera _camera;
-        private int _score = 0;
         private List<ScorePopup> _scorePopups = new List<ScorePopup>();
 
         private float _gameTimeElapsed = 0f;
@@ -66,6 +65,7 @@ namespace TheCure
         public GameState CurrentGameState { get; private set; }
         public HUD HUD { get; private set; }
         public List<Mob> Enemies;
+        public Camera Camera => _camera;
 
 
         public List<Friendly> Friendlies { get; private set; } = new List<Friendly>();
@@ -187,7 +187,7 @@ namespace TheCure
             _supplySpawnTimer = 0f;
             _currentSpawnInterval = _initialSpawnInterval;
             _enemiesToSpawn = 1;
-            
+
             HUD.Reset();
 
             AddWorldWalls();
@@ -532,7 +532,7 @@ namespace TheCure
 
                 currentY += gameOverTextSize.Y + spacing;
 
-                string scoreText = $"Eindscore: {_score}";
+                string scoreText = $"Eindscore: {GetScore()}";
                 Vector2 scoreTextSize = _titleFont.MeasureString(scoreText);
                 float scale = 0.5f;
                 Vector2 scoreTextPosition =
@@ -641,14 +641,14 @@ namespace TheCure
 
             Vector2[] fallbackPoints =
             {
-                new (safePlayableBounds.Left, safePlayableBounds.Top),
-                new (safePlayableBounds.Right - 1, safePlayableBounds.Top),
-                new (safePlayableBounds.Left, safePlayableBounds.Bottom - 1),
-                new (safePlayableBounds.Right - 1, safePlayableBounds.Bottom - 1),
-                new (safePlayableBounds.Center.X, safePlayableBounds.Top),
-                new (safePlayableBounds.Center.X, safePlayableBounds.Bottom - 1),
-                new (safePlayableBounds.Left, safePlayableBounds.Center.Y),
-                new (safePlayableBounds.Right - 1, safePlayableBounds.Center.Y)
+                new(safePlayableBounds.Left, safePlayableBounds.Top),
+                new(safePlayableBounds.Right - 1, safePlayableBounds.Top),
+                new(safePlayableBounds.Left, safePlayableBounds.Bottom - 1),
+                new(safePlayableBounds.Right - 1, safePlayableBounds.Bottom - 1),
+                new(safePlayableBounds.Center.X, safePlayableBounds.Top),
+                new(safePlayableBounds.Center.X, safePlayableBounds.Bottom - 1),
+                new(safePlayableBounds.Left, safePlayableBounds.Center.Y),
+                new(safePlayableBounds.Right - 1, safePlayableBounds.Center.Y)
             };
 
             var bestPoint = fallbackPoints[0];
