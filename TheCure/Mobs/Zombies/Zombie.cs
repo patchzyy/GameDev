@@ -24,6 +24,7 @@ namespace TheCure
         private Action _onDeathComplete;
 
         public float LastHealed;
+        private Vector2 _spawnPosition;
 
         public Zombie() : base(
             textureName: "Zombie-Walk",
@@ -43,6 +44,8 @@ namespace TheCure
         public override void Load(ContentManager content)
         {
             base.Load(content);
+
+            _collider.Center = _spawnPosition;
 
             SetHealthBar(_texture, _maxHealth, _startHealth, Destroy, BecomeFriendly);
         }
@@ -130,6 +133,7 @@ namespace TheCure
                 return;
 
             _isDying = true;
+            Vector2 spawnPosition = _collider.Center;
 
             SwitchAnimation("Zombie-Dead", 8, 3f, false);
             _currentState = ZombieAnimationState.Dead;
@@ -137,7 +141,7 @@ namespace TheCure
             _onDeathComplete = () =>
             {
                 var gm = GameManager.GetGameManager();
-                gm.AddGameObject(new Friendly(FriendlyWeapons.HandGun, _collider.Center));
+                gm.AddGameObject(new Friendly(FriendlyWeapons.HandGun, spawnPosition));
                 gm.RemoveGameObject(this);
                 gm.AddScore(100, "Zombie Healed");
             };
@@ -153,7 +157,7 @@ namespace TheCure
             SwitchAnimation("Zombie-Dead", 8, 3f, false);
             _currentState = ZombieAnimationState.Dead;
 
-            _onDeathComplete = null; // gewone death (geen friendly)
+            _onDeathComplete = null; 
         }
 
         public override void OnCollision(GameObject tmp)
@@ -252,6 +256,11 @@ namespace TheCure
             DrawAnimatedSprite(spriteBatch, tint, _facingDirection);
 
             base.Draw(gameTime, spriteBatch);
+        }
+
+        public void Spawn(Vector2 position)
+        {
+            _spawnPosition = position;
         }
     }
 

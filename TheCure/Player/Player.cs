@@ -50,7 +50,7 @@ namespace TheCure
         public override void Load(ContentManager content)
         {
             // ===== CHARACTER JOE ONLY =====
-            SwitchAnimation("Character-Joe-Idle", 6, 6f, true);
+            SwitchAnimation("Character-Joe-Idle", 5, 1f, true);
 
             SetHealthBar(
                 content.Load<Texture2D>("Character-Joe-Idle"),
@@ -106,7 +106,6 @@ namespace TheCure
 
             _velocity = moveDirection * MoveSpeed;
 
-            // ===== DASH PROTECTION =====
             var dash = GameManager.GetGameManager().HUD?.GetDash();
             if (dash != null && dash.IsDashing)
             {
@@ -155,15 +154,21 @@ namespace TheCure
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            // ===== CHARACTER JOE ONLY =====
+            SpriteEffects effects = SpriteEffects.None;
+
+            if (_facingDirection.X < 0)
+            {
+                effects = SpriteEffects.FlipHorizontally;
+            }
+
             _animatedSprite?.Draw(
                 spriteBatch,
                 _rectangleCollider.shape.Center.ToVector2(),
                 Color.White,
-                0,
-                2f
+                0f,
+                2f,
+                effects
             );
-
             base.Draw(gameTime, spriteBatch);
         }
 
@@ -205,15 +210,15 @@ namespace TheCure
             switch (newState)
             {
                 case PlayerAnimationState.Run:
-                    SwitchAnimation("Character-Joe-Run", 6, 8f, true);
+                    SwitchAnimation("Character-Joe-Run", 8, 8f, true);
                     break;
 
                 case PlayerAnimationState.Hit:
-                    SwitchAnimation("Character-Joe-Idle-Shot", 4, 10f, false);
+                    SwitchAnimation("Character-Joe-Idle-Shot", 6, 10f, false);
                     break;
 
                 default:
-                    SwitchAnimation("Character-Joe-Idle", 6, 6f, true);
+                    SwitchAnimation("Character-Joe-Idle", 5, 1f, true);
                     break;
             }
         }

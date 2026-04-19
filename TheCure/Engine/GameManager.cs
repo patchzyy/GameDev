@@ -422,7 +422,12 @@ namespace TheCure
         private void SpawnZombie()
         {
             var newZombie = new Zombie();
+
+            Vector2 spawnPos = RandomLocationOutsideView();
+
+            newZombie.Spawn(spawnPos);
             newZombie.Load(_content);
+
             AddGameObject(newZombie);
         }
 
