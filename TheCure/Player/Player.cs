@@ -12,16 +12,25 @@ namespace TheCure
         public float MoveSpeed;
         public float MaxHealth;
 
-        private Texture2D ship_body;
-        private Texture2D base_turret;
-
         internal readonly RectangleCollider _rectangleCollider;
-
         internal Vector2 _velocity;
         internal float _rotation;
+
         private Rectangle _previousBounds;
-        
+
+        // ===== WEAPONS =====
         public WeaponsSystem WeaponsSystem = new WeaponsSystem();
+
+        internal BaseWeapon _currentWeapon;
+        internal readonly SingleBulletWeapon _bulletWeapon = new SingleBulletWeapon();
+        internal float _weaponBuffTimer = 0f;
+
+        // ===== CHARACTER JOE =====
+        private PlayerAnimationState _currentState;
+        private AnimatedSprite _animatedSprite;
+        private float _hitTimer = 0f;
+
+        private Vector2 _facingDirection = Vector2.UnitX;
 
         public Player(Point Position)
         {
@@ -29,25 +38,28 @@ namespace TheCure
             MaxHealth = Settings.GetValue(SettingsConst.PLAYER.MAX_HEALTH);
 
             _rectangleCollider = new RectangleCollider(new Rectangle(Position, Point.Zero));
-
             SetCollider(_rectangleCollider);
 
             _velocity = Vector2.Zero;
             _rotation = 0f;
+
+            _currentWeapon = _bulletWeapon;
             _previousBounds = _rectangleCollider.shape;
         }
 
         public override void Load(ContentManager content)
         {
-            ship_body = content.Load<Texture2D>("ship_body");
-            base_turret = content.Load<Texture2D>("base_turret");
+            // ===== CHARACTER JOE ONLY =====
+            SwitchAnimation("Character-Joe-Idle", 5, 1f, true);
 
-            SetHealthBar(ship_body, (int)MaxHealth, (int)MaxHealth,
+            SetHealthBar(
+                content.Load<Texture2D>("Character-Joe-Idle"),
+                (int)MaxHealth,
+                (int)MaxHealth,
                 () => GameManager.GetGameManager().SetGameState(GameState.GameOver),
-                null, true);
-
-            _rectangleCollider.shape.Size = ship_body.Bounds.Size;
-            _rectangleCollider.shape.Location -= new Point(ship_body.Width / 2, ship_body.Height / 2);
+                null,
+                true
+            );
 
             base.Load(content);
         }
@@ -56,46 +68,48 @@ namespace TheCure
         {
             base.HandleInput(inputManager);
 
+            // ===== SHOOTING =====
+            Point mousePosition = inputManager.CurrentMouseState.Position;
+            Vector2 worldMouse = GameManager.GetGameManager()
+                .ScreenToWorld(mousePosition.ToVector2());
+
             if (inputManager.CurrentMouseState.LeftButton == ButtonState.Pressed)
             {
-                WeaponsSystem.Fire(inputManager);
+                if (_currentWeapon != null && _currentWeapon.CanFire)
+                {
+                    Vector2 aimDirection =
+                        LinePieceCollider.GetDirection(GetPosition().Center.ToVector2(), worldMouse);
+
+                    Vector2 spawnPos =
+                        _rectangleCollider.shape.Center.ToVector2() +
+                        aimDirection * 20f;
+
+                    _currentWeapon.Fire(spawnPos, aimDirection);
+                }
             }
 
+            // ===== MOVEMENT =====
             KeyboardState keyState = Keyboard.GetState();
             Vector2 moveDirection = Vector2.Zero;
 
-            if (keyState.IsKeyDown(Keys.W))
-            {
-                moveDirection.Y = -1;
-            }
-
-            if (keyState.IsKeyDown(Keys.S))
-            {
-                moveDirection.Y = 1;
-            }
-
-            if (keyState.IsKeyDown(Keys.A))
-            {
-                moveDirection.X = -1;
-            }
-
-            if (keyState.IsKeyDown(Keys.D))
-            {
-                moveDirection.X = 1;
-            }
+            if (keyState.IsKeyDown(Keys.W)) moveDirection.Y = -1;
+            if (keyState.IsKeyDown(Keys.S)) moveDirection.Y = 1;
+            if (keyState.IsKeyDown(Keys.A)) moveDirection.X = -1;
+            if (keyState.IsKeyDown(Keys.D)) moveDirection.X = 1;
 
             if (moveDirection != Vector2.Zero)
             {
                 moveDirection.Normalize();
                 _rotation = LinePieceCollider.GetAngle(moveDirection);
+                _facingDirection = moveDirection;
             }
 
-            var hud = GameManager.GetGameManager().HUD;
-            var dash = hud?.GetDash();
+            _velocity = moveDirection * MoveSpeed;
 
-            if (dash == null || !dash.IsDashing)
+            var dash = GameManager.GetGameManager().HUD?.GetDash();
+            if (dash != null && dash.IsDashing)
             {
-                _velocity = moveDirection * MoveSpeed;
+                _velocity = Vector2.Zero;
             }
         }
 
@@ -104,57 +118,57 @@ namespace TheCure
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             WeaponsSystem.Update(gameTime);
+            _currentWeapon?.UpdateCoolDown(gameTime);
+
+            // ===== WEAPON BUFF =====
+            if (_weaponBuffTimer > 0)
+            {
+                _weaponBuffTimer -= deltaTime;
+                if (_weaponBuffTimer <= 0)
+                {
+                    _currentWeapon = _bulletWeapon;
+                }
+            }
+
+            // ===== HIT TIMER =====
+            if (_hitTimer > 0)
+            {
+                _hitTimer -= deltaTime;
+                if (_hitTimer <= 0)
+                {
+                    SetState(PlayerAnimationState.Idle);
+                }
+            }
+
+            UpdateState();
 
             _previousBounds = _rectangleCollider.shape;
+
             _rectangleCollider.shape.X += (int)(_velocity.X * deltaTime);
             _rectangleCollider.shape.Y += (int)(_velocity.Y * deltaTime);
+
+            _animatedSprite?.Update(gameTime);
 
             base.Update(gameTime);
         }
 
-        private Texture2D GetCurrentTurretTexture()
-        {
-            return base_turret;
-        }
-
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            Vector2 bodyOrigin = ship_body.Bounds.Size.ToVector2() / 2f;
+            SpriteEffects effects = SpriteEffects.None;
 
-            Rectangle shadowCore = new Rectangle(
-                _rectangleCollider.shape.Center.X - (int)(bodyOrigin.X * 0.55f),
-                _rectangleCollider.shape.Center.Y + (int)(bodyOrigin.Y * 0.38f),
-                (int)(bodyOrigin.X * 1.1f),
-                (int)(bodyOrigin.Y * 0.18f)
+            if (_facingDirection.X < 0)
+            {
+                effects = SpriteEffects.FlipHorizontally;
+            }
+
+            _animatedSprite?.Draw(
+                spriteBatch,
+                _rectangleCollider.shape.Center.ToVector2(),
+                Color.White,
+                0f,
+                2f,
+                effects
             );
-
-            Rectangle shadowSoft = new Rectangle(
-                _rectangleCollider.shape.Center.X - (int)(bodyOrigin.X * 0.65f),
-                _rectangleCollider.shape.Center.Y + (int)(bodyOrigin.Y * 0.42f),
-                (int)(bodyOrigin.X * 1.3f),
-                (int)(bodyOrigin.Y * 0.12f)
-            );
-
-            spriteBatch.Draw(GameManager.GetGameManager().DummyTexture, shadowSoft, Color.Black * 0.08f);
-            spriteBatch.Draw(GameManager.GetGameManager().DummyTexture, shadowCore, Color.Black * 0.16f);
-
-            spriteBatch.Draw(ship_body, _rectangleCollider.shape.Center.ToVector2(), null, Color.White, _rotation,
-                bodyOrigin, 1f, SpriteEffects.None, 0);
-
-            Texture2D texture = GetCurrentTurretTexture();
-
-            Point screenMouse = Mouse.GetState().Position;
-
-            Vector2 mouse = GameManager.GetGameManager().ScreenToWorld(screenMouse.ToVector2());
-            Vector2 direction = LinePieceCollider.GetDirection(GetPosition().Center.ToVector2(), mouse);
-
-            float angle = LinePieceCollider.GetAngle(direction);
-
-            Vector2 position = _rectangleCollider.shape.Center.ToVector2();
-            Vector2 origin = texture.Bounds.Size.ToVector2() / 2f;
-
-            spriteBatch.Draw(texture, position, null, Color.White, angle, origin, 1f, SpriteEffects.None, 0);
-
             base.Draw(gameTime, spriteBatch);
         }
 
@@ -162,32 +176,71 @@ namespace TheCure
         {
             if (tmp is Wall wall)
             {
-                // speler netjes terugduwen uit de muur
                 wall.ResolveRectangleCollision(_rectangleCollider, _previousBounds, ref _velocity);
             }
         }
 
-        public override void LoseHealth(int amount)
+        // ===== ANIMATION SYSTEM (CHARACTER JOE) =====
+
+        private void SwitchAnimation(string name, int frames, float fps, bool loop)
         {
-            var hud = GameManager.GetGameManager().HUD;
-            var dash = hud?.GetDash();
+            var texture = GameManager.GetGameManager()._content.Load<Texture2D>(name);
+            int frameWidth = texture.Width / frames;
 
-            if (dash != null && dash.IsDashing)
-            {
-                System.Diagnostics.Debug.WriteLine("Player is protected by dash - no damage taken!");
+            _animatedSprite = new AnimatedSprite(texture, frameWidth, texture.Height, frames, fps, loop);
+        }
+
+        private void UpdateState()
+        {
+            if (_currentState == PlayerAnimationState.Hit)
                 return;
-            }
 
-            base.LoseHealth(amount);
+            if (_velocity.LengthSquared() > 0.01f)
+                SetState(PlayerAnimationState.Run);
+            else
+                SetState(PlayerAnimationState.Idle);
+        }
+
+        private void SetState(PlayerAnimationState newState)
+        {
+            if (_currentState == newState) return;
+
+            _currentState = newState;
+
+            switch (newState)
+            {
+                case PlayerAnimationState.Run:
+                    SwitchAnimation("Character-Joe-Run", 8, 8f, true);
+                    break;
+
+                case PlayerAnimationState.Hit:
+                    SwitchAnimation("Character-Joe-Idle-Shot", 6, 10f, false);
+                    break;
+
+                default:
+                    SwitchAnimation("Character-Joe-Idle", 5, 1f, true);
+                    break;
+            }
+        }
+
+        public void TakeHit()
+        {
+            SetState(PlayerAnimationState.Hit);
+            _hitTimer = 0.4f;
         }
 
         public void Reset()
         {
             _healthBar.ResetHealth();
-            WeaponsSystem.SetShootWeapon(ShootWeapons.SingleBullet);
+            _currentWeapon = _bulletWeapon;
+            _weaponBuffTimer = 0f;
+
             _rectangleCollider.shape.Location =
-                new Point(GameManager.GetGameManager().Game.GraphicsDevice.Viewport.Width / 2,
-                    GameManager.GetGameManager().Game.GraphicsDevice.Viewport.Height / 2);
+                new Point(
+                    GameManager.GetGameManager().Game.GraphicsDevice.Viewport.Width / 2,
+                    GameManager.GetGameManager().Game.GraphicsDevice.Viewport.Height / 2
+                );
+
             _velocity = Vector2.Zero;
             _rotation = 0f;
         }
@@ -196,5 +249,12 @@ namespace TheCure
         {
             return _rectangleCollider.shape;
         }
+    }
+
+    enum PlayerAnimationState
+    {
+        Idle,
+        Run,
+        Hit
     }
 }

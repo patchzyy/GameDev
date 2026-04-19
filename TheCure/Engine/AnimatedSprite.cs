@@ -23,6 +23,7 @@ namespace TheCure
         public Point FrameSize => new(FrameWidth, FrameHeight);
         public Vector2 Origin => new(FrameWidth / 2f, FrameHeight / 2f);
         private float SecondsPerFrame => 1f / FrameRate;
+        public bool IsFinished => !IsLooping && CurrentFrame == FrameCount - 1;
 
         public Rectangle SourceRectangle
         {

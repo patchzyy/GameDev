@@ -20,7 +20,7 @@ namespace TheCure
         private List<GameObject> _gameObjects;
         private List<GameObject> _toBeRemoved;
         private List<GameObject> _toBeAdded;
-        private ContentManager _content;
+        public ContentManager _content;
         private Texture2D _backgroundTexture;
         private Texture2D _backgroundPauseTexture;
         private Texture2D _backgroundGameOverTexture;
@@ -334,6 +334,7 @@ namespace TheCure
                         Enemies.Add(brute);
                     }
 
+                    gameObject.Load(_content);
                     _gameObjects.Add(gameObject);
                 }
 
@@ -421,6 +422,12 @@ namespace TheCure
         private void SpawnZombie()
         {
             var newZombie = new Zombie();
+
+            Vector2 spawnPos = RandomLocationOutsideView();
+
+            newZombie.Spawn(spawnPos);
+            newZombie.Load(_content);
+
             AddGameObject(newZombie);
         }
 

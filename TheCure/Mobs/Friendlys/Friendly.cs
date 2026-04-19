@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using System.Collections.Generic;
 using TheCure.Mobs;
 using TheCure.Weapons;
 
@@ -9,307 +10,282 @@ namespace TheCure
 {
     public class Friendly : Mob
     {
-        private Vector2 _startPosition;
-        private float _radius;
+        private Vector2 _spawnPosition;
         private Vector2 _previousCenter;
         private Vector2 _velocity;
-        private Vector2 _formationAnchor;
-        private bool _hasFormationAnchor;
-        private Vector2 _facingDirection = Vector2.UnitX;
 
         private BaseWeapon _weapon;
-        private const int RingSize = 6;
-        private const float BaseRadius = 130f;
-        private const float RingSpacing = 80f;
-        private const float AnchorCatchupSpeed = 3.5f;
-        private const float SteeringResponsiveness = 6f;
-        private const float SlowRadius = 90f;
-        private const float FriendlySeparationStrength = 36f;
 
-        public Friendly(FriendlyWeapons friendlyWeapon) : base(
-            textureName: "player",
-            speed: Settings.GetValue(SettingsConst.FRIENDLY.MOVE_SPEED),
-            startHealth: Settings.GetValue(SettingsConst.FRIENDLY.START_HEALTH),
-            maxHealth: Settings.GetValue(SettingsConst.FRIENDLY.MAX_HEALTH),
-            frameCount: 5,
-            frameRate: 5f,
-            scale: 0.35f
-        )
+        private AnimatedSprite _animatedSprite;
+        private FriendlyState _currentState;
+
+        private Texture2D _idleTexture;
+        private Texture2D _runTexture;
+        private Texture2D _hitTexture;
+
+        private const float BaseRadius = 120f;
+        private const float RingSpacing = 75f;
+
+        private const float MaxMoveSpeed = 120f;
+        private const float Steering = 5f;
+        private const float StopDistance = 4f;
+
+        private const float SeparationDistance = 42f;
+        private const float SeparationStrength = 22f;
+
+        private const float IdleThreshold = 0.15f;
+
+        private enum FriendlyState
         {
-            _radius = Settings.GetValue(SettingsConst.FRIENDLY.RADIUS);
-            _velocity = Vector2.Zero;
+            Idle,
+            Run,
+            Hit
+        }
 
-            switch (friendlyWeapon)
+        public Friendly(FriendlyWeapons weaponType, Vector2 position)
+            : base(
+                textureName: "Character-Unknown-Idle",
+                speed: Settings.GetValue(SettingsConst.FRIENDLY.MOVE_SPEED),
+                startHealth: Settings.GetValue(SettingsConst.FRIENDLY.START_HEALTH),
+                maxHealth: Settings.GetValue(SettingsConst.FRIENDLY.MAX_HEALTH),
+                frameCount: 6,
+                frameRate: 6f,
+                scale: 1.7f
+            )
+        {
+            _collider = new CircleCollider(Vector2.Zero, 16f);
+
+            _spawnPosition = position;
+            _collider.Center = position;
+
+            switch (weaponType)
             {
                 case FriendlyWeapons.HandGun:
                     _weapon = new Handgun();
                     break;
             }
-        }
 
-        public Friendly(FriendlyWeapons friendlyWeapons, Vector2 position) : this(friendlyWeapons)
-        {
-            _startPosition = position;
-            _formationAnchor = position;
-            _hasFormationAnchor = true;
             GameManager.GetGameManager().Friendlies.Add(this);
         }
 
         public override void Load(ContentManager content)
         {
-            base.Load(content);
-            _collider.Center = _startPosition;
+            _idleTexture = content.Load<Texture2D>("Character-Unknown-Idle");
+            _runTexture = content.Load<Texture2D>("Character-Unknown-Run");
+            _hitTexture = content.Load<Texture2D>("Character-Unknown-Idle-Shot");
 
-            SetHealthBar(_texture, _maxHealth, _startHealth, Destroy, null);
+            SetAnimation(_idleTexture, 5, 1f, true);
+
+            SetHealthBar(
+                _idleTexture,
+                _maxHealth,
+                _startHealth,
+                Destroy,
+                null
+            );
+
+            base.Load(content);
+        }
+
+        private void SetAnimation(Texture2D texture, int frames, float fps, bool loop)
+        {
+            int frameWidth = texture.Width / frames;
+            _animatedSprite = new AnimatedSprite(texture, frameWidth, texture.Height, frames, fps, loop);
         }
 
         public override void Update(GameTime gameTime)
         {
-            float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
-            var gameManager = GameManager.GetGameManager();
-            Vector2 playerPosition = gameManager.Player.GetPosition().Center.ToVector2();
+            float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            var gm = GameManager.GetGameManager();
+
             _previousCenter = _collider.Center;
 
-            if (gameManager.Friendlies.Count == 0)
-                return;
+            Vector2 target = GetRingTarget(gm);
+            target += GetSeparation(gm);
 
-            if (!_hasFormationAnchor)
-            {
-                _formationAnchor = playerPosition;
-                _hasFormationAnchor = true;
-            }
+            MoveTo(target, dt);
 
-            float anchorBlend = MathHelper.Clamp(AnchorCatchupSpeed * deltaTime, 0f, 1f);
-            _formationAnchor = Vector2.Lerp(_formationAnchor, playerPosition, anchorBlend);
-
-            Vector2 formationTarget = GetFormationTarget(gameManager, _formationAnchor);
-            formationTarget = KeepPositionOutsidePlayer(gameManager.Player, formationTarget, _radius + 18f);
-            formationTarget += GetFriendlySeparationOffset(gameManager);
-
-            Vector2 correctedPosition = KeepPositionOutsidePlayer(gameManager.Player, _collider.Center, _radius + 4f);
-            if (correctedPosition != _collider.Center)
-            {
-                Vector2 correction = correctedPosition - _collider.Center;
-                _collider.Center = correctedPosition;
-
-                if (correction.LengthSquared() > 0.0001f)
-                {
-                    Vector2 correctionNormal = Vector2.Normalize(correction);
-                    float velocityIntoPlayer = Vector2.Dot(_velocity, correctionNormal);
-                    if (velocityIntoPlayer > 0f)
-                    {
-                        _velocity -= correctionNormal * velocityIntoPlayer;
-                    }
-                }
-            }
-
-            MoveTowards(formationTarget, deltaTime);
             Attack(gameTime);
 
             Vector2 movement = _collider.Center - _previousCenter;
-            if (movement.LengthSquared() > 0.0001f)
-            {
-                _facingDirection = Vector2.Normalize(movement);
-            }
+
+            UpdateState(movement);
+
+            _animatedSprite?.Update(gameTime);
 
             base.Update(gameTime);
         }
 
-        public override void OnCollision(GameObject tmp)
+        private Vector2 GetRingTarget(GameManager gm)
         {
-            if (tmp is Bullet && tmp is Bullet bullet && bullet.IsHealing)
-            {
-                if (!_healthBar.IsMaxHealth)
-                {
-                    GainHealth(1);
-                    tmp.Destroy();
-                }
-            }
+            var list = gm.Friendlies;
 
-            if (tmp is Wall wall)
-            {
-                Vector2 collisionNormal = wall.ResolveCircleCollision(_collider, _previousCenter);
-                if (collisionNormal != Vector2.Zero)
-                {
-                    float velocityIntoWall = Vector2.Dot(_velocity, collisionNormal);
-                    if (velocityIntoWall < 0f)
-                    {
-                        _velocity -= collisionNormal * velocityIntoWall;
-                    }
-                }
-            }
-
-            base.OnCollision(tmp);
-        }
-
-        public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
-        {
-            Color tint = Color.LightBlue;
-            Rectangle destinationRectangle = GetAnimatedSpriteDestinationRectangle();
-            DrawShadow(spriteBatch, destinationRectangle);
-            DrawAnimatedSprite(spriteBatch, tint, _facingDirection);
-
-            base.Draw(gameTime, spriteBatch);
-        }
-
-        private Vector2 GetFormationTarget(GameManager gameManager, Vector2 anchorPosition)
-        {
-            int index = gameManager.Friendlies.IndexOf(this);
+            int index = list.IndexOf(this);
             if (index < 0)
-                return anchorPosition;
+                return _spawnPosition;
 
-            int ringNumber = index / RingSize;
-            int indexInRing = index % RingSize;
-            float angleStep = MathHelper.TwoPi / RingSize;
-            float ringOffset = ringNumber % 2 == 0 ? 0f : angleStep * 0.5f;
-            float angle = indexInRing * angleStep + ringOffset - MathHelper.PiOver2;
-            float radius = BaseRadius + ringNumber * RingSpacing;
+            Vector2 player = gm.Player.GetPosition().Center.ToVector2();
 
-            Vector2 slotOffset = new Vector2(
+            int ring = 0;
+            int spots = 6;
+            int start = 0;
+
+            while (index >= start + spots)
+            {
+                start += spots;
+                ring++;
+                spots += 6;
+            }
+
+            int slot = index - start;
+
+            float angleStep = MathHelper.TwoPi / spots;
+            float angle = slot * angleStep - MathHelper.PiOver2;
+
+            float radius = BaseRadius + ring * RingSpacing;
+
+            return player + new Vector2(
                 (float)Math.Cos(angle),
                 (float)Math.Sin(angle)
             ) * radius;
-
-            return anchorPosition + slotOffset;
         }
 
-        private Vector2 KeepPositionOutsidePlayer(Player player, Vector2 position, float padding)
+        private Vector2 GetSeparation(GameManager gm)
         {
-            Rectangle bounds = player.GetPosition();
-            float left = bounds.Left - padding;
-            float right = bounds.Right + padding;
-            float top = bounds.Top - padding;
-            float bottom = bounds.Bottom + padding;
+            Vector2 force = Vector2.Zero;
 
-            if (position.X < left || position.X > right || position.Y < top || position.Y > bottom)
-                return position;
+            foreach (var other in gm.Friendlies)
+            {
+                if (other == this) continue;
 
-            float distanceToLeft = position.X - left;
-            float distanceToRight = right - position.X;
-            float distanceToTop = position.Y - top;
-            float distanceToBottom = bottom - position.Y;
+                Vector2 diff = _collider.Center - other._collider.Center;
+                float dist = diff.Length();
 
-            if (distanceToLeft <= distanceToRight && distanceToLeft <= distanceToTop && distanceToLeft <= distanceToBottom)
-            {
-                position.X = left;
-            }
-            else if (distanceToRight <= distanceToTop && distanceToRight <= distanceToBottom)
-            {
-                position.X = right;
-            }
-            else if (distanceToTop <= distanceToBottom)
-            {
-                position.Y = top;
-            }
-            else
-            {
-                position.Y = bottom;
+                if (dist <= 0.01f || dist > SeparationDistance)
+                    continue;
+
+                diff /= dist;
+
+                float strength = 1f - (dist / SeparationDistance);
+                force += diff * strength * SeparationStrength;
             }
 
-            return position;
+            return force;
         }
 
-        private Vector2 GetFriendlySeparationOffset(GameManager gameManager)
+        private void MoveTo(Vector2 target, float dt)
         {
-            Vector2 totalOffset = Vector2.Zero;
-            float desiredDistance = _radius * 2.15f;
+            Vector2 toTarget = target - _collider.Center;
+            float dist = toTarget.Length();
 
-            foreach (var other in gameManager.Friendlies)
-            {
-                if (other == this)
-                    continue;
-
-                Vector2 away = _collider.Center - other._collider.Center;
-                if (away.LengthSquared() < 0.0001f)
-                    continue;
-
-                float distance = away.Length();
-                if (distance >= desiredDistance)
-                    continue;
-
-                away /= distance;
-                float strength = 1f - MathHelper.Clamp(distance / desiredDistance, 0f, 1f);
-                totalOffset += away * (strength * FriendlySeparationStrength);
-            }
-
-            return totalOffset;
-        }
-
-        private void MoveTowards(Vector2 targetPosition, float deltaTime)
-        {
-            Vector2 toTarget = targetPosition - _collider.Center;
-            float distance = toTarget.Length();
-            float maxSpeed = _speed;
-            Vector2 desiredVelocity = Vector2.Zero;
-
-            if (distance > 0.5f)
-            {
-                Vector2 direction = toTarget / distance;
-                float speedFactor = MathHelper.Clamp(distance / SlowRadius, 0f, 1f);
-                desiredVelocity = direction * (maxSpeed * speedFactor);
-            }
-
-            float steeringBlend = MathHelper.Clamp(SteeringResponsiveness * deltaTime, 0f, 1f);
-            _velocity = Vector2.Lerp(_velocity, desiredVelocity, steeringBlend);
-
-            if (_velocity.LengthSquared() > maxSpeed * maxSpeed)
-            {
-                _velocity = Vector2.Normalize(_velocity) * maxSpeed;
-            }
-
-            _collider.Center += _velocity * deltaTime;
-
-            if (distance < 2f && _velocity.LengthSquared() < 9f)
+            if (dist < StopDistance)
             {
                 _velocity = Vector2.Zero;
+                return;
+            }
+
+            toTarget /= dist;
+
+            float speed = Math.Min(dist * 2f, MaxMoveSpeed);
+
+            Vector2 desired = toTarget * speed;
+
+            float blend = MathHelper.Clamp(Steering * dt, 0f, 1f);
+            _velocity = Vector2.Lerp(_velocity, desired, blend);
+
+            if (_velocity.LengthSquared() < 0.01f)
+                _velocity = Vector2.Zero;
+
+            _collider.Center += _velocity * dt;
+        }
+
+        private void UpdateState(Vector2 movement)
+        {
+            if (_currentState == FriendlyState.Hit)
+                return;
+
+            if (movement.Length() > IdleThreshold)
+                SetState(FriendlyState.Run);
+            else
+                SetState(FriendlyState.Idle);
+        }
+
+        private void SetState(FriendlyState state)
+        {
+            if (_currentState == state) return;
+
+            _currentState = state;
+
+            switch (state)
+            {
+                case FriendlyState.Run:
+                    SetAnimation(_runTexture, 8, 3f, true);
+                    break;
+
+                case FriendlyState.Hit:
+                    SetAnimation(_hitTexture, 6, 6f, false);
+                    break;
+
+                default:
+                    SetAnimation(_idleTexture, 5, 1f, false);
+                    break;
             }
         }
 
         private void Attack(GameTime gameTime)
         {
-            if (_weapon.CanFire)
+            if (!_weapon.CanFire)
             {
-                Mob nearestEnemy = GetNearestEnemyPosition();
-                if (nearestEnemy != null)
-                {
-                    Vector2 targetPosition = nearestEnemy._collider.Center;
-                    Vector2 aimDirection = LinePieceCollider.GetDirection(_collider.Center, targetPosition);
-                    float distance = Vector2.Distance(targetPosition, _collider.Center);
+                _weapon.UpdateCoolDown(gameTime);
+                return;
+            }
 
-                    if (distance < 300f)
-                    {
-                        _weapon.Fire(_collider.Center, aimDirection);
-                    }
-                }
+            Mob enemy = GetNearestEnemy();
+            if (enemy == null) return;
+
+            float dist = Vector2.Distance(enemy._collider.Center, _collider.Center);
+
+            if (dist < 300f)
+            {
+                Vector2 dir = Vector2.Normalize(enemy._collider.Center - _collider.Center);
+                _weapon.Fire(_collider.Center, dir);
             }
 
             _weapon.UpdateCoolDown(gameTime);
         }
 
-        private Mob GetNearestEnemyPosition()
+        private Mob GetNearestEnemy()
         {
-            var enemies = GameManager.GetGameManager().Enemies;
+            Mob best = null;
+            float bestDist = float.MaxValue;
 
-            Mob closest = null;
-            float closestDistance = float.MaxValue;
-
-            foreach (var enemy in enemies)
+            foreach (var e in GameManager.GetGameManager().Enemies)
             {
-                if (enemy == null) continue;
+                if (e == null) continue;
 
-                if (enemy is Zombie zombie && zombie.LastHealed < 3f) continue;
+                float dist = Vector2.Distance(e._collider.Center, _collider.Center);
 
-                var enemyLocation = enemy._collider.Center;
-                var distance = Vector2.Distance(enemyLocation, _collider.Center);
-
-                if (distance < closestDistance)
+                if (dist < bestDist)
                 {
-                    closest = enemy;
-                    closestDistance = distance;
+                    bestDist = dist;
+                    best = e;
                 }
             }
 
-            return closest;
+            return best;
+        }
+
+        public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
+        {
+            _animatedSprite?.Draw(
+                spriteBatch,
+                _collider.Center,
+                Color.White,
+                0f,
+                2f
+            );
+
+            base.Draw(gameTime, spriteBatch);
         }
     }
 }
