@@ -10,6 +10,10 @@ namespace TheCure
     {
         protected Collider collider;
         protected HealthBar _healthBar;
+        protected float _flashTimer = 0f;
+        protected const float _flashDuration = 0.15f;
+        protected Color _flashColor;
+        protected bool _isFlashing => _flashTimer > 0f;
 
         public float LastHealed;
 
@@ -39,7 +43,12 @@ namespace TheCure
         }
 
         public virtual void Update(GameTime gameTime)
-        {
+        {            
+            if (_isFlashing)
+            {
+                _flashTimer -= (float)gameTime.ElapsedGameTime.TotalSeconds;
+            }
+
             if (_healthBar != null)
             {
                 _healthBar.UpdateHealthBar(collider.GetBoundingBox().Center, collider.GetBoundingBox().Height);
@@ -80,6 +89,9 @@ namespace TheCure
             if (_healthBar != null)
             {
                 _healthBar.DecreaseHealth(amount);
+
+                _flashTimer = _flashDuration;
+                _flashColor = Color.Red * 0.9f;
             }
             else
             {
@@ -93,6 +105,9 @@ namespace TheCure
             {
                 _healthBar.IncreaseHealth(amount);
                 LastHealed = 0f;
+
+                _flashTimer = _flashDuration;
+                _flashColor = Color.Green * 0.9f;
             }
             else
             {

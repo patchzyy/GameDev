@@ -161,10 +161,11 @@ namespace TheCure
                 effects = SpriteEffects.FlipHorizontally;
             }
 
+            Color tint = _isFlashing ? _flashColor : Color.White;
             _animatedSprite?.Draw(
                 spriteBatch,
                 _rectangleCollider.shape.Center.ToVector2(),
-                Color.White,
+                tint,
                 0f,
                 2f,
                 effects

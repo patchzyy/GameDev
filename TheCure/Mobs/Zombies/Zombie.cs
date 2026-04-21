@@ -247,8 +247,7 @@ namespace TheCure
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            Color tint = Color.White;
-
+            Color tint = _isFlashing ? _flashColor : Color.White;
             Rectangle destRect = GetAnimatedSpriteDestinationRectangle();
 
             DrawShadow(spriteBatch, destRect);

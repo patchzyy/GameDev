@@ -277,10 +277,11 @@ namespace TheCure
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
+            Color tint = _isFlashing ? _flashColor : Color.White;
             _animatedSprite?.Draw(
                 spriteBatch,
                 _collider.Center,
-                Color.White,
+                tint,
                 0f,
                 2f
             );
