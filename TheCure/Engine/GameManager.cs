@@ -332,7 +332,6 @@ namespace TheCure
                         Enemies.Add(brute);
                     }
 
-                    gameObject.Load(_content);
                     _gameObjects.Add(gameObject);
                 }
 

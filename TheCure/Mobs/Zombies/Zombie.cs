@@ -49,8 +49,9 @@ namespace TheCure
             _collider.Center = _spawnPosition;
 
             SetHealthBar(_texture, _maxHealth, _startHealth, Destroy, BecomeFriendly);
+            SyncHealthBarPosition();
 
-            SwitchAnimation("Zombie-Dead", 11, 8f, false, true);
+            SwitchAnimation("Zombie-Dead", 11, 5f, false, true);
             _currentState = ZombieAnimationState.Spawn;
             _isSpawning = true;
         }
@@ -64,6 +65,7 @@ namespace TheCure
             if (_isSpawning)
             {
                 _animatedSprite.Update(gameTime);
+                base.Update(gameTime);
 
                 if (_animatedSprite.IsFinished)
                 {
@@ -78,6 +80,7 @@ namespace TheCure
             if (_isDying)
             {
                 _animatedSprite.Update(gameTime);
+                base.Update(gameTime);
 
                 if (_animatedSprite.IsFinished)
                 {
@@ -154,7 +157,7 @@ namespace TheCure
             _isDying = true;
             Vector2 spawnPosition = _collider.Center;
 
-            SwitchAnimation("Zombie-Dead", 11, 8f, false);
+            SwitchAnimation("Zombie-Dead", 11, 5f, false);
             _currentState = ZombieAnimationState.Dead;
 
             _onDeathComplete = () =>
@@ -173,7 +176,7 @@ namespace TheCure
 
             _isDying = true;
 
-            SwitchAnimation("Zombie-Dead", 11, 8f, false);
+            SwitchAnimation("Zombie-Dead", 11, 5f, false);
             _currentState = ZombieAnimationState.Dead;
 
             _onDeathComplete = null; 

@@ -76,13 +76,8 @@ namespace TheCure
 
             SetAnimation(_idleTexture, 5, 1f, true);
 
-            SetHealthBar(
-                _idleTexture,
-                _maxHealth,
-                _startHealth,
-                Destroy,
-                null
-            );
+            SetHealthBar(_idleTexture, _maxHealth, _startHealth, Destroy, null);
+            SyncHealthBarPosition();
 
             base.Load(content);
         }

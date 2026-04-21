@@ -84,6 +84,12 @@ namespace TheCure
             SetHealthBar(texture, maxHealth, startHealth, onDeath, null, hide);
         }
 
+        protected void SyncHealthBarPosition()
+        {
+            if (_healthBar != null && collider != null)
+                _healthBar.UpdateHealthBar(collider.GetBoundingBox().Center, collider.GetBoundingBox().Height);
+        }
+
         public virtual void LoseHealth(int amount)
         {
             if (_healthBar != null)
