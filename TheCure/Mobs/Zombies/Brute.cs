@@ -147,7 +147,8 @@ namespace TheCure
         {
             Rectangle destRect = GetAnimatedSpriteDestinationRectangle();
             DrawShadow(spriteBatch, destRect, 0.18f, 0.10f);
-            DrawAnimatedSprite(spriteBatch, Color.White, _facingDirection);
+            Color tint = _isFlashing ? _flashColor : Color.White;
+            DrawAnimatedSprite(spriteBatch, tint, _facingDirection);
 
             base.Draw(gameTime, spriteBatch);
         }
