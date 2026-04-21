@@ -111,7 +111,7 @@ namespace TheCure
                 // brute ignores healing bullets
                 if (!bullet.IsHealing)
                 {
-                    LoseHealth(1);
+                    LoseHealth(bullet.Damage);
                 }
 
                 tmp.Destroy();

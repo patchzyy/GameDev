@@ -37,31 +37,41 @@ public class UpgradeSelection
             new Button(new Rectangle(10, 200, 200, 50), "Upgrade 4", _font),
         };
 
+        Reset();
+    }
+
+    public void Reset()
+    {
+        var boostUnlock = new BoostUnlockUpgrade();
+
         _availableUpgrades = new List<Upgrade>
         {
             new HealthBombUnlockUpgrade(),
+            boostUnlock,
+            new BoostPowerUpgrade(boostUnlock),
         };
 
         _unlockedUpgrades = new List<Upgrade>();
         _selectedUpgrades = new List<Upgrade>();
+        _lastScore = 0;
+        _upgradePicked = false;
     }
 
     public void PickRandomUpgrade()
     {
         _upgradePicked = false;
         var random = new Random();
-        if (_availableUpgrades.Count < _upgradeButtons.Count)
+        var selectableUpgrades = _availableUpgrades.FindAll(upgrade =>
+            upgrade.RequiredUpgrade == null || _unlockedUpgrades.Contains(upgrade.RequiredUpgrade));
+
+        while (selectableUpgrades.Count < _upgradeButtons.Count)
         {
-            var count = _upgradeButtons.Count - _availableUpgrades.Count;
-            for (int i = 0; i < count; i++)
-            {
-                _availableUpgrades.Add(new GainHealthUpgrade());
-            }
+            selectableUpgrades.Add(new GainHealthUpgrade());
         }
 
         for (int i = 0; i < _upgradeButtons.Count; i++)
         {
-            var upgrade = _availableUpgrades[random.Next(0, _availableUpgrades.Count)];
+            var upgrade = selectableUpgrades[random.Next(0, selectableUpgrades.Count)];
             if (_selectedUpgrades.Contains(upgrade))
             {
                 i--;
@@ -120,10 +130,15 @@ public class UpgradeSelection
                 _upgradePicked = true;
                 upgrade.Unlock(_unlockedUpgrades);
                 _selectedUpgrades.Clear();
+
+                if (!_unlockedUpgrades.Contains(upgrade))
+                {
+                    _unlockedUpgrades.Add(upgrade);
+                }
+
                 if (upgrade.UnlockedOnce)
                 {
                     _availableUpgrades.Remove(upgrade);
-                    _unlockedUpgrades.Add(upgrade);
                 }
 
                 GameManager.GetGameManager().SetGameState(GameState.Playing);

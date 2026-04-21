@@ -75,7 +75,14 @@ public class PlayerInteractionsHUD
 
     public void Reset()
     {
-        foreach (var action in _actions)
+        _actions.Clear();
+        _actionKeyMap = new Dictionary<PlayerAction, Keys>()
+        {
+            { _shoot, _shootKey },
+            { _dash, _dashKey }
+        };
+
+        foreach (var action in _actionKeyMap.Keys)
         {
             action.ResetCoolDown();
         }
