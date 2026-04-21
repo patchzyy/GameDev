@@ -324,13 +324,11 @@ namespace TheCure
 
                     if (gameObject is Zombie zombie)
                     {
-                        zombie.RandomMove();
                         Enemies.Add(zombie);
                     }
 
                     if (gameObject is Brute brute)
                     {
-                        brute.RandomMove();
                         Enemies.Add(brute);
                     }
 
@@ -422,18 +420,16 @@ namespace TheCure
         private void SpawnZombie()
         {
             var newZombie = new Zombie();
-
             Vector2 spawnPos = RandomLocationOutsideView();
-
             newZombie.Spawn(spawnPos);
-            newZombie.Load(_content);
-
             AddGameObject(newZombie);
         }
 
         private void SpawnBrute()
         {
             Brute brute = new Brute();
+            Vector2 spawnPos = RandomLocationOutsideView();
+            brute.Spawn(spawnPos);
             AddGameObject(brute);
         }
 

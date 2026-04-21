@@ -20,6 +20,7 @@ namespace TheCure
         private Vector2 _facingDirection = Vector2.UnitX;
 
         private ZombieAnimationState _currentState;
+        private bool _isSpawning = false;
         private bool _isDying = false;
         private Action _onDeathComplete;
 
@@ -48,6 +49,10 @@ namespace TheCure
             _collider.Center = _spawnPosition;
 
             SetHealthBar(_texture, _maxHealth, _startHealth, Destroy, BecomeFriendly);
+
+            SwitchAnimation("Zombie-Dead", 11, 8f, false, true);
+            _currentState = ZombieAnimationState.Spawn;
+            _isSpawning = true;
         }
 
         public override void Update(GameTime gameTime)
@@ -55,6 +60,20 @@ namespace TheCure
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             _previousCenter = _collider.Center;
+
+            if (_isSpawning)
+            {
+                _animatedSprite.Update(gameTime);
+
+                if (_animatedSprite.IsFinished)
+                {
+                    _isSpawning = false;
+                    SwitchAnimation("Zombie-Walk", 7, 5f, true);
+                    _currentState = ZombieAnimationState.Walk;
+                }
+
+                return;
+            }
             
             if (_isDying)
             {
@@ -135,7 +154,7 @@ namespace TheCure
             _isDying = true;
             Vector2 spawnPosition = _collider.Center;
 
-            SwitchAnimation("Zombie-Dead", 8, 3f, false);
+            SwitchAnimation("Zombie-Dead", 11, 8f, false);
             _currentState = ZombieAnimationState.Dead;
 
             _onDeathComplete = () =>
@@ -154,7 +173,7 @@ namespace TheCure
 
             _isDying = true;
 
-            SwitchAnimation("Zombie-Dead", 8, 3f, false);
+            SwitchAnimation("Zombie-Dead", 11, 8f, false);
             _currentState = ZombieAnimationState.Dead;
 
             _onDeathComplete = null; 
@@ -214,35 +233,12 @@ namespace TheCure
             }
         }
 
-        private void SwitchAnimation(string name, int frames, float fps, bool loop)
+        private void SwitchAnimation(string name, int frames, float fps, bool loop, bool reverse = false)
         {
             var texture = GameManager.GetGameManager()._content.Load<Texture2D>(name);
             int frameWidth = texture.Width / frames;
 
-            _animatedSprite = new AnimatedSprite(texture, frameWidth, texture.Height, frames, fps, loop);
-        }
-
-        public void RandomMove()
-        {
-            var gameManager = GameManager.GetGameManager();
-            var viewport = gameManager.Game.GraphicsDevice.Viewport;
-            var rng = gameManager.RNG;
-
-            Vector2 playerPos = gameManager.Player.GetPosition().Center.ToVector2();
-
-            Vector2 spawn;
-            float minDistance = 100f;
-
-            do
-            {
-                spawn = new Vector2(
-                    rng.Next(0, viewport.Width),
-                    rng.Next(0, viewport.Height)
-                );
-            }
-            while (Vector2.Distance(spawn, playerPos) < minDistance);
-
-            _collider.Center = spawn;
+            _animatedSprite = new AnimatedSprite(texture, frameWidth, texture.Height, frames, fps, loop, reverse);
         }
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
@@ -265,6 +261,7 @@ namespace TheCure
 
     enum ZombieAnimationState
     {
+        Spawn,
         Walk,
         Attack,
         Dead
