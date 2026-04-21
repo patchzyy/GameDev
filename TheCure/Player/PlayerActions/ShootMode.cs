@@ -5,7 +5,7 @@ namespace TheCure.PlayerActions;
 
 public class ShootMode : PlayerAction
 {
-    public ShootMode()
+    public ShootMode(string iconName) : base(iconName)
     {
         CoolDown = 0;
     }

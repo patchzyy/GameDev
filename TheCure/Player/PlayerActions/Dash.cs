@@ -15,7 +15,7 @@ public class Dash : PlayerAction
     private Vector2 _dashDirection = Vector2.Zero;
     private HashSet<Mob> _hitEnemies = new HashSet<Mob>();
 
-    public Dash()
+    public Dash(string iconName ) : base(iconName)
     {
         CoolDown = 10f;
     }

@@ -5,7 +5,7 @@ namespace TheCure.PlayerActions;
 
 public class Boost : PlayerAction
 {
-    public Boost()
+    public Boost(string iconName) : base(iconName)
     {
         CoolDown = 10f;
     }

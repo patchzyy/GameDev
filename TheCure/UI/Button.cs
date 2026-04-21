@@ -12,7 +12,7 @@ namespace TheCure
 
         private SpriteFont _font;
         private bool _isHovering;
-        public event EventHandler Clicked;
+        public event Action Action;
 
         public Button(Rectangle rectangle, string text, SpriteFont font)
         {
@@ -25,6 +25,11 @@ namespace TheCure
         public void SetPosition(int x, int y)
         {
             Rectangle = new Rectangle(x, y, Rectangle.Width, Rectangle.Height);
+        }
+
+        public void SetAction(Action action)
+        {
+            Action = action;
         }
 
         public void Update(MouseState mouseState)
@@ -40,7 +45,7 @@ namespace TheCure
 
             if (mouseState.LeftButton == ButtonState.Pressed && _isHovering)
             {
-                Clicked?.Invoke(this, EventArgs.Empty);
+                Action?.Invoke();
             }
         }
 
@@ -54,13 +59,20 @@ namespace TheCure
             Color borderColor = _isHovering ? new Color(255, 200, 0, 255) : new Color(255, 255, 255, 150);
             int borderThickness = 2;
 
-            spriteBatch.Draw(gameManager.DummyTexture, new Rectangle(Rectangle.X, Rectangle.Y, Rectangle.Width, borderThickness), borderColor);
-            spriteBatch.Draw(gameManager.DummyTexture, new Rectangle(Rectangle.X, Rectangle.Y + Rectangle.Height - borderThickness, Rectangle.Width, borderThickness), borderColor);
-            spriteBatch.Draw(gameManager.DummyTexture, new Rectangle(Rectangle.X, Rectangle.Y, borderThickness, Rectangle.Height), borderColor);
-            spriteBatch.Draw(gameManager.DummyTexture, new Rectangle(Rectangle.X + Rectangle.Width - borderThickness, Rectangle.Y, borderThickness, Rectangle.Height), borderColor);
+            spriteBatch.Draw(gameManager.DummyTexture,
+                new Rectangle(Rectangle.X, Rectangle.Y, Rectangle.Width, borderThickness), borderColor);
+            spriteBatch.Draw(gameManager.DummyTexture,
+                new Rectangle(Rectangle.X, Rectangle.Y + Rectangle.Height - borderThickness, Rectangle.Width,
+                    borderThickness), borderColor);
+            spriteBatch.Draw(gameManager.DummyTexture,
+                new Rectangle(Rectangle.X, Rectangle.Y, borderThickness, Rectangle.Height), borderColor);
+            spriteBatch.Draw(gameManager.DummyTexture,
+                new Rectangle(Rectangle.X + Rectangle.Width - borderThickness, Rectangle.Y, borderThickness,
+                    Rectangle.Height), borderColor);
 
             Vector2 size = _font.MeasureString(Text);
-            Vector2 position = new Vector2(Rectangle.X + (Rectangle.Width - size.X) / 2, Rectangle.Y + (Rectangle.Height - size.Y) / 2);
+            Vector2 position = new Vector2(Rectangle.X + (Rectangle.Width - size.X) / 2,
+                Rectangle.Y + (Rectangle.Height - size.Y) / 2);
 
             Color textColor = _isHovering ? Color.Yellow : Color.White;
             spriteBatch.DrawString(_font, Text, position, textColor);
