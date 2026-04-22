@@ -83,10 +83,12 @@ namespace TheCure
             _formationAnchor = Vector2.Lerp(_formationAnchor, playerPosition, anchorBlend);
 
             Vector2 formationTarget = GetFormationTarget(gameManager, _formationAnchor);
-            formationTarget = KeepPositionOutsidePlayer(gameManager.Player, formationTarget, _radius + 18f);
+            float sizeMultiplier = GetSizeMultiplier(gameManager);
+            formationTarget = KeepPositionOutsidePlayer(gameManager.Player, formationTarget, _radius * sizeMultiplier + 18f);
             formationTarget += GetFriendlySeparationOffset(gameManager);
 
-            Vector2 correctedPosition = KeepPositionOutsidePlayer(gameManager.Player, _collider.Center, _radius + 4f);
+            Vector2 correctedPosition = KeepPositionOutsidePlayer(gameManager.Player, _collider.Center,
+                _radius * sizeMultiplier + 4f);
             if (correctedPosition != _collider.Center)
             {
                 Vector2 correction = correctedPosition - _collider.Center;
@@ -145,9 +147,10 @@ namespace TheCure
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             Color tint = Color.LightBlue;
-            Rectangle destinationRectangle = GetAnimatedSpriteDestinationRectangle();
+            float sizeMultiplier = GetSizeMultiplier(GameManager.GetGameManager());
+            Rectangle destinationRectangle = GetAnimatedSpriteDestinationRectangle(sizeMultiplier);
             DrawShadow(spriteBatch, destinationRectangle);
-            DrawAnimatedSprite(spriteBatch, tint, _facingDirection);
+            DrawAnimatedSprite(spriteBatch, tint, _facingDirection, sizeMultiplier);
 
             base.Draw(gameTime, spriteBatch);
         }
@@ -212,7 +215,7 @@ namespace TheCure
         private Vector2 GetFriendlySeparationOffset(GameManager gameManager)
         {
             Vector2 totalOffset = Vector2.Zero;
-            float desiredDistance = _radius * 2.15f;
+            float desiredDistance = _radius * 2.15f * GetSizeMultiplier(gameManager);
 
             foreach (var other in gameManager.Friendlies)
             {
@@ -267,6 +270,8 @@ namespace TheCure
 
         private void Attack(GameTime gameTime)
         {
+            _weapon.SetDamageMultiplier(GameManager.GetGameManager().GetFriendlyBoostMultiplier());
+
             if (_weapon.CanFire)
             {
                 Mob nearestEnemy = GetNearestEnemyPosition();
@@ -284,6 +289,11 @@ namespace TheCure
             }
 
             _weapon.UpdateCoolDown(gameTime);
+        }
+
+        private float GetSizeMultiplier(GameManager gameManager)
+        {
+            return gameManager.GetFriendlyBoostMultiplier();
         }
 
         private Mob GetNearestEnemyPosition()

@@ -8,7 +8,7 @@ public class Handgun : BaseWeapon
 
     public override void Fire(Vector2 position, Vector2 direction)
     {
-        Bullet bullet = new Bullet(position, direction, 300f);
+        Bullet bullet = new Bullet(position, direction, 300f, damage: DamageMultiplier);
 
         GameManager.GetGameManager().AddGameObject(bullet);
         ResetCoolDown();

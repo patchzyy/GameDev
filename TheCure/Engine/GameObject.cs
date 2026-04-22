@@ -75,7 +75,7 @@ namespace TheCure
             SetHealthBar(texture, maxHealth, startHealth, onDeath, null, hide);
         }
 
-        public virtual void LoseHealth(int amount)
+        public virtual void LoseHealth(float amount)
         {
             if (_healthBar != null)
             {
@@ -87,7 +87,7 @@ namespace TheCure
             }
         }
 
-        public void GainHealth(int amount)
+        public void GainHealth(float amount)
         {
             if (_healthBar != null)
             {

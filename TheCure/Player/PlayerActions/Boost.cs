@@ -1,4 +1,3 @@
-using System;
 using Microsoft.Xna.Framework;
 
 namespace TheCure.PlayerActions;
@@ -13,6 +12,6 @@ public class Boost : PlayerAction
 
     protected override void OnExecute(GameTime gameTime, GameManager gameManager)
     {
-        Console.WriteLine("Boost");
+        gameManager.ActivateFriendlyBoost();
     }
 }

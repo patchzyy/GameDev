@@ -51,8 +51,14 @@ namespace TheCure
 
         private float _supplySpawnTimer = 0f;
         private float _supplySpawnInterval = 15.0f;
+        private float _friendlyBoostTimer = 0f;
+        private int _friendlyBoostUpgradeLevel = 0;
 
         private UpgradeSelection _upgradeSelection;
+
+        private const float FriendlyBoostDuration = 8f;
+        private const float FriendlyBoostBaseMultiplier = 1.05f;
+        private const float FriendlyBoostUpgradeStep = 0.05f;
 
 
         //World borders
@@ -172,8 +178,11 @@ namespace TheCure
             _supplySpawnTimer = 0f;
             _currentSpawnInterval = _initialSpawnInterval;
             _enemiesToSpawn = 1;
+            _friendlyBoostTimer = 0f;
+            _friendlyBoostUpgradeLevel = 0;
 
             PlayerInteractionsHud.Reset();
+            _upgradeSelection.Reset();
 
             AddWorldWalls();
             _gameObjects.Add(Player);
@@ -290,6 +299,7 @@ namespace TheCure
                 _gameTimeElapsed += deltaTime;
                 _spawnTimer += deltaTime;
                 _supplySpawnTimer += deltaTime;
+                _friendlyBoostTimer = Math.Max(0f, _friendlyBoostTimer - deltaTime);
 
                 UpdatePhase();
                 SpawnEnemies();
@@ -506,9 +516,30 @@ namespace TheCure
             {
                 new Stat("Max Health", Player.MaxHealth.ToString()),
                 new Stat("Move Speed", (Player.MoveSpeed / 10).ToString("0.0", CultureInfo.InvariantCulture)),
-                new Stat("Friendlies", _gameObjects.OfType<Friendly>().Count().ToString())
+                new Stat("Friendlies", _gameObjects.OfType<Friendly>().Count().ToString()),
+                new Stat("Boost", $"x{GetUnlockedFriendlyBoostMultiplier():0.00}")
             };
             return stats;
+        }
+
+        public void ActivateFriendlyBoost()
+        {
+            _friendlyBoostTimer = FriendlyBoostDuration;
+        }
+
+        public void UpgradeFriendlyBoost()
+        {
+            _friendlyBoostUpgradeLevel++;
+        }
+
+        public float GetFriendlyBoostMultiplier()
+        {
+            return _friendlyBoostTimer > 0f ? GetUnlockedFriendlyBoostMultiplier() : 1f;
+        }
+
+        public float GetUnlockedFriendlyBoostMultiplier()
+        {
+            return FriendlyBoostBaseMultiplier + (_friendlyBoostUpgradeLevel * FriendlyBoostUpgradeStep);
         }
 
         public void AddGameObject(GameObject gameObject)

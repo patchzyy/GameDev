@@ -165,7 +165,7 @@ namespace TheCure
             }
         }
 
-        public override void LoseHealth(int amount)
+        public override void LoseHealth(float amount)
         {
             var dash = GameManager.GetGameManager().PlayerInteractionsHud.GetDash();
             if (dash != null && dash.IsDashing)
