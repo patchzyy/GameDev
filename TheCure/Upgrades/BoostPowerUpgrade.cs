@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using TheCure.Boosts;
+using TheCure.Engine.Managers;
 
 namespace TheCure.Upgrades;
 
@@ -23,7 +25,7 @@ public class BoostPowerUpgrade : Upgrade
         {
             return;
         }
-
-        GameManager.GetGameManager().UpgradeFriendlyBoost();
+        
+        BoostManager.Get().Upgrade<FriendlyBoost>();
     }
 }

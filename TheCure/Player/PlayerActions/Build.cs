@@ -10,7 +10,7 @@ public class Build : PlayerAction
         CoolDown = 15f;
     }
 
-    protected override void OnExecute(GameTime gameTime, GameManager gameManager)
+    protected override void OnExecute(GameTime gameTime)
     {
         Console.WriteLine("Build");
     }

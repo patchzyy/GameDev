@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using TheCure.Managers;
 using TheCure.World;
 
 namespace TheCure
@@ -25,10 +26,11 @@ namespace TheCure
             Damage = damage;
         }
 
-        public override void Load(ContentManager content)
+        public override void Load()
         {
+            var content = ContentsManager.Get().GetContent();
             _texture = content.Load<Texture2D>("Bullet");
-            base.Load(content);
+            base.Load();
         }
 
         public override void Update(GameTime gameTime)
@@ -40,7 +42,7 @@ namespace TheCure
 
             if (_life <= 0)
             {
-                GameManager.GetGameManager().RemoveGameObject(this);
+                GameManager.Get().RemoveGameObject(this);
             }
         }
 
@@ -48,11 +50,11 @@ namespace TheCure
         {
             if (gameObject is Zombie)
             {
-                GameManager.GetGameManager().RemoveGameObject(this);
+                GameManager.Get().RemoveGameObject(this);
             }
             else if (gameObject is Supply)
             {
-                GameManager.GetGameManager().RemoveGameObject(this);
+                GameManager.Get().RemoveGameObject(this);
             }
         }
 

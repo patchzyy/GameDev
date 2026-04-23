@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using TheCure.Managers;
 using TheCure.Mobs;
 using TheCure.Weapons;
 
@@ -11,7 +12,7 @@ namespace TheCure
         // constants
         private float _attackCoolDown;
         private float _stagger;
-        private int _attackDamage;
+        private float _attackDamage;
 
         // states
         private bool _attackNextCombat;
@@ -36,9 +37,9 @@ namespace TheCure
             _attackCoolDown = Settings.GetValue(SettingsConst.ZOMBIE.ATTACK_COOL_DOWN);
         }
 
-        public override void Load(ContentManager content)
+        public override void Load()
         {
-            base.Load(content);
+            base.Load();
 
             SetHealthBar(_texture, _maxHealth, _startHealth, Destroy, BecomeFriendly);
         }
@@ -79,7 +80,7 @@ namespace TheCure
             }
 
             Vector2 targetPosition = _currentTarget == null
-                ? GameManager.GetGameManager().Player.GetPosition().Center.ToVector2()
+                ? PlayerManager.Get().Player.GetPosition().Center.ToVector2()
                 : _currentTarget.GetCollider().GetBoundingBox().Center.ToVector2();
             Vector2 direction = targetPosition - _collider.Center;
 
@@ -89,13 +90,13 @@ namespace TheCure
 
         private void BecomeFriendly()
         {
-            GameManager gameManager = GameManager.GetGameManager();
+            GameManager gameManager = GameManager.Get();
 
             // turn into friendly at same position
             gameManager.AddGameObject(new Friendly(FriendlyWeapons.HandGun, _collider.Center));
             gameManager.RemoveGameObject(this);
 
-            gameManager.AddScore(100, "Zombie Healed"); // Add score for converting a zombie to friendly
+            ScoreManager.Get().AddScore(100, "Zombie Healed"); // Add score for converting a zombie to friendly
         }
 
         private void Attack(float deltaTime)
@@ -145,13 +146,13 @@ namespace TheCure
 
         public override void Destroy()
         {
-            GameManager.GetGameManager().AddScore(50, "Zombie Killed");
+            ScoreManager.Get().AddScore(50, "Zombie Killed");
             base.Destroy();
         }
 
         public void RandomMove()
         {
-            var gameManager = GameManager.GetGameManager();
+            var gameManager = GameManager.Get();
             _collider.Center = gameManager.RandomLocationOutsideView((int)_collider.Radius);
         }
 

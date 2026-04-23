@@ -1,17 +1,18 @@
 ﻿using System.Data;
 using System.Reflection.PortableExecutable;
 using Microsoft.Xna.Framework.Input;
+using TheCure.Managers;
 
 namespace TheCure
 {
-    public class InputManager
+    public class InputManager : Manager<InputManager>
     {
         public KeyboardState LastKeyboardState { get; private set; }
         public KeyboardState CurrentKeyboardState { get; private set; }
         public MouseState LastMouseState { get; private set; }
         public MouseState CurrentMouseState { get; private set; }
 
-        public InputManager()
+        public void Load()
         {
             LastKeyboardState = Keyboard.GetState();
             CurrentKeyboardState = Keyboard.GetState();
@@ -44,12 +45,14 @@ namespace TheCure
 
         public bool LeftMousePress()
         {
-            return CurrentMouseState.LeftButton == ButtonState.Pressed && LastMouseState.LeftButton == ButtonState.Released;
+            return CurrentMouseState.LeftButton == ButtonState.Pressed &&
+                   LastMouseState.LeftButton == ButtonState.Released;
         }
 
         public bool RightMousePress()
         {
-            return CurrentMouseState.RightButton == ButtonState.Pressed && LastMouseState.RightButton == ButtonState.Released;
+            return CurrentMouseState.RightButton == ButtonState.Pressed &&
+                   LastMouseState.RightButton == ButtonState.Released;
         }
     }
 }

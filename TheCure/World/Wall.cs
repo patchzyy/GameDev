@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using TheCure.Collision;
+using TheCure.Managers;
 
 namespace TheCure
 {
@@ -17,8 +18,9 @@ namespace TheCure
             SetCollider(_rectangleCollider);
         }
 
-        public override void Load(ContentManager content)
+        public override void Load()
         {
+            var content = ContentsManager.Get().GetContent();
             _texture = content.Load<Texture2D>("Wall_Texture");
         }
 
@@ -76,7 +78,8 @@ namespace TheCure
                 var overlapRight = wall.Right - current.Left;
                 var overlapTop = current.Bottom - wall.Top;
                 var overlapBottom = wall.Bottom - current.Top;
-                var smallestOverlap = Math.Min(Math.Min(overlapLeft, overlapRight), Math.Min(overlapTop, overlapBottom));
+                var smallestOverlap =
+                    Math.Min(Math.Min(overlapLeft, overlapRight), Math.Min(overlapTop, overlapBottom));
 
                 if (smallestOverlap == overlapLeft)
                 {

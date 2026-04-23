@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using TheCure.Engine.Managers;
+using TheCure.Managers;
 
 namespace TheCure
 {
@@ -9,6 +11,12 @@ namespace TheCure
         private SpriteBatch _spriteBatch;
         private GraphicsDeviceManager _graphics;
         private GameManager _gameManager;
+        private PlayerManager _playerManager;
+        private ContentsManager _contentsManager;
+        private ScreenManager _screenManager;
+        private InputManager _inputManager;
+        private UpgradeManager _upgradeManager;
+        private BoostManager _boostManager;
         private bool _isEscapeKeyPressed = false;
 
         public TheCure()
@@ -16,7 +24,7 @@ namespace TheCure
             _graphics = new GraphicsDeviceManager(this);
             _graphics.PreferredBackBufferWidth = 1920;
             _graphics.PreferredBackBufferHeight = 1080;
-            _graphics.IsFullScreen = true;
+            _graphics.IsFullScreen = false;
             _graphics.ApplyChanges();
 
             Content.RootDirectory = "Content";
@@ -25,23 +33,32 @@ namespace TheCure
 
         protected override void Initialize()
         {
-            _gameManager = GameManager.GetGameManager();
+            _gameManager = GameManager.Get();
+            _contentsManager = ContentsManager.Get();
+            _playerManager = PlayerManager.Get();
+            _screenManager = ScreenManager.Get();
+            _inputManager = InputManager.Get();
+            _upgradeManager = UpgradeManager.Get();
+            _boostManager = BoostManager.Get();
 
+            _contentsManager.Initialize(Content, this);
+
+            Player player =
+                new Player(new Point(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height / 2));
+
+            _playerManager.Initialize(player);
+            _gameManager.Initialize(this);
             base.Initialize();
-
-            Player player = new Player(new Point(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height / 2));
-
-            _gameManager.Initialize(Content, this, player);
-            _gameManager.AddWorldWalls();
-
-            _gameManager.AddGameObject(player);
-            _gameManager.AddGameObject(new Zombie());
         }
 
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-            _gameManager.Load(Content);
+            _contentsManager.Load();
+            _gameManager.Load();
+            _screenManager.Load();
+            _inputManager.Load();
+            _upgradeManager.Load();
         }
 
         protected override void Update(GameTime gameTime)
@@ -69,6 +86,8 @@ namespace TheCure
 
             _isEscapeKeyPressed = currentKeyboardState.IsKeyDown(Keys.Escape);
             _gameManager.Update(gameTime);
+            _screenManager.Update();
+            _inputManager.Update();
 
             base.Update(gameTime);
         }

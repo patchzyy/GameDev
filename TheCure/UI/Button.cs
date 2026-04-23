@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using TheCure.Managers;
 
 namespace TheCure
 {
@@ -51,22 +52,21 @@ namespace TheCure
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            GameManager gameManager = GameManager.GetGameManager();
-
+            var dummyTexture = ContentsManager.Get().DummyTexture;
             Color bgColor = _isHovering ? new Color(100, 200, 100, 255) : new Color(70, 150, 70, 255);
-            spriteBatch.Draw(gameManager.DummyTexture, Rectangle, bgColor);
+            spriteBatch.Draw(dummyTexture, Rectangle, bgColor);
 
             Color borderColor = _isHovering ? new Color(255, 200, 0, 255) : new Color(255, 255, 255, 150);
             int borderThickness = 2;
 
-            spriteBatch.Draw(gameManager.DummyTexture,
+            spriteBatch.Draw(dummyTexture,
                 new Rectangle(Rectangle.X, Rectangle.Y, Rectangle.Width, borderThickness), borderColor);
-            spriteBatch.Draw(gameManager.DummyTexture,
+            spriteBatch.Draw(dummyTexture,
                 new Rectangle(Rectangle.X, Rectangle.Y + Rectangle.Height - borderThickness, Rectangle.Width,
                     borderThickness), borderColor);
-            spriteBatch.Draw(gameManager.DummyTexture,
+            spriteBatch.Draw(dummyTexture,
                 new Rectangle(Rectangle.X, Rectangle.Y, borderThickness, Rectangle.Height), borderColor);
-            spriteBatch.Draw(gameManager.DummyTexture,
+            spriteBatch.Draw(dummyTexture,
                 new Rectangle(Rectangle.X + Rectangle.Width - borderThickness, Rectangle.Y, borderThickness,
                     Rectangle.Height), borderColor);
 

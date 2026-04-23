@@ -9,7 +9,7 @@ public class HealBomb : BaseWeapon
     public override void Fire(Vector2 position, Vector2 direction)
     {
         HealBombObject healBombObject = new HealBombObject(position, direction, "Bullet");
-        GameManager.GetGameManager().AddGameObject(healBombObject);
+        GameManager.Get().AddGameObject(healBombObject);
 
         ResetCoolDown();
     }

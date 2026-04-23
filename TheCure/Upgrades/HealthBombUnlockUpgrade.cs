@@ -16,6 +16,11 @@ public class HealthBombUnlockUpgrade : Upgrade
 
     public void Unlock(List<Upgrade> unlockedUpgrades)
     {
-        GameManager.GetGameManager().PlayerInteractionsHud.AddAction(new Throw("Throw", ThrowWeapons.HealBomb));
+        PlayerActionsManager.Get().AddAction(new Throw("Throw", ThrowWeapons.HealBomb));
+    }
+    
+    public void Upgrade()
+    {
+        return;
     }
 }

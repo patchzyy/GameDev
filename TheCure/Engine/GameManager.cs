@@ -3,40 +3,19 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using TheCure.Weapons;
+using TheCure.Engine.Managers;
+using TheCure.Managers;
 using TheCure.Mobs;
-using TheCure.World;
 
 namespace TheCure
 {
-    public class GameManager
+    public class GameManager : Manager<GameManager>
     {
-        private static GameManager gameManager;
-        private ScoreManager scoreManager;
-
         private List<GameObject> _gameObjects;
         private List<GameObject> _toBeRemoved;
         private List<GameObject> _toBeAdded;
-        private ContentManager _content;
-        private Texture2D _backgroundTexture;
-        private Texture2D _backgroundPauseTexture;
-        private Texture2D _backgroundGameOverTexture;
-        private Texture2D _gameplayBackgroundTexture;
-        private SpriteFont _titleFont;
-        private SpriteFont _buttonFont;
-        private Button _startButton;
-        private Button _quitButton;
-        private Button _continueButton;
-        private Button _pauseQuitButton;
-        private Button _restartButton;
         private Camera _camera;
-        private List<ScorePopup> _scorePopups = new List<ScorePopup>();
-
-        public PlayerInteractionsHUD PlayerInteractionsHud;
-
 
         private float _gameTimeElapsed = 0f;
         private float _spawnTimer = 0f;
@@ -49,16 +28,7 @@ namespace TheCure
         private int _maxBrutesOnScreen;
         private float _bruteSpawnChance;
 
-        private float _supplySpawnTimer = 0f;
-        private float _supplySpawnInterval = 15.0f;
-        private float _friendlyBoostTimer = 0f;
-        private int _friendlyBoostUpgradeLevel = 0;
 
-        private UpgradeSelection _upgradeSelection;
-
-        private const float FriendlyBoostDuration = 8f;
-        private const float FriendlyBoostBaseMultiplier = 1.05f;
-        private const float FriendlyBoostUpgradeStep = 0.05f;
 
 
         //World borders
@@ -69,27 +39,13 @@ namespace TheCure
 
 
         public Random RNG { get; private set; }
-        public Player Player { get; private set; }
-        public InputManager InputManager { get; private set; }
         public Game Game { get; private set; }
-        public Texture2D DummyTexture { get; private set; }
         public GameState CurrentGameState { get; private set; }
         public HUD HUD { get; private set; }
         public List<Mob> Enemies;
         public Camera Camera => _camera;
 
-
         public List<Friendly> Friendlies { get; private set; } = new List<Friendly>();
-
-        public static GameManager GetGameManager()
-        {
-            if (gameManager == null)
-            {
-                gameManager = new GameManager();
-            }
-
-            return gameManager;
-        }
 
         public GameManager()
         {
@@ -98,94 +54,43 @@ namespace TheCure
             _toBeAdded = new List<GameObject>();
             Enemies = new List<Mob>();
 
-            InputManager = new InputManager();
             RNG = new Random();
 
             CurrentGameState = GameState.StartScreen;
             _currentSpawnInterval = _initialSpawnInterval;
         }
 
-        public void Initialize(ContentManager content, Game game, Player player)
+        public void Initialize(Game game)
         {
             Game = game;
-            _content = content;
-            Player = player;
             _camera = new Camera(Game.GraphicsDevice.Viewport);
-
-            DummyTexture = new(Game.GraphicsDevice, 1, 1);
-            DummyTexture.SetData(new[] { Color.White });
-
-            CreateButtons();
-
-            PositionButtons();
-
             CurrentGameState = GameState.StartScreen;
+            AddGameObject(PlayerManager.Get().Player);
+            AddWorldWalls();
         }
 
-        private void CreateButtons()
-        {
-            int buttonWidth = 200;
-            int buttonHeight = 50;
-            _startButton = new Button(new Rectangle(0, 0, buttonWidth, buttonHeight), "Start", _buttonFont);
-            _quitButton = new Button(new Rectangle(0, 0, buttonWidth, buttonHeight), "Quit", _buttonFont);
-            _continueButton = new Button(new Rectangle(0, 0, buttonWidth, buttonHeight), "Continue", _buttonFont);
-            _pauseQuitButton = new Button(new Rectangle(0, 0, buttonWidth, buttonHeight), "Quit", _buttonFont);
-            _restartButton = new Button(new Rectangle(0, 0, buttonWidth, buttonHeight), "Opnieuw spelen", _buttonFont);
-
-            _startButton.SetAction(()=> CurrentGameState = GameState.Playing);
-            _quitButton.SetAction(Game.Exit);
-            _continueButton.SetAction(() => CurrentGameState = GameState.Playing);
-            _pauseQuitButton.SetAction(Game.Exit);
-            _restartButton.SetAction(RestartButtonAction);
-        }
-
-        private void PositionButtons()
-        {
-            int buttonWidth = 200;
-            int centerX = Game.GraphicsDevice.Viewport.Width / 2;
-
-            _startButton.SetPosition(centerX - buttonWidth / 2, (int)(Game.GraphicsDevice.Viewport.Height * 0.54f));
-            _quitButton.SetPosition(centerX - buttonWidth / 2, (int)(Game.GraphicsDevice.Viewport.Height * 0.68f));
-            _continueButton.SetPosition(centerX - buttonWidth / 2, (int)(Game.GraphicsDevice.Viewport.Height * 0.5f));
-            _restartButton.SetPosition(centerX - buttonWidth / 2, (int)(Game.GraphicsDevice.Viewport.Height * 0.5f));
-            _pauseQuitButton.SetPosition(centerX - buttonWidth / 2, (int)(Game.GraphicsDevice.Viewport.Height * 0.68f));
-        }
-
-        private void RestartButtonAction()
-        {
-            ResetGame();
-            CurrentGameState = GameState.Playing;
-        }
-
-        private void ResetGame()
+        public void ResetGame()
         {
             _gameObjects.Clear();
             _toBeRemoved.Clear();
             _toBeAdded.Clear();
             Friendlies.Clear();
 
-            scoreManager.Reset();
-
-            Player.GainHealth((int)Player.MaxHealth);
-            Player.WeaponsSystem = new WeaponsSystem();
-            Player._rectangleCollider.shape.Location = new Point(Game.GraphicsDevice.Viewport.Width / 2,
-                Game.GraphicsDevice.Viewport.Height / 2);
-            Player._velocity = Vector2.Zero;
-            Player._rotation = 0f;
+            ScoreManager.Get().Reset();
+            PlayerManager.Get().ResetPlayer();
+            BoostManager.Get().Reset();
 
             _gameTimeElapsed = 0f;
             _spawnTimer = 0f;
-            _supplySpawnTimer = 0f;
             _currentSpawnInterval = _initialSpawnInterval;
             _enemiesToSpawn = 1;
-            _friendlyBoostTimer = 0f;
-            _friendlyBoostUpgradeLevel = 0;
 
-            PlayerInteractionsHud.Reset();
-            _upgradeSelection.Reset();
+
+            PlayerActionsManager.Get().Reset();
+            UpgradeManager.Get().Reset();
 
             AddWorldWalls();
-            _gameObjects.Add(Player);
+            _gameObjects.Add(PlayerManager.Get().Player);
 
             for (var i = 0; i < 1; i++)
             {
@@ -198,35 +103,24 @@ namespace TheCure
             CurrentGameState = newState;
         }
 
-        public void Load(ContentManager content)
+        public void Load()
         {
-            _backgroundTexture = content.Load<Texture2D>("ZombieBackground");
-            _gameplayBackgroundTexture = content.Load<Texture2D>("BackGround");
-            _backgroundPauseTexture = content.Load<Texture2D>("BackgroundPause");
-            _backgroundGameOverTexture = content.Load<Texture2D>("GameOverBackground");
-            _titleFont = content.Load<SpriteFont>("TitleFont");
-            _buttonFont = content.Load<SpriteFont>("ButtonFont");
-
-            PlayerInteractionsHud = new PlayerInteractionsHUD();
             HUD = new HUD();
-            scoreManager = new ScoreManager();
-            _upgradeSelection = new UpgradeSelection();
 
             foreach (var gameObject in _gameObjects)
             {
-                gameObject.Load(content);
+                gameObject.Load();
             }
 
-            PlayerInteractionsHud.Load(content);
-            HUD.Load(content);
-            _upgradeSelection.Load(content);
+            PlayerActionsManager.Get().Load();
+            HUD.Load();
         }
 
-        public void HandleInput(InputManager inputManager)
+        public void HandleInput()
         {
             foreach (var gameObject in _gameObjects)
             {
-                gameObject.HandleInput(this.InputManager);
+                gameObject.HandleInput();
             }
         }
 
@@ -252,43 +146,14 @@ namespace TheCure
 
         public void Update(GameTime gameTime)
         {
-            InputManager.Update();
-            PlayerInteractionsHud.Update(gameTime);
-            _upgradeSelection.Update(gameTime);
-            var mouseState = Mouse.GetState();
-
-            if (CurrentGameState == GameState.StartScreen)
-            {
-                _startButton.Update(mouseState);
-                _quitButton.Update(mouseState);
-
-                return;
-            }
-
-            if (CurrentGameState == GameState.Paused)
-            {
-                if (InputManager.IsKeyPress(Keys.Space))
-                {
-                    CurrentGameState = GameState.Playing;
-                }
-
-                _continueButton.Update(mouseState);
-                _pauseQuitButton.Update(mouseState);
-
-                return;
-            }
+            PlayerActionsManager.Get().Update(gameTime);
+            UpgradeManager.Get().Update(gameTime);
+            ScoreManager.Get().Update(gameTime);
+            BoostManager.Get().Update(gameTime);
 
             if (CurrentGameState == GameState.Upgrade)
             {
-                _upgradeSelection.UpdateButtons(gameTime);
-                return;
-            }
-
-            if (CurrentGameState == GameState.GameOver)
-            {
-                _restartButton.Update(mouseState);
-                _quitButton.Update(mouseState);
-
+                UpgradeManager.Get().UpdateButtons(gameTime);
                 return;
             }
 
@@ -298,37 +163,24 @@ namespace TheCure
 
                 _gameTimeElapsed += deltaTime;
                 _spawnTimer += deltaTime;
-                _supplySpawnTimer += deltaTime;
-                _friendlyBoostTimer = Math.Max(0f, _friendlyBoostTimer - deltaTime);
 
                 UpdatePhase();
                 SpawnEnemies();
-                // SpawnSupply();
-                for (int i = _scorePopups.Count - 1; i >= 0; i--)
-                {
-                    _scorePopups[i].TimeLeft -= deltaTime;
-
-                    if (_scorePopups[i].TimeLeft <= 0)
-                    {
-                        _scorePopups.RemoveAt(i);
-                    }
-                }
-
-                HandleInput(InputManager);
+                HandleInput();
 
                 foreach (var gameObject in _gameObjects)
                 {
                     gameObject.Update(gameTime);
                 }
 
-                _camera.Update(Player.GetPosition().Center.ToVector2(), GetWorldBounds());
+                _camera.Update(PlayerManager.Get().Player.GetPosition().Center.ToVector2(), GetWorldBounds());
                 HUD.Update(gameTime);
 
                 CheckCollision();
 
                 foreach (var gameObject in _toBeAdded)
                 {
-                    gameObject.Load(_content);
+                    gameObject.Load();
 
                     if (gameObject is Zombie zombie)
                     {
@@ -438,25 +290,12 @@ namespace TheCure
             AddGameObject(brute);
         }
 
-        private void SpawnSupply()
-        {
-            if (_supplySpawnTimer < _supplySpawnInterval)
-                return;
-
-            _supplySpawnTimer = 0f;
-
-            var newSupply = new Supply();
-            newSupply.Load(_content);
-            AddGameObject(newSupply);
-            newSupply.RandomMove();
-        }
-
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             switch (CurrentGameState)
             {
                 case GameState.StartScreen:
-                    DrawStartScreen(spriteBatch);
+                    ScreenManager.Get().DrawStartScreen(spriteBatch);
                     break;
 
                 case GameState.Playing:
@@ -464,7 +303,7 @@ namespace TheCure
 
                     spriteBatch.Begin();
                     HUD.Draw(spriteBatch, this);
-                    PlayerInteractionsHud.Draw(spriteBatch, this);
+                    PlayerActionsManager.Get().Draw(spriteBatch);
                     spriteBatch.End();
                     break;
 
@@ -473,18 +312,18 @@ namespace TheCure
 
                     spriteBatch.Begin();
                     HUD.Draw(spriteBatch, this);
-                    PlayerInteractionsHud.Draw(spriteBatch, this);
+                    PlayerActionsManager.Get().Draw(spriteBatch);
 
-                    _upgradeSelection.Draw(spriteBatch, this);
+                    UpgradeManager.Get().Draw(spriteBatch, this);
                     spriteBatch.End();
                     break;
 
                 case GameState.Paused:
-                    DrawPauseMenu(spriteBatch);
+                    ScreenManager.Get().DrawPauseMenu(spriteBatch);
                     break;
 
                 case GameState.GameOver:
-                    DrawGameOver(spriteBatch);
+                    ScreenManager.Get().DrawGameOver(spriteBatch);
                     break;
             }
         }
@@ -494,52 +333,20 @@ namespace TheCure
             return _gameTimeElapsed;
         }
 
-        public int GetScore()
-        {
-            return scoreManager.GetScore();
-        }
-
-        public List<ScorePopup> GetScorePopups()
-        {
-            return _scorePopups;
-        }
-
-        public void AddScore(int pointsToAdd, string reason = "")
-        {
-            scoreManager.AddScore(pointsToAdd);
-            _scorePopups.Add(new ScorePopup($"{reason}  +{pointsToAdd}", 2f));
-        }
-
         public List<Stat> GetStats()
         {
             var stats = new List<Stat>
             {
-                new Stat("Max Health", Player.MaxHealth.ToString()),
-                new Stat("Move Speed", (Player.MoveSpeed / 10).ToString("0.0", CultureInfo.InvariantCulture)),
+                new Stat("Max Health", PlayerManager.Get().Player.MaxHealth.ToString()),
+                new Stat("Move Speed",
+                    (PlayerManager.Get().Player.MoveSpeed / 10).ToString("0.0", CultureInfo.InvariantCulture)),
                 new Stat("Friendlies", _gameObjects.OfType<Friendly>().Count().ToString()),
-                new Stat("Boost", $"x{GetUnlockedFriendlyBoostMultiplier():0.00}")
             };
+            foreach (var boost in BoostManager.Get()._boosts)
+            {
+                stats.Add(new Stat("Boost", $"x{boost.GetUnlockedBoostMultiplier():0.00}"));
+            }
             return stats;
-        }
-
-        public void ActivateFriendlyBoost()
-        {
-            _friendlyBoostTimer = FriendlyBoostDuration;
-        }
-
-        public void UpgradeFriendlyBoost()
-        {
-            _friendlyBoostUpgradeLevel++;
-        }
-
-        public float GetFriendlyBoostMultiplier()
-        {
-            return _friendlyBoostTimer > 0f ? GetUnlockedFriendlyBoostMultiplier() : 1f;
-        }
-
-        public float GetUnlockedFriendlyBoostMultiplier()
-        {
-            return FriendlyBoostBaseMultiplier + (_friendlyBoostUpgradeLevel * FriendlyBoostUpgradeStep);
         }
 
         public void AddGameObject(GameObject gameObject)
@@ -575,7 +382,7 @@ namespace TheCure
             var blockedViewBounds = _camera.GetViewBounds();
             blockedViewBounds.Inflate(margin, margin);
 
-            Vector2 playerPos = Player.GetPosition().Center.ToVector2();
+            Vector2 playerPos = PlayerManager.Get().Player.GetPosition().Center.ToVector2();
             float minDistanceFromPlayer = margin;
 
             // todo: check of dit... niet random kan, heb dit van de les lol
@@ -673,101 +480,8 @@ namespace TheCure
         private void AddWorldWall(Rectangle bounds)
         {
             var wall = new Wall(bounds);
-
-            if (_content != null && _backgroundTexture != null)
-            {
-                wall.Load(_content);
-            }
-
+            wall.Load();
             _gameObjects.Add(wall);
-        }
-
-        private void DrawGameOver(SpriteBatch spriteBatch)
-        {
-            spriteBatch.Begin();
-
-            var spacing = 20f;
-            var currentY = 150f;
-
-            spriteBatch.Draw(_backgroundGameOverTexture,
-                new Rectangle(0, 0, Game.GraphicsDevice.Viewport.Width, Game.GraphicsDevice.Viewport.Height),
-                Color.White);
-
-            spriteBatch.Draw(DummyTexture,
-                new Rectangle(0, 0, Game.GraphicsDevice.Viewport.Width, Game.GraphicsDevice.Viewport.Height),
-                new Color(0, 0, 0, 100));
-
-            var gameOverText = "Game Over";
-            var gameOverTextSize = _titleFont.MeasureString(gameOverText);
-            var gameOverTextPosition =
-                new Vector2(Game.GraphicsDevice.Viewport.Width / 2 - gameOverTextSize.X / 2,
-                    Game.GraphicsDevice.Viewport.Height / 8f);
-
-            spriteBatch.DrawString(_titleFont, gameOverText, gameOverTextPosition, Color.Red);
-
-            string scoreText = $"Eindscore: {GetScore()}";
-            Vector2 scoreTextSize = _titleFont.MeasureString(scoreText);
-            float scale = 0.5f;
-            Vector2 scoreTextPosition =
-                new Vector2(Game.GraphicsDevice.Viewport.Width / 2 - (scoreTextSize.X * scale) / 2,
-                    Game.GraphicsDevice.Viewport.Height / 10f);
-
-            spriteBatch.DrawString(_titleFont, scoreText, scoreTextPosition, Color.White, 0f, Vector2.Zero, scale,
-                SpriteEffects.None, 0f);
-
-            _restartButton.Draw(spriteBatch);
-            _quitButton.Draw(spriteBatch);
-
-            spriteBatch.End();
-        }
-
-        private void DrawPauseMenu(SpriteBatch spriteBatch)
-        {
-            spriteBatch.Begin();
-            spriteBatch.Draw(_backgroundPauseTexture,
-                new Rectangle(0, 0, Game.GraphicsDevice.Viewport.Width, Game.GraphicsDevice.Viewport.Height),
-                Color.White);
-
-            spriteBatch.Draw(DummyTexture,
-                new Rectangle(0, 0, Game.GraphicsDevice.Viewport.Width, Game.GraphicsDevice.Viewport.Height),
-                new Color(0, 0, 0, 100));
-
-            string pauseText = "Game gepauzeerd";
-            Vector2 pauseTextSize = _titleFont.MeasureString(pauseText);
-            float scale = 0.6f;
-            Vector2 pauseTextPosition =
-                new Vector2(Game.GraphicsDevice.Viewport.Width / 2 - (pauseTextSize.X * scale) / 2,
-                    Game.GraphicsDevice.Viewport.Height / 8f);
-
-            spriteBatch.DrawString(_titleFont, pauseText, pauseTextPosition, Color.White, 0f, Vector2.Zero, scale,
-                SpriteEffects.None, 0f);
-
-            _continueButton.Draw(spriteBatch);
-            _pauseQuitButton.Draw(spriteBatch);
-
-            spriteBatch.End();
-        }
-
-        private void DrawStartScreen(SpriteBatch spriteBatch)
-        {
-            spriteBatch.Begin();
-            spriteBatch.Draw(_backgroundTexture,
-                new Rectangle(0, 0, Game.GraphicsDevice.Viewport.Width, Game.GraphicsDevice.Viewport.Height),
-                Color.White);
-
-            var titleText = "The Cure";
-            var titleSize = _titleFont.MeasureString(titleText);
-
-            var titlePosition = new Vector2(
-                Game.GraphicsDevice.Viewport.Width / 2 - titleSize.X / 2,
-                Game.GraphicsDevice.Viewport.Height / 8f
-            );
-
-            spriteBatch.DrawString(_titleFont, titleText, titlePosition, Color.Red);
-
-            _startButton.Draw(spriteBatch);
-            _quitButton.Draw(spriteBatch);
-            spriteBatch.End();
         }
 
         private void DrawGameObjects(SpriteBatch spriteBatch, GameTime gameTime)
@@ -785,20 +499,18 @@ namespace TheCure
 
         private void DrawTiledGameplayBackground(SpriteBatch spriteBatch)
         {
-            if (_gameplayBackgroundTexture == null)
-                return;
-
+            var content = ContentsManager.Get();
             var worldBounds = GetWorldBounds();
 
-            for (var x = worldBounds.Left; x < worldBounds.Right; x += _gameplayBackgroundTexture.Width)
+            for (var x = worldBounds.Left; x < worldBounds.Right; x += content.BackgroundGamePlayTexture.Width)
             {
-                for (var y = worldBounds.Top; y < worldBounds.Bottom; y += _gameplayBackgroundTexture.Height)
+                for (var y = worldBounds.Top; y < worldBounds.Bottom; y += content.BackgroundGamePlayTexture.Height)
                 {
-                    var tileWidth = Math.Min(_gameplayBackgroundTexture.Width, worldBounds.Right - x);
-                    var tileHeight = Math.Min(_gameplayBackgroundTexture.Height, worldBounds.Bottom - y);
+                    var tileWidth = Math.Min(content.BackgroundGamePlayTexture.Width, worldBounds.Right - x);
+                    var tileHeight = Math.Min(content.BackgroundGamePlayTexture.Height, worldBounds.Bottom - y);
 
                     spriteBatch.Draw(
-                        _gameplayBackgroundTexture,
+                        content.BackgroundGamePlayTexture,
                         new Rectangle(x, y, tileWidth, tileHeight),
                         new Rectangle(0, 0, tileWidth, tileHeight),
                         Color.White);

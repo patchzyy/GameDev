@@ -32,9 +32,10 @@ namespace TheCure
             JsonHelper.Save(SettingsDictionary);
         }
 
-        public static T GetValue<T>(SettingKey<T> settingKey)
+        public static T GetValue<T>(SettingKey<T> settingKey, bool useDefault = false)
         {
-            if (SettingsDictionary.TryGetValue(settingKey.Group, out var groupSettings))
+            
+            if (SettingsDictionary.TryGetValue(settingKey.Group, out var groupSettings) && !useDefault)
             {
                 if (groupSettings.TryGetValue(settingKey.Name, out var value))
                     return value.Deserialize<T>()!;

@@ -14,7 +14,7 @@ public class ThrowWeapon : BaseWeapon
         {
             case ThrowWeapons.HealBomb:
                 HealBombObject healBombObject = new HealBombObject(position, direction, "Bullet");
-                GameManager.GetGameManager().AddGameObject(healBombObject);
+                GameManager.Get().AddGameObject(healBombObject);
                 break;
         }
 

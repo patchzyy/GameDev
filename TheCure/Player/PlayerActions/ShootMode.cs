@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using TheCure.Managers;
 using TheCure.Weapons;
 
 namespace TheCure.PlayerActions;
@@ -10,8 +11,8 @@ public class ShootMode : PlayerAction
         CoolDown = 0;
     }
 
-    protected override void OnExecute(GameTime gameTime, GameManager gameManager)
+    protected override void OnExecute(GameTime gameTime)
     {
-        gameManager.Player.WeaponsSystem.SetShootWeapon(ShootWeapons.SingleBullet);
+        PlayerManager.Get().Player.WeaponsSystem.SetShootWeapon(ShootWeapons.SingleBullet);
     }
 }

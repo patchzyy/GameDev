@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using TheCure.Collision;
+using TheCure.Managers;
 
 namespace TheCure.Mobs;
 
@@ -36,8 +37,9 @@ public class Mob : GameObject
         _scale = scale;
     }
 
-    public override void Load(ContentManager content)
+    public override void Load()
     {
+        var content = ContentsManager.Get().GetContent();
         _texture = content.Load<Texture2D>(_textureName);
 
         int frameWidth = _texture.Width / _frameCount;
@@ -105,8 +107,9 @@ public class Mob : GameObject
             2
         );
 
-        spriteBatch.Draw(GameManager.GetGameManager().DummyTexture, shadowCore, Color.Black * coreAlpha);
-        spriteBatch.Draw(GameManager.GetGameManager().DummyTexture, shadowSoft, Color.Black * softAlpha);
+        var dummyTexture = ContentsManager.Get().DummyTexture;
+        spriteBatch.Draw(dummyTexture, shadowCore, Color.Black * coreAlpha);
+        spriteBatch.Draw(dummyTexture, shadowSoft, Color.Black * softAlpha);
     }
 
     protected void DrawAnimatedSprite(SpriteBatch spriteBatch, Color color, float scaleMultiplier = 1f)

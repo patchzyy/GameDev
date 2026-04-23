@@ -1,7 +1,6 @@
 ﻿using System;
 using TheCure.Collision;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace TheCure
@@ -18,11 +17,11 @@ namespace TheCure
             this.collider = collider;
         }
 
-        public virtual void Load(ContentManager content)
+        public virtual void Load()
         {
         }
 
-        public virtual void HandleInput(InputManager inputManager)
+        public virtual void HandleInput()
         {
         }
 
@@ -56,7 +55,7 @@ namespace TheCure
 
         public virtual void Destroy()
         {
-            GameManager.GetGameManager().RemoveGameObject(this);
+            GameManager.Get().RemoveGameObject(this);
         }
 
         public void SetHealthBar(Texture2D texture, float maxHealth, float startHealth, Action onDeath,

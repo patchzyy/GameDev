@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using TheCure.Collision;
+using TheCure.Managers;
 using TheCure.Weapons;
 
 namespace TheCure
@@ -37,28 +37,30 @@ namespace TheCure
             _previousBounds = _rectangleCollider.shape;
         }
 
-        public override void Load(ContentManager content)
+        public override void Load()
         {
+            var content = ContentsManager.Get().GetContent();
             ship_body = content.Load<Texture2D>("ship_body");
             base_turret = content.Load<Texture2D>("base_turret");
 
             SetHealthBar(ship_body, (int)MaxHealth, (int)MaxHealth,
-                () => GameManager.GetGameManager().SetGameState(GameState.GameOver),
+                () => GameManager.Get().SetGameState(GameState.GameOver),
                 null, true);
 
             _rectangleCollider.shape.Size = ship_body.Bounds.Size;
             _rectangleCollider.shape.Location -= new Point(ship_body.Width / 2, ship_body.Height / 2);
 
-            base.Load(content);
+            base.Load();
         }
 
-        public override void HandleInput(InputManager inputManager)
+        public override void HandleInput()
         {
-            base.HandleInput(inputManager);
+            base.HandleInput();
+            var inputManager = InputManager.Get();
 
             if (inputManager.CurrentMouseState.LeftButton == ButtonState.Pressed)
             {
-                WeaponsSystem.Fire(inputManager);
+                WeaponsSystem.Fire();
             }
 
             KeyboardState keyState = Keyboard.GetState();
@@ -90,7 +92,7 @@ namespace TheCure
                 _rotation = LinePieceCollider.GetAngle(moveDirection);
             }
 
-            var dash = GameManager.GetGameManager().PlayerInteractionsHud.GetDash();
+            var dash = PlayerActionsManager.Get().GetDash();
             if (dash == null || !dash.IsDashing)
             {
                 _velocity = moveDirection * MoveSpeed;
@@ -133,8 +135,9 @@ namespace TheCure
                 (int)(bodyOrigin.Y * 0.12f)
             );
 
-            spriteBatch.Draw(GameManager.GetGameManager().DummyTexture, shadowSoft, Color.Black * 0.08f);
-            spriteBatch.Draw(GameManager.GetGameManager().DummyTexture, shadowCore, Color.Black * 0.16f);
+            var dummyTexture = ContentsManager.Get().DummyTexture;
+            spriteBatch.Draw(dummyTexture, shadowSoft, Color.Black * 0.08f);
+            spriteBatch.Draw(dummyTexture, shadowCore, Color.Black * 0.16f);
 
             spriteBatch.Draw(ship_body, _rectangleCollider.shape.Center.ToVector2(), null, Color.White, _rotation,
                 bodyOrigin, 1f, SpriteEffects.None, 0);
@@ -143,7 +146,7 @@ namespace TheCure
 
             Point screenMouse = Mouse.GetState().Position;
 
-            Vector2 mouse = GameManager.GetGameManager().ScreenToWorld(screenMouse.ToVector2());
+            Vector2 mouse = GameManager.Get().ScreenToWorld(screenMouse.ToVector2());
             Vector2 direction = LinePieceCollider.GetDirection(GetPosition().Center.ToVector2(), mouse);
 
             float angle = LinePieceCollider.GetAngle(direction);
@@ -167,7 +170,7 @@ namespace TheCure
 
         public override void LoseHealth(float amount)
         {
-            var dash = GameManager.GetGameManager().PlayerInteractionsHud.GetDash();
+            var dash = PlayerActionsManager.Get().GetDash();
             if (dash != null && dash.IsDashing)
             {
                 System.Diagnostics.Debug.WriteLine("Player is protected by dash - no damage taken!");
@@ -182,8 +185,8 @@ namespace TheCure
             _healthBar.ResetHealth();
             WeaponsSystem.SetShootWeapon(ShootWeapons.SingleBullet);
             _rectangleCollider.shape.Location =
-                new Point(GameManager.GetGameManager().Game.GraphicsDevice.Viewport.Width / 2,
-                    GameManager.GetGameManager().Game.GraphicsDevice.Viewport.Height / 2);
+                new Point(GameManager.Get().Game.GraphicsDevice.Viewport.Width / 2,
+                    GameManager.Get().Game.GraphicsDevice.Viewport.Height / 2);
             _velocity = Vector2.Zero;
             _rotation = 0f;
         }

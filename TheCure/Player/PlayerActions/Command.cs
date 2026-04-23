@@ -10,7 +10,7 @@ namespace TheCure.PlayerActions
             CoolDown = 5f;
         }
 
-        protected override void OnExecute(GameTime gameTime, GameManager gameManager)
+        protected override void OnExecute(GameTime gameTime)
         {
             Console.WriteLine("Command");
         }

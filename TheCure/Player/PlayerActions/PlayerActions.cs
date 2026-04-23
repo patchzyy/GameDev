@@ -1,6 +1,6 @@
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using TheCure.Managers;
 
 namespace TheCure.PlayerActions
 {
@@ -17,8 +17,9 @@ namespace TheCure.PlayerActions
             _iconName = iconName;
         }
 
-        public void Load(ContentManager content)
+        public void Load()
         {
+            var content = ContentsManager.Get().GetContent();
             _iconTexture = content.Load<Texture2D>(_iconName);
         }
 
@@ -37,15 +38,15 @@ namespace TheCure.PlayerActions
             _remainingCoolDown = 0f;
         }
 
-        public void Execute(GameTime gameTime, GameManager gameManager)
+        public void Execute(GameTime gameTime)
         {
             if (_remainingCoolDown > 0f)
                 return;
 
             _remainingCoolDown = CoolDown;
-            OnExecute(gameTime, gameManager);
+            OnExecute(gameTime);
         }
 
-        protected abstract void OnExecute(GameTime gameTime, GameManager gameManager);
+        protected abstract void OnExecute(GameTime gameTime);
     }
 }

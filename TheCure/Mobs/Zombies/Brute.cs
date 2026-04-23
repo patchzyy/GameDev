@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using TheCure.Managers;
 using TheCure.Mobs;
 
 namespace TheCure
@@ -32,9 +33,9 @@ namespace TheCure
             _attackCoolDown = 2f;
         }
 
-        public override void Load(ContentManager content)
+        public override void Load()
         {
-            base.Load(content);
+            base.Load();
 
             // no BecomeFriendly here, brute cannot be healed
             SetHealthBar(_texture, _maxHealth, _startHealth, Destroy, null);
@@ -74,7 +75,7 @@ namespace TheCure
             }
 
             Vector2 targetPosition = _currentTarget == null
-                ? GameManager.GetGameManager().Player.GetPosition().Center.ToVector2()
+                ? PlayerManager.Get().Player.GetPosition().Center.ToVector2()
                 : _currentTarget.GetCollider().GetBoundingBox().Center.ToVector2();
 
             Vector2 direction = targetPosition - _collider.Center;
@@ -133,13 +134,13 @@ namespace TheCure
 
         public override void Destroy()
         {
-            GameManager.GetGameManager().AddScore(75, "Brute Killed");
+            ScoreManager.Get().AddScore(75, "Brute Killed");
             base.Destroy();
         }
 
         public void RandomMove()
         {
-            var game = GameManager.GetGameManager();
+            var game = GameManager.Get();
             _collider.Center = game.RandomLocationOutsideView((int)_collider.Radius);
         }
 
