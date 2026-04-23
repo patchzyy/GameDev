@@ -10,7 +10,7 @@ public class Handgun : BaseWeapon
     {
         Bullet bullet = new Bullet(position, direction, 300f, damage: DamageMultiplier);
 
-        GameManager.GetGameManager().AddGameObject(bullet);
+        GameManager.Get().AddGameObject(bullet);
         ResetCoolDown();
     }
 }

@@ -12,7 +12,7 @@ namespace TheCure.PlayerActions
             CoolDown = 12f;
         }
 
-        protected override void OnExecute(GameTime gameTime, GameManager gameManager)
+        protected override void OnExecute(GameTime gameTime)
         {
             Point mousePosition = gameManager.InputManager.CurrentMouseState.Position;
             Vector2 worldMousePosition = gameManager.ScreenToWorld(mousePosition.ToVector2());

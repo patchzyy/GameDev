@@ -32,7 +32,7 @@ public class Build : PlayerAction
         }
     }
 
-    protected override void OnExecute(GameTime gameTime, GameManager gameManager)
+    protected override void OnExecute(GameTime gameTime)
     {
         Player player = gameManager.Player;
         if (player == null)

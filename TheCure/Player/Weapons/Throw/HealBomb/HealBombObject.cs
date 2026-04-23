@@ -12,7 +12,7 @@ public class HealBombObject : Throwable
     public override void OnImpact()
     {
         HealBombExplosion hbe = new HealBombExplosion(_targetPosition);
-        GameManager.GetGameManager().AddGameObject(hbe);
+        GameManager.Get().AddGameObject(hbe);
         base.OnImpact();
     }
 }
