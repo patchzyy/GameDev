@@ -111,6 +111,33 @@ namespace TheCure
             base.Update(gameTime);
         }
 
+        public override void OnCollision(GameObject tmp)
+        {
+            if (tmp is Bullet && tmp is Bullet bullet && bullet.IsHealing)
+            {
+                if (!_healthBar.IsMaxHealth)
+                {
+                    GainHealth(1);
+                    tmp.Destroy();
+                }
+            }
+
+            if (tmp is Wall wall)
+            {
+                Vector2 collisionNormal = wall.ResolveCircleCollision(_collider, _previousCenter);
+                if (collisionNormal != Vector2.Zero)
+                {
+                    float velocityIntoWall = Vector2.Dot(_velocity, collisionNormal);
+                    if (velocityIntoWall < 0f)
+                    {
+                        _velocity -= collisionNormal * velocityIntoWall;
+                    }
+                }
+            }
+
+            base.OnCollision(tmp);
+        }
+
         private Vector2 GetRingTarget(GameManager gm)
         {
             var list = gm.Friendlies;
