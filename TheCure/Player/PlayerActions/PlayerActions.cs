@@ -1,4 +1,6 @@
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace TheCure.PlayerActions
 {
@@ -6,6 +8,21 @@ namespace TheCure.PlayerActions
     {
         protected float CoolDown { get; set; }
         private float _remainingCoolDown;
+        public string _iconName;
+        public Texture2D _iconTexture;
+
+
+        public PlayerAction(string iconName)
+        {
+            _iconName = iconName;
+        }
+
+        public void Load(ContentManager content)
+        {
+            _iconTexture = content.Load<Texture2D>(_iconName);
+        }
+
+        public Texture2D GetIconTexture() => _iconTexture;
 
         public float GetRemainingCoolDown() => _remainingCoolDown;
 

@@ -1,11 +1,10 @@
-using System;
 using Microsoft.Xna.Framework;
 
 namespace TheCure.PlayerActions;
 
 public class Boost : PlayerAction
 {
-    public Boost()
+    public Boost(string iconName) : base(iconName)
     {
         CoolDown = 10f;
     }
@@ -13,6 +12,6 @@ public class Boost : PlayerAction
 
     protected override void OnExecute(GameTime gameTime, GameManager gameManager)
     {
-        Console.WriteLine("Boost");
+        gameManager.ActivateFriendlyBoost();
     }
 }

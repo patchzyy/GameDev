@@ -35,6 +35,9 @@ namespace TheCure
         private Camera _camera;
         private List<ScorePopup> _scorePopups = new List<ScorePopup>();
 
+        public PlayerInteractionsHUD PlayerInteractionsHud;
+
+
         private float _gameTimeElapsed = 0f;
         private float _spawnTimer = 0f;
 
@@ -48,6 +51,14 @@ namespace TheCure
 
         private float _supplySpawnTimer = 0f;
         private float _supplySpawnInterval = 15.0f;
+        private float _friendlyBoostTimer = 0f;
+        private int _friendlyBoostUpgradeLevel = 0;
+
+        private UpgradeSelection _upgradeSelection;
+
+        private const float FriendlyBoostDuration = 8f;
+        private const float FriendlyBoostBaseMultiplier = 1.05f;
+        private const float FriendlyBoostUpgradeStep = 0.05f;
 
 
         //World borders
@@ -121,11 +132,11 @@ namespace TheCure
             _pauseQuitButton = new Button(new Rectangle(0, 0, buttonWidth, buttonHeight), "Quit", _buttonFont);
             _restartButton = new Button(new Rectangle(0, 0, buttonWidth, buttonHeight), "Opnieuw spelen", _buttonFont);
 
-            _startButton.Clicked += StartButton_Clicked;
-            _quitButton.Clicked += QuitButton_Clicked;
-            _continueButton.Clicked += ContinueButton_Clicked;
-            _pauseQuitButton.Clicked += PauseQuitButton_Clicked;
-            _restartButton.Clicked += RestartButton_Clicked;
+            _startButton.SetAction(()=> CurrentGameState = GameState.Playing);
+            _quitButton.SetAction(Game.Exit);
+            _continueButton.SetAction(() => CurrentGameState = GameState.Playing);
+            _pauseQuitButton.SetAction(Game.Exit);
+            _restartButton.SetAction(RestartButtonAction);
         }
 
         private void PositionButtons()
@@ -140,27 +151,7 @@ namespace TheCure
             _pauseQuitButton.SetPosition(centerX - buttonWidth / 2, (int)(Game.GraphicsDevice.Viewport.Height * 0.68f));
         }
 
-        private void StartButton_Clicked(object sender, EventArgs e)
-        {
-            CurrentGameState = GameState.Playing;
-        }
-
-        private void ContinueButton_Clicked(object sender, EventArgs e)
-        {
-            CurrentGameState = GameState.Playing;
-        }
-
-        private void QuitButton_Clicked(object sender, EventArgs e)
-        {
-            Game.Exit();
-        }
-
-        private void PauseQuitButton_Clicked(object sender, EventArgs e)
-        {
-            Game.Exit();
-        }
-
-        private void RestartButton_Clicked(object sender, EventArgs e)
+        private void RestartButtonAction()
         {
             ResetGame();
             CurrentGameState = GameState.Playing;
@@ -187,8 +178,11 @@ namespace TheCure
             _supplySpawnTimer = 0f;
             _currentSpawnInterval = _initialSpawnInterval;
             _enemiesToSpawn = 1;
+            _friendlyBoostTimer = 0f;
+            _friendlyBoostUpgradeLevel = 0;
 
-            HUD.Reset();
+            PlayerInteractionsHud.Reset();
+            _upgradeSelection.Reset();
 
             AddWorldWalls();
             _gameObjects.Add(Player);
@@ -212,15 +206,20 @@ namespace TheCure
             _backgroundGameOverTexture = content.Load<Texture2D>("GameOverBackground");
             _titleFont = content.Load<SpriteFont>("TitleFont");
             _buttonFont = content.Load<SpriteFont>("ButtonFont");
+
+            PlayerInteractionsHud = new PlayerInteractionsHUD();
             HUD = new HUD();
             scoreManager = new ScoreManager();
+            _upgradeSelection = new UpgradeSelection();
 
             foreach (var gameObject in _gameObjects)
             {
                 gameObject.Load(content);
             }
 
+            PlayerInteractionsHud.Load(content);
             HUD.Load(content);
+            _upgradeSelection.Load(content);
         }
 
         public void HandleInput(InputManager inputManager)
@@ -254,6 +253,8 @@ namespace TheCure
         public void Update(GameTime gameTime)
         {
             InputManager.Update();
+            PlayerInteractionsHud.Update(gameTime);
+            _upgradeSelection.Update(gameTime);
             var mouseState = Mouse.GetState();
 
             if (CurrentGameState == GameState.StartScreen)
@@ -277,6 +278,12 @@ namespace TheCure
                 return;
             }
 
+            if (CurrentGameState == GameState.Upgrade)
+            {
+                _upgradeSelection.UpdateButtons(gameTime);
+                return;
+            }
+
             if (CurrentGameState == GameState.GameOver)
             {
                 _restartButton.Update(mouseState);
@@ -292,6 +299,7 @@ namespace TheCure
                 _gameTimeElapsed += deltaTime;
                 _spawnTimer += deltaTime;
                 _supplySpawnTimer += deltaTime;
+                _friendlyBoostTimer = Math.Max(0f, _friendlyBoostTimer - deltaTime);
 
                 UpdatePhase();
                 SpawnEnemies();
@@ -447,107 +455,40 @@ namespace TheCure
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            spriteBatch.Begin(transformMatrix: _camera.GetViewMatrix(), samplerState: SamplerState.LinearClamp);
-
-            if (CurrentGameState == GameState.Playing || CurrentGameState == GameState.Paused)
+            switch (CurrentGameState)
             {
-                DrawTiledGameplayBackground(spriteBatch);
+                case GameState.StartScreen:
+                    DrawStartScreen(spriteBatch);
+                    break;
 
-                foreach (var gameObject in _gameObjects)
-                {
-                    gameObject.Draw(gameTime, spriteBatch);
-                }
+                case GameState.Playing:
+                    DrawGameObjects(spriteBatch, gameTime);
+
+                    spriteBatch.Begin();
+                    HUD.Draw(spriteBatch, this);
+                    PlayerInteractionsHud.Draw(spriteBatch, this);
+                    spriteBatch.End();
+                    break;
+
+                case GameState.Upgrade:
+                    DrawGameObjects(spriteBatch, gameTime);
+
+                    spriteBatch.Begin();
+                    HUD.Draw(spriteBatch, this);
+                    PlayerInteractionsHud.Draw(spriteBatch, this);
+
+                    _upgradeSelection.Draw(spriteBatch, this);
+                    spriteBatch.End();
+                    break;
+
+                case GameState.Paused:
+                    DrawPauseMenu(spriteBatch);
+                    break;
+
+                case GameState.GameOver:
+                    DrawGameOver(spriteBatch);
+                    break;
             }
-
-            spriteBatch.End();
-            spriteBatch.Begin();
-
-            if (CurrentGameState == GameState.StartScreen)
-            {
-                spriteBatch.Draw(_backgroundTexture,
-                    new Rectangle(0, 0, Game.GraphicsDevice.Viewport.Width, Game.GraphicsDevice.Viewport.Height),
-                    Color.White);
-
-                var titleText = "The Cure";
-                var titleSize = _titleFont.MeasureString(titleText);
-
-                var titlePosition = new Vector2(
-                    Game.GraphicsDevice.Viewport.Width / 2 - titleSize.X / 2,
-                    Game.GraphicsDevice.Viewport.Height / 8f
-                );
-
-                spriteBatch.DrawString(_titleFont, titleText, titlePosition, Color.Red);
-
-                _startButton.Draw(spriteBatch);
-                _quitButton.Draw(spriteBatch);
-            }
-            else if (CurrentGameState == GameState.Paused)
-            {
-                spriteBatch.Draw(_backgroundPauseTexture,
-                    new Rectangle(0, 0, Game.GraphicsDevice.Viewport.Width, Game.GraphicsDevice.Viewport.Height),
-                    Color.White);
-
-                spriteBatch.Draw(DummyTexture,
-                    new Rectangle(0, 0, Game.GraphicsDevice.Viewport.Width, Game.GraphicsDevice.Viewport.Height),
-                    new Color(0, 0, 0, 100));
-
-                string pauseText = "Game gepauzeerd";
-                Vector2 pauseTextSize = _titleFont.MeasureString(pauseText);
-                float scale = 0.6f;
-                Vector2 pauseTextPosition =
-                    new Vector2(Game.GraphicsDevice.Viewport.Width / 2 - (pauseTextSize.X * scale) / 2,
-                        Game.GraphicsDevice.Viewport.Height / 8f);
-
-                spriteBatch.DrawString(_titleFont, pauseText, pauseTextPosition, Color.White, 0f, Vector2.Zero, scale,
-                    SpriteEffects.None, 0f);
-
-                _continueButton.Draw(spriteBatch);
-                _pauseQuitButton.Draw(spriteBatch);
-            }
-            else if (CurrentGameState == GameState.GameOver)
-            {
-                var spacing = 20f;
-                var currentY = 150f;
-
-                spriteBatch.Draw(_backgroundGameOverTexture,
-                    new Rectangle(0, 0, Game.GraphicsDevice.Viewport.Width, Game.GraphicsDevice.Viewport.Height),
-                    Color.White);
-
-                spriteBatch.Draw(DummyTexture,
-                    new Rectangle(0, 0, Game.GraphicsDevice.Viewport.Width, Game.GraphicsDevice.Viewport.Height),
-                    new Color(0, 0, 0, 100));
-
-                var gameOverText = "Game Over";
-                var gameOverTextSize = _titleFont.MeasureString(gameOverText);
-                var gameOverTextPosition =
-                    new Vector2(Game.GraphicsDevice.Viewport.Width / 2 - gameOverTextSize.X / 2,
-                        Game.GraphicsDevice.Viewport.Height / 8f);
-
-                spriteBatch.DrawString(_titleFont, gameOverText, gameOverTextPosition, Color.Red);
-
-                currentY += gameOverTextSize.Y + spacing;
-
-                string scoreText = $"Eindscore: {GetScore()}";
-                Vector2 scoreTextSize = _titleFont.MeasureString(scoreText);
-                float scale = 0.5f;
-                Vector2 scoreTextPosition =
-                    new Vector2(Game.GraphicsDevice.Viewport.Width / 2 - (scoreTextSize.X * scale) / 2,
-                        Game.GraphicsDevice.Viewport.Height / 10f);
-
-                spriteBatch.DrawString(_titleFont, scoreText, scoreTextPosition, Color.White, 0f, Vector2.Zero, scale,
-                    SpriteEffects.None, 0f);
-
-                _restartButton.Draw(spriteBatch);
-                _quitButton.Draw(spriteBatch);
-            }
-
-            if (CurrentGameState == GameState.Playing || CurrentGameState == GameState.Paused ||
-                CurrentGameState == GameState.GameOver)
-            {
-                HUD.Draw(spriteBatch, this);
-            }
-
-            spriteBatch.End();
         }
 
         public float GetGameTime()
@@ -577,9 +518,30 @@ namespace TheCure
             {
                 new Stat("Max Health", Player.MaxHealth.ToString()),
                 new Stat("Move Speed", (Player.MoveSpeed / 10).ToString("0.0", CultureInfo.InvariantCulture)),
-                new Stat("Friendlies", _gameObjects.OfType<Friendly>().Count().ToString())
+                new Stat("Friendlies", _gameObjects.OfType<Friendly>().Count().ToString()),
+                new Stat("Boost", $"x{GetUnlockedFriendlyBoostMultiplier():0.00}")
             };
             return stats;
+        }
+
+        public void ActivateFriendlyBoost()
+        {
+            _friendlyBoostTimer = FriendlyBoostDuration;
+        }
+
+        public void UpgradeFriendlyBoost()
+        {
+            _friendlyBoostUpgradeLevel++;
+        }
+
+        public float GetFriendlyBoostMultiplier()
+        {
+            return _friendlyBoostTimer > 0f ? GetUnlockedFriendlyBoostMultiplier() : 1f;
+        }
+
+        public float GetUnlockedFriendlyBoostMultiplier()
+        {
+            return FriendlyBoostBaseMultiplier + (_friendlyBoostUpgradeLevel * FriendlyBoostUpgradeStep);
         }
 
         public void AddGameObject(GameObject gameObject)
@@ -720,6 +682,107 @@ namespace TheCure
             }
 
             _gameObjects.Add(wall);
+        }
+
+        private void DrawGameOver(SpriteBatch spriteBatch)
+        {
+            spriteBatch.Begin();
+
+            var spacing = 20f;
+            var currentY = 150f;
+
+            spriteBatch.Draw(_backgroundGameOverTexture,
+                new Rectangle(0, 0, Game.GraphicsDevice.Viewport.Width, Game.GraphicsDevice.Viewport.Height),
+                Color.White);
+
+            spriteBatch.Draw(DummyTexture,
+                new Rectangle(0, 0, Game.GraphicsDevice.Viewport.Width, Game.GraphicsDevice.Viewport.Height),
+                new Color(0, 0, 0, 100));
+
+            var gameOverText = "Game Over";
+            var gameOverTextSize = _titleFont.MeasureString(gameOverText);
+            var gameOverTextPosition =
+                new Vector2(Game.GraphicsDevice.Viewport.Width / 2 - gameOverTextSize.X / 2,
+                    Game.GraphicsDevice.Viewport.Height / 8f);
+
+            spriteBatch.DrawString(_titleFont, gameOverText, gameOverTextPosition, Color.Red);
+
+            string scoreText = $"Eindscore: {GetScore()}";
+            Vector2 scoreTextSize = _titleFont.MeasureString(scoreText);
+            float scale = 0.5f;
+            Vector2 scoreTextPosition =
+                new Vector2(Game.GraphicsDevice.Viewport.Width / 2 - (scoreTextSize.X * scale) / 2,
+                    Game.GraphicsDevice.Viewport.Height / 10f);
+
+            spriteBatch.DrawString(_titleFont, scoreText, scoreTextPosition, Color.White, 0f, Vector2.Zero, scale,
+                SpriteEffects.None, 0f);
+
+            _restartButton.Draw(spriteBatch);
+            _quitButton.Draw(spriteBatch);
+
+            spriteBatch.End();
+        }
+
+        private void DrawPauseMenu(SpriteBatch spriteBatch)
+        {
+            spriteBatch.Begin();
+            spriteBatch.Draw(_backgroundPauseTexture,
+                new Rectangle(0, 0, Game.GraphicsDevice.Viewport.Width, Game.GraphicsDevice.Viewport.Height),
+                Color.White);
+
+            spriteBatch.Draw(DummyTexture,
+                new Rectangle(0, 0, Game.GraphicsDevice.Viewport.Width, Game.GraphicsDevice.Viewport.Height),
+                new Color(0, 0, 0, 100));
+
+            string pauseText = "Game gepauzeerd";
+            Vector2 pauseTextSize = _titleFont.MeasureString(pauseText);
+            float scale = 0.6f;
+            Vector2 pauseTextPosition =
+                new Vector2(Game.GraphicsDevice.Viewport.Width / 2 - (pauseTextSize.X * scale) / 2,
+                    Game.GraphicsDevice.Viewport.Height / 8f);
+
+            spriteBatch.DrawString(_titleFont, pauseText, pauseTextPosition, Color.White, 0f, Vector2.Zero, scale,
+                SpriteEffects.None, 0f);
+
+            _continueButton.Draw(spriteBatch);
+            _pauseQuitButton.Draw(spriteBatch);
+
+            spriteBatch.End();
+        }
+
+        private void DrawStartScreen(SpriteBatch spriteBatch)
+        {
+            spriteBatch.Begin();
+            spriteBatch.Draw(_backgroundTexture,
+                new Rectangle(0, 0, Game.GraphicsDevice.Viewport.Width, Game.GraphicsDevice.Viewport.Height),
+                Color.White);
+
+            var titleText = "The Cure";
+            var titleSize = _titleFont.MeasureString(titleText);
+
+            var titlePosition = new Vector2(
+                Game.GraphicsDevice.Viewport.Width / 2 - titleSize.X / 2,
+                Game.GraphicsDevice.Viewport.Height / 8f
+            );
+
+            spriteBatch.DrawString(_titleFont, titleText, titlePosition, Color.Red);
+
+            _startButton.Draw(spriteBatch);
+            _quitButton.Draw(spriteBatch);
+            spriteBatch.End();
+        }
+
+        private void DrawGameObjects(SpriteBatch spriteBatch, GameTime gameTime)
+        {
+            spriteBatch.Begin(transformMatrix: _camera.GetViewMatrix(), samplerState: SamplerState.LinearClamp);
+
+            DrawTiledGameplayBackground(spriteBatch);
+            foreach (var gameObject in _gameObjects)
+            {
+                gameObject.Draw(gameTime, spriteBatch);
+            }
+
+            spriteBatch.End();
         }
 
         private void DrawTiledGameplayBackground(SpriteBatch spriteBatch)

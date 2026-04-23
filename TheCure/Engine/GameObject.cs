@@ -90,7 +90,7 @@ namespace TheCure
                 _healthBar.UpdateHealthBar(collider.GetBoundingBox().Center, collider.GetBoundingBox().Height);
         }
 
-        public virtual void LoseHealth(int amount)
+        public virtual void LoseHealth(float amount)
         {
             if (_healthBar != null)
             {
@@ -105,7 +105,7 @@ namespace TheCure
             }
         }
 
-        public void GainHealth(int amount)
+        public void GainHealth(float amount)
         {
             if (_healthBar != null)
             {

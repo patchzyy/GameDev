@@ -18,6 +18,7 @@ namespace TheCure
 
         private Rectangle _previousBounds;
 
+
         // ===== WEAPONS =====
         public WeaponsSystem WeaponsSystem = new WeaponsSystem();
 
@@ -104,13 +105,9 @@ namespace TheCure
                 _facingDirection = moveDirection;
             }
 
+            var dash = GameManager.GetGameManager().PlayerInteractionsHud.GetDash();
+            if (dash == null || !dash.IsDashing)
             _velocity = moveDirection * MoveSpeed;
-
-            var dash = GameManager.GetGameManager().HUD?.GetDash();
-            if (dash != null && dash.IsDashing)
-            {
-                _velocity = Vector2.Zero;
-            }
         }
 
         public override void Update(GameTime gameTime)

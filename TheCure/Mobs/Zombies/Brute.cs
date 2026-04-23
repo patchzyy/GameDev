@@ -152,7 +152,7 @@ namespace TheCure
             {
                 if (!bullet.IsHealing)
                 {
-                    LoseHealth(1);
+                    LoseHealth(bullet.Damage);
                 }
 
                 bullet.Destroy();

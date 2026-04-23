@@ -193,7 +193,7 @@ namespace TheCure
                 }
                 else
                 {
-                    LoseHealth(1);
+                    LoseHealth(bullet.Damage);
                 }
 
                 bullet.Destroy();

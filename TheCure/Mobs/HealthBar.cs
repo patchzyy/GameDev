@@ -34,7 +34,7 @@ namespace TheCure
             _objectHeight = 0;
         }
 
-        public void IncreaseHealth(int health)
+        public void IncreaseHealth(float health)
         {
             _currentHealth += health;
 
@@ -49,7 +49,7 @@ namespace TheCure
             }
         }
 
-        public void DecreaseHealth(int health)
+        public void DecreaseHealth(float health)
         {
             _currentHealth -= health;
 
