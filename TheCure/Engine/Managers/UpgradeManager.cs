@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using TheCure.Managers;
 using TheCure.Upgrades;
 
 namespace TheCure;
 
-public class UpgradeSelection
+public class UpgradeManager:Manager<UpgradeManager>
 {
     private SpriteFont _font;
 
@@ -22,13 +22,11 @@ public class UpgradeSelection
     private int _lastScore = 0;
     private bool _upgradePicked = false;
 
-    public UpgradeSelection()
-    {
-    }
 
-    public void Load(ContentManager content)
+    public void Load()
     {
-        _font = content.Load<SpriteFont>("HudFont");
+        var content = ContentsManager.Get();
+        _font = content.HUDFont;
         _upgradeButtons = new List<Button>(4)
         {
             new Button(new Rectangle(10, 50, 200, 50), "Upgrade 1", _font),
@@ -93,11 +91,10 @@ public class UpgradeSelection
         var mainRect = new Rectangle(screenWidth / 2 - mainPanelWidth / 2, screenHeight / 2 - mainPanelHeight / 2,
             mainPanelWidth, mainPanelHeight);
 
-
-        spriteBatch.Draw(gameManager.DummyTexture, mainRect, new Color(100, 255, 100, 200));
+        var dummyTexture = ContentsManager.Get().DummyTexture;
+        spriteBatch.Draw(dummyTexture, mainRect, new Color(100, 255, 100, 200));
         spriteBatch.DrawString(_font, "Upgrades", new Vector2(mainRect.X + 10, mainRect.Y + 10), Color.White);
 
-        int buttonWidth = 200;
         int buttonHeight = 50;
         int buttonY = mainRect.Y + mainRect.Height - buttonHeight - 20;
         var count = _upgradeButtons.Count;
@@ -112,7 +109,7 @@ public class UpgradeSelection
                 new Rectangle(mainRect.X + i * (mainRect.Width / count) + 10, mainRect.Y + 10,
                     (mainRect.Width / count) - 20,
                     mainRect.Height - 20);
-            spriteBatch.Draw(gameManager.DummyTexture, buttonPanel, new Color(20, 30, 20, 255));
+            spriteBatch.Draw(dummyTexture, buttonPanel, new Color(20, 30, 20, 255));
 
             spriteBatch.DrawString(_font, upgrade.Name, new Vector2(buttonPanel.X + 10, buttonPanel.Y + 10),
                 Color.White);
@@ -141,7 +138,7 @@ public class UpgradeSelection
                     _availableUpgrades.Remove(upgrade);
                 }
 
-                GameManager.GetGameManager().SetGameState(GameState.Playing);
+                GameManager.Get().SetGameState(GameState.Playing);
             });
             button.SetPosition(buttonPanel.X + 15, buttonY);
             button.Draw(spriteBatch);
@@ -155,18 +152,18 @@ public class UpgradeSelection
             PickRandomUpgrade();
         }
 
-        var score = GameManager.GetGameManager().GetScore();
+        var score = ScoreManager.Get().GetScore();
 
-        if (score > _lastScore & score % 100 == 0 && GameManager.GetGameManager().CurrentGameState != GameState.Upgrade)
+        if (score > _lastScore & score % 100 == 0 && GameManager.Get().CurrentGameState != GameState.Upgrade)
         {
             _lastScore = score;
-            GameManager.GetGameManager().SetGameState(GameState.Upgrade);
+            GameManager.Get().SetGameState(GameState.Upgrade);
         }
     }
 
     public void UpdateButtons(GameTime gameTime)
     {
-        var mouseState = GameManager.GetGameManager().InputManager.CurrentMouseState;
+        var mouseState = InputManager.Get().CurrentMouseState;
         foreach (var button in _upgradeButtons)
         {
             button.Update(mouseState);

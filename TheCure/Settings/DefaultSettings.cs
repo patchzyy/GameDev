@@ -15,7 +15,7 @@ namespace TheCure
             // ZOMBIE
             { SettingsConst.ZOMBIE.SPEED, 60f },
             { SettingsConst.ZOMBIE.STAGGER, 1f },
-            { SettingsConst.ZOMBIE.ATTACK_DAMAGE, 1 },
+            { SettingsConst.ZOMBIE.ATTACK_DAMAGE, 1f },
             { SettingsConst.ZOMBIE.ATTACK_COOL_DOWN, 1f },
             { SettingsConst.ZOMBIE.START_HEALTH, 3f },
             { SettingsConst.ZOMBIE.MAX_HEALTH, 10f },
@@ -32,6 +32,8 @@ namespace TheCure
             { SettingsConst.FRIENDLY.MOVE_SPEED, 50f },
             { SettingsConst.FRIENDLY.START_HEALTH, 10f },
             { SettingsConst.FRIENDLY.MAX_HEALTH, 10f },
+            { SettingsConst.FRIENDLY.ATTACK_DAMAGE, 1f },
+            { SettingsConst.FRIENDLY.SIZE, 1f },
             { SettingsConst.FRIENDLY.RADIUS, 20f },
             { SettingsConst.FRIENDLY.START_WEAPON, FriendlyWeapons.HandGun },
 

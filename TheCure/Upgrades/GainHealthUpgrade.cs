@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using TheCure.Managers;
 
 namespace TheCure.Upgrades;
 
@@ -16,7 +17,7 @@ public class GainHealthUpgrade : Upgrade
     {
         if (unlockedUpgrades.Contains(RequiredUpgrade) || RequiredUpgrade == null)
         {
-            GameManager.GetGameManager().Player.GainHealth(1);
+            PlayerManager.Get().Player.GainHealth(1);
         }
     }
 }

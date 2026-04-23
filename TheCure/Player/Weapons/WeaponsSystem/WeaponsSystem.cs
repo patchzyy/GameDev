@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using TheCure.Managers;
 
 namespace TheCure.Weapons;
 
@@ -31,15 +32,16 @@ public class WeaponsSystem
         }
     }
 
-    public void Fire(InputManager inputManager)
+    public void Fire()
     {
+        var inputManager = InputManager.Get();
         Point mousePosition = inputManager.CurrentMouseState.Position;
-        var gameManager = GameManager.GetGameManager();
+        var gameManager = GameManager.Get();
         Vector2 worldMousePosition = gameManager.ScreenToWorld(mousePosition.ToVector2());
 
         if (CurrentWeapon != null && CurrentWeapon.CanFire)
         {
-            Vector2 position = gameManager.Player.GetPosition().Center.ToVector2();
+            Vector2 position = PlayerManager.Get().Player.GetPosition().Center.ToVector2();
 
             if (_currentWeaponMode == WeaponMode.Throw)
             {

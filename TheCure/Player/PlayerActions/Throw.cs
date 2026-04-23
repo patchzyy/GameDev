@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using TheCure.Managers;
 using TheCure.Weapons;
 using TheCure.Weapons.Throw;
 
@@ -21,10 +22,11 @@ public class Throw : PlayerAction
     }
 
 
-    protected override void OnExecute(GameTime gameTime, GameManager gameManager)
+    protected override void OnExecute(GameTime gameTime)
     {
-        Point mousePosition = gameManager.InputManager.CurrentMouseState.Position;
-        var position = gameManager.Player.GetPosition().Center.ToVector2();
+        var gameManager = GameManager.Get();
+        Point mousePosition = InputManager.Get().CurrentMouseState.Position;
+        var position = PlayerManager.Get().Player.GetPosition().Center.ToVector2();
         Vector2 worldMousePosition = gameManager.ScreenToWorld(mousePosition.ToVector2());
 
         _bomb.Fire(position, worldMousePosition);

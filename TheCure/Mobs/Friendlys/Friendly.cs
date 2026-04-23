@@ -1,8 +1,8 @@
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Graphics;
 using System;
-using System.Collections.Generic;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using TheCure.Engine.Managers;
+using TheCure.Managers;
 using TheCure.Mobs;
 using TheCure.Weapons;
 
@@ -15,8 +15,8 @@ namespace TheCure
         private Vector2 _velocity;
 
         private BaseWeapon _weapon;
+        private float _sizeMultiplier;
 
-        private AnimatedSprite _animatedSprite;
         private FriendlyState _currentState;
 
         private Texture2D _idleTexture;
@@ -53,33 +53,42 @@ namespace TheCure
                 scale: 1.7f
             )
         {
-            _collider = new CircleCollider(Vector2.Zero, 16f);
-
             _spawnPosition = position;
-            _collider.Center = position;
+            _velocity = Vector2.Zero;
+            _sizeMultiplier = Settings.GetValue(SettingsConst.FRIENDLY.SIZE);
 
             switch (weaponType)
             {
                 case FriendlyWeapons.HandGun:
                     _weapon = new Handgun();
                     break;
+
+                default:
+                    _weapon = new Handgun();
+                    break;
             }
 
-            GameManager.GetGameManager().Friendlies.Add(this);
+            GameManager.Get().Friendlies.Add(this);
         }
 
-        public override void Load(ContentManager content)
+        public override void Load()
         {
+            base.Load();
+
+            var content = ContentsManager.Get().GetContent();
+
             _idleTexture = content.Load<Texture2D>("Character-Unknown-Idle");
             _runTexture = content.Load<Texture2D>("Character-Unknown-Run");
             _hitTexture = content.Load<Texture2D>("Character-Unknown-Idle-Shot");
+
+            _collider.Center = _spawnPosition;
 
             SetAnimation(_idleTexture, 5, 1f, true);
 
             SetHealthBar(_idleTexture, _maxHealth, _startHealth, Destroy, null);
             SyncHealthBarPosition();
 
-            base.Load(content);
+            StatManager.Get().UpdateFriendlyStats(this);
         }
 
         private void SetAnimation(Texture2D texture, int frames, float fps, bool loop)
@@ -91,7 +100,7 @@ namespace TheCure
         public override void Update(GameTime gameTime)
         {
             float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
-            var gm = GameManager.GetGameManager();
+            var gm = GameManager.Get();
 
             _previousCenter = _collider.Center;
 
@@ -99,7 +108,6 @@ namespace TheCure
             target += GetSeparation(gm);
 
             MoveTo(target, dt);
-
             Attack(gameTime);
 
             Vector2 movement = _collider.Center - _previousCenter;
@@ -113,7 +121,7 @@ namespace TheCure
 
         public override void OnCollision(GameObject tmp)
         {
-            if (tmp is Bullet && tmp is Bullet bullet && bullet.IsHealing)
+            if (tmp is Bullet bullet && bullet.IsHealing)
             {
                 if (!_healthBar.IsMaxHealth)
                 {
@@ -146,7 +154,7 @@ namespace TheCure
             if (index < 0)
                 return _spawnPosition;
 
-            Vector2 player = gm.Player.GetPosition().Center.ToVector2();
+            Vector2 player = PlayerManager.Get().Player.GetPosition().Center.ToVector2();
 
             int ring = 0;
             int spots = 6;
@@ -178,7 +186,8 @@ namespace TheCure
 
             foreach (var other in gm.Friendlies)
             {
-                if (other == this) continue;
+                if (other == this)
+                    continue;
 
                 Vector2 diff = _collider.Center - other._collider.Center;
                 float dist = diff.Length();
@@ -188,7 +197,7 @@ namespace TheCure
 
                 diff /= dist;
 
-                float strength = 1f - (dist / SeparationDistance);
+                float strength = 1f - dist / SeparationDistance;
                 force += diff * strength * SeparationStrength;
             }
 
@@ -209,7 +218,6 @@ namespace TheCure
             toTarget /= dist;
 
             float speed = Math.Min(dist * 2f, MaxMoveSpeed);
-
             Vector2 desired = toTarget * speed;
 
             float blend = MathHelper.Clamp(Steering * dt, 0f, 1f);
@@ -234,7 +242,8 @@ namespace TheCure
 
         private void SetState(FriendlyState state)
         {
-            if (_currentState == state) return;
+            if (_currentState == state)
+                return;
 
             _currentState = state;
 
@@ -263,14 +272,20 @@ namespace TheCure
             }
 
             Mob enemy = GetNearestEnemy();
-            if (enemy == null) return;
+            if (enemy == null)
+                return;
 
             float dist = Vector2.Distance(enemy._collider.Center, _collider.Center);
 
             if (dist < 300f)
             {
-                Vector2 dir = Vector2.Normalize(enemy._collider.Center - _collider.Center);
-                _weapon.Fire(_collider.Center, dir);
+                Vector2 dir = enemy._collider.Center - _collider.Center;
+
+                if (dir.LengthSquared() > 0.0001f)
+                {
+                    dir.Normalize();
+                    _weapon.Fire(_collider.Center, dir);
+                }
             }
 
             _weapon.UpdateCoolDown(gameTime);
@@ -281,32 +296,40 @@ namespace TheCure
             Mob best = null;
             float bestDist = float.MaxValue;
 
-            foreach (var e in GameManager.GetGameManager().Enemies)
+            foreach (var enemy in GameManager.Get().Enemies)
             {
-                if (e == null) continue;
+                if (enemy == null)
+                    continue;
 
-                float dist = Vector2.Distance(e._collider.Center, _collider.Center);
+                float dist = Vector2.Distance(enemy._collider.Center, _collider.Center);
 
                 if (dist < bestDist)
                 {
                     bestDist = dist;
-                    best = e;
+                    best = enemy;
                 }
             }
 
             return best;
         }
 
+        public void SetSizeMultiplier(float sizeMultiplier)
+        {
+            _sizeMultiplier = sizeMultiplier;
+        }
+
+        public void SetWeaponDamage(float damage)
+        {
+            _weapon.SetDamageMultiplier(damage);
+        }
+
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             Color tint = _isFlashing ? _flashColor : Color.White;
-            _animatedSprite?.Draw(
-                spriteBatch,
-                _collider.Center,
-                tint,
-                0f,
-                2f
-            );
+            Rectangle destinationRectangle = GetAnimatedSpriteDestinationRectangle(_sizeMultiplier);
+
+            DrawShadow(spriteBatch, destinationRectangle);
+            DrawAnimatedSprite(spriteBatch, tint, _sizeMultiplier);
 
             base.Draw(gameTime, spriteBatch);
         }

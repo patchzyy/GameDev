@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using TheCure.Managers;
 using TheCure.Mobs;
 
 namespace TheCure.PlayerActions;
@@ -20,16 +21,17 @@ public class Dash : PlayerAction
         CoolDown = 10f;
     }
 
-    protected override void OnExecute(GameTime gameTime, GameManager gameManager)
+    protected override void OnExecute(GameTime gameTime)
     {
         if (_isDashing)
             return;
 
-        Player player = gameManager.Player;
+        Player player = PlayerManager.Get().Player;
         if (player == null)
             return;
 
-        Point mousePosition = gameManager.InputManager.CurrentMouseState.Position;
+        var gameManager = GameManager.Get();
+        Point mousePosition = InputManager.Get().CurrentMouseState.Position;
         Vector2 worldMousePosition = gameManager.ScreenToWorld(mousePosition.ToVector2());
         Vector2 playerCenter = player.GetPosition().Center.ToVector2();
 
@@ -58,9 +60,9 @@ public class Dash : PlayerAction
         if (!_isDashing)
             return;
 
-        var gameManager = GameManager.GetGameManager();
+        var gameManager = GameManager.Get();
 
-        Player player = gameManager.Player;
+        Player player = PlayerManager.Get().Player;
         if (player == null)
             return;
 

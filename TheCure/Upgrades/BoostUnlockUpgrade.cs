@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
-using TheCure.PlayerActions;
+using TheCure.Boosts;
+using TheCure.Engine.Managers;
 
 namespace TheCure.Upgrades;
 
@@ -15,6 +16,8 @@ public class BoostUnlockUpgrade : Upgrade
 
     public void Unlock(List<Upgrade> unlockedUpgrades)
     {
-        GameManager.GetGameManager().PlayerInteractionsHud.AddAction(new Boost("Boost"));
+        var boost = new FriendlyBoost("Boost");
+        PlayerActionsManager.Get().AddAction(boost);
+        BoostManager.Get().AddBoost(boost);
     }
 }
