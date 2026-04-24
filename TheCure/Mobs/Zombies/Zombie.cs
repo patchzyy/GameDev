@@ -236,14 +236,6 @@ namespace TheCure
             }
         }
 
-        private void SwitchAnimation(string name, int frames, float fps, bool loop, bool reverse = false)
-        {
-            var texture = GameManager.GetGameManager()._content.Load<Texture2D>(name);
-            int frameWidth = texture.Width / frames;
-
-            _animatedSprite = new AnimatedSprite(texture, frameWidth, texture.Height, frames, fps, loop, reverse);
-        }
-
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             Color tint = _isFlashing ? _flashColor : Color.White;

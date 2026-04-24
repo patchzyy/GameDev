@@ -9,6 +9,7 @@ namespace TheCure
     public abstract class GameObject
     {
         protected Collider collider;
+        protected AnimatedSprite _animatedSprite;
         protected HealthBar _healthBar;
         protected float _flashTimer = 0f;
         protected const float _flashDuration = 0.15f;
@@ -66,6 +67,14 @@ namespace TheCure
         public virtual void Destroy()
         {
             GameManager.GetGameManager().RemoveGameObject(this);
+        }
+
+        protected void SwitchAnimation(string name, int frames, float fps, bool loop, bool reverse = false)
+        {
+            var texture = GameManager.GetGameManager()._content.Load<Texture2D>(name);
+            int frameWidth = texture.Width / frames;
+
+            _animatedSprite = new AnimatedSprite(texture, frameWidth, texture.Height, frames, fps, loop, reverse);
         }
 
         public void SetHealthBar(Texture2D texture, float maxHealth, float startHealth, Action onDeath,

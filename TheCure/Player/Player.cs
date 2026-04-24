@@ -28,7 +28,6 @@ namespace TheCure
 
         // ===== CHARACTER JOE =====
         private PlayerAnimationState _currentState;
-        private AnimatedSprite _animatedSprite;
         private float _hitTimer = 0f;
 
         private Vector2 _facingDirection = Vector2.UnitX;
@@ -176,16 +175,6 @@ namespace TheCure
             {
                 wall.ResolveRectangleCollision(_rectangleCollider, _previousBounds, ref _velocity);
             }
-        }
-
-        // ===== ANIMATION SYSTEM (CHARACTER JOE) =====
-
-        private void SwitchAnimation(string name, int frames, float fps, bool loop)
-        {
-            var texture = GameManager.GetGameManager()._content.Load<Texture2D>(name);
-            int frameWidth = texture.Width / frames;
-
-            _animatedSprite = new AnimatedSprite(texture, frameWidth, texture.Height, frames, fps, loop);
         }
 
         private void UpdateState()

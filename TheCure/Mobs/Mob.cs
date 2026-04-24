@@ -10,7 +10,6 @@ public class Mob : GameObject
     public CircleCollider _collider;
     public string _textureName;
     public Texture2D _texture;
-    public AnimatedSprite _animatedSprite;
     public SpriteFont _font;
     public float _speed;
     public float _maxHealth;
