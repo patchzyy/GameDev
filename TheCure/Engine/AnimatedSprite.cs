@@ -19,10 +19,14 @@ namespace TheCure
         public float FrameRate { get; set; }
         public bool IsLooping { get; set; }
         public bool IsPlaying { get; private set; }
+        public bool IsReversed { get; set; }
 
         public Point FrameSize => new(FrameWidth, FrameHeight);
         public Vector2 Origin => new(FrameWidth / 2f, FrameHeight / 2f);
         private float SecondsPerFrame => 1f / FrameRate;
+        public bool IsFinished => !IsLooping && (
+            (!IsReversed && CurrentFrame == FrameCount - 1 && !IsPlaying) || 
+            (IsReversed && CurrentFrame == 0 && !IsPlaying));
 
         public Rectangle SourceRectangle
         {
@@ -35,7 +39,7 @@ namespace TheCure
             }
         }
 
-        public AnimatedSprite(Texture2D texture, int frameWidth, int frameHeight, int frameCount, float frameRate, bool isLooping = true)
+        public AnimatedSprite(Texture2D texture, int frameWidth, int frameHeight, int frameCount, float frameRate, bool isLooping = true, bool isReversed = false)
         {
             if (texture == null)
                 throw new ArgumentNullException(nameof(texture));
@@ -66,6 +70,8 @@ namespace TheCure
             FrameRate = frameRate;
             IsLooping = isLooping;
             IsPlaying = true;
+            IsReversed = isReversed;
+            CurrentFrame = isReversed ? frameCount - 1 : 0;
             _frameTimer = SecondsPerFrame;
         }
 
@@ -100,7 +106,7 @@ namespace TheCure
 
         public void Reset()
         {
-            CurrentFrame = 0;
+            CurrentFrame = IsReversed ? FrameCount - 1 : 0;
             _frameTimer = SecondsPerFrame;
             IsPlaying = true;
         }
@@ -118,6 +124,25 @@ namespace TheCure
 
         private void AdvanceFrame()
         {
+            if (IsReversed)
+            {
+                if (CurrentFrame > 0)
+                {
+                    CurrentFrame--;
+                    return;
+                }
+
+                if (IsLooping)
+                {
+                    CurrentFrame = FrameCount - 1;
+                    return;
+                }
+
+                CurrentFrame = 0;
+                IsPlaying = false;
+                return;
+            }
+
             if (CurrentFrame < FrameCount - 1)
             {
                 CurrentFrame++;

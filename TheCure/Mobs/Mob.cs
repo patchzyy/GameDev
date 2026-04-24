@@ -10,7 +10,6 @@ public class Mob : GameObject
     public CircleCollider _collider;
     public string _textureName;
     public Texture2D _texture;
-    public AnimatedSprite _animatedSprite;
     public SpriteFont _font;
     public float _speed;
     public float _maxHealth;
@@ -76,9 +75,10 @@ public class Mob : GameObject
 
     protected Rectangle GetAnimatedSpriteDestinationRectangle(float scaleMultiplier = 1f)
     {
-        float scaledFactor = _scale * scaleMultiplier;
-        int scaledWidth = (int)(_animatedSprite.FrameWidth * scaledFactor);
-        int scaledHeight = (int)(_animatedSprite.FrameHeight * scaledFactor);
+        if (_animatedSprite == null)
+            return new Rectangle(0, 0, 0, 0);
+        int scaledWidth = (int)(_animatedSprite.FrameWidth * _scale);
+        int scaledHeight = (int)(_animatedSprite.FrameHeight * _scale);
 
         return new Rectangle(
             (int)(_collider.X - scaledWidth / 2),

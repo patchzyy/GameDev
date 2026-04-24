@@ -9,7 +9,12 @@ namespace TheCure
     public abstract class GameObject
     {
         protected Collider collider;
+        protected AnimatedSprite _animatedSprite;
         protected HealthBar _healthBar;
+        protected float _flashTimer = 0f;
+        protected const float _flashDuration = 0.15f;
+        protected Color _flashColor;
+        protected bool _isFlashing => _flashTimer > 0f;
 
         public float LastHealed;
 
@@ -39,7 +44,12 @@ namespace TheCure
         }
 
         public virtual void Update(GameTime gameTime)
-        {
+        {            
+            if (_isFlashing)
+            {
+                _flashTimer -= (float)gameTime.ElapsedGameTime.TotalSeconds;
+            }
+
             if (_healthBar != null)
             {
                 _healthBar.UpdateHealthBar(collider.GetBoundingBox().Center, collider.GetBoundingBox().Height);
@@ -59,6 +69,14 @@ namespace TheCure
             GameManager.GetGameManager().RemoveGameObject(this);
         }
 
+        protected void SwitchAnimation(string name, int frames, float fps, bool loop, bool reverse = false)
+        {
+            var texture = GameManager.GetGameManager()._content.Load<Texture2D>(name);
+            int frameWidth = texture.Width / frames;
+
+            _animatedSprite = new AnimatedSprite(texture, frameWidth, texture.Height, frames, fps, loop, reverse);
+        }
+
         public void SetHealthBar(Texture2D texture, float maxHealth, float startHealth, Action onDeath,
             Action onMaxHealth, bool hide = false)
         {
@@ -75,11 +93,20 @@ namespace TheCure
             SetHealthBar(texture, maxHealth, startHealth, onDeath, null, hide);
         }
 
+        protected void SyncHealthBarPosition()
+        {
+            if (_healthBar != null && collider != null)
+                _healthBar.UpdateHealthBar(collider.GetBoundingBox().Center, collider.GetBoundingBox().Height);
+        }
+
         public virtual void LoseHealth(float amount)
         {
             if (_healthBar != null)
             {
                 _healthBar.DecreaseHealth(amount);
+
+                _flashTimer = _flashDuration;
+                _flashColor = Color.Red * 0.9f;
             }
             else
             {
@@ -93,6 +120,9 @@ namespace TheCure
             {
                 _healthBar.IncreaseHealth(amount);
                 LastHealed = 0f;
+
+                _flashTimer = _flashDuration;
+                _flashColor = Color.Green * 0.9f;
             }
             else
             {
