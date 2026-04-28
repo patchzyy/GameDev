@@ -74,10 +74,11 @@ public class Mob : GameObject
         }
     }
 
-    protected Rectangle GetAnimatedSpriteDestinationRectangle()
+    protected Rectangle GetAnimatedSpriteDestinationRectangle(float scaleMultiplier = 1f)
     {
-        int scaledWidth = (int)(_animatedSprite.FrameWidth * _scale);
-        int scaledHeight = (int)(_animatedSprite.FrameHeight * _scale);
+        float scaledFactor = _scale * scaleMultiplier;
+        int scaledWidth = (int)(_animatedSprite.FrameWidth * scaledFactor);
+        int scaledHeight = (int)(_animatedSprite.FrameHeight * scaledFactor);
 
         return new Rectangle(
             (int)(_collider.X - scaledWidth / 2),
@@ -108,21 +109,23 @@ public class Mob : GameObject
         spriteBatch.Draw(GameManager.GetGameManager().DummyTexture, shadowSoft, Color.Black * softAlpha);
     }
 
-    protected void DrawAnimatedSprite(SpriteBatch spriteBatch, Color color)
+    protected void DrawAnimatedSprite(SpriteBatch spriteBatch, Color color, float scaleMultiplier = 1f)
     {
-        _animatedSprite?.Draw(spriteBatch, GetAnimatedSpriteDestinationRectangle(), color);
+        _animatedSprite?.Draw(spriteBatch, GetAnimatedSpriteDestinationRectangle(scaleMultiplier), color);
     }
 
-    protected void DrawAnimatedSprite(SpriteBatch spriteBatch, Color color, Vector2 facingDirection)
+    protected void DrawAnimatedSprite(SpriteBatch spriteBatch, Color color, Vector2 facingDirection,
+        float scaleMultiplier = 1f)
     {
         if (_animatedSprite == null)
             return;
 
         SpriteEffects effects = facingDirection.X < 0f ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
-        var destinationRectangle = GetAnimatedSpriteDestinationRectangle();
+        float scale = _scale * scaleMultiplier;
+        var destinationRectangle = GetAnimatedSpriteDestinationRectangle(scaleMultiplier);
         var position = destinationRectangle.Center.ToVector2();
 
-        _animatedSprite.Draw(spriteBatch, position, color, 0f, _scale, effects, 0f);
+        _animatedSprite.Draw(spriteBatch, position, color, 0f, scale, effects, 0f);
     }
 }

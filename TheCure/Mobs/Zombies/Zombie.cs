@@ -114,16 +114,16 @@ namespace TheCure
 
         public override void OnCollision(GameObject tmp)
         {
-            if (tmp is Bullet)
+            if (tmp is Bullet bullet)
             {
-                if ((tmp as Bullet).IsHealing)
+                if (bullet.IsHealing)
                 {
                     GainHealth(1);
                     LastHealed = 0f;
                 }
                 else
                 {
-                    LoseHealth(1);
+                    LoseHealth(bullet.Damage);
                 }
 
                 tmp.Destroy();

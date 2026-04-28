@@ -1,10 +1,12 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 
 namespace TheCure.Weapons
 {
     public abstract class BaseWeapon : IWeapon
     {
         protected float CoolDown = 0f;
+        protected float DamageMultiplier = 1f;
 
         public abstract float FireRate { get; }
 
@@ -20,6 +22,11 @@ namespace TheCure.Weapons
         }
 
         public abstract void Fire(Vector2 position, Vector2 direction);
+
+        public virtual void SetDamageMultiplier(float damageMultiplier)
+        {
+            DamageMultiplier = Math.Max(0f, damageMultiplier);
+        }
 
         protected void ResetCoolDown()
         {

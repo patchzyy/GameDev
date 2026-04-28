@@ -20,7 +20,7 @@ namespace TheCure
         internal Vector2 _velocity;
         internal float _rotation;
         private Rectangle _previousBounds;
-        
+
         public WeaponsSystem WeaponsSystem = new WeaponsSystem();
 
         public Player(Point Position)
@@ -90,9 +90,7 @@ namespace TheCure
                 _rotation = LinePieceCollider.GetAngle(moveDirection);
             }
 
-            var hud = GameManager.GetGameManager().HUD;
-            var dash = hud?.GetDash();
-
+            var dash = GameManager.GetGameManager().PlayerInteractionsHud.GetDash();
             if (dash == null || !dash.IsDashing)
             {
                 _velocity = moveDirection * MoveSpeed;
@@ -167,11 +165,9 @@ namespace TheCure
             }
         }
 
-        public override void LoseHealth(int amount)
+        public override void LoseHealth(float amount)
         {
-            var hud = GameManager.GetGameManager().HUD;
-            var dash = hud?.GetDash();
-
+            var dash = GameManager.GetGameManager().PlayerInteractionsHud.GetDash();
             if (dash != null && dash.IsDashing)
             {
                 System.Diagnostics.Debug.WriteLine("Player is protected by dash - no damage taken!");

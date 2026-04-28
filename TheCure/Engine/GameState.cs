@@ -4,6 +4,7 @@
     {
         StartScreen,
         Playing,
+        Upgrade,
         Quit,
         Paused,
         GameOver
