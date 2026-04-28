@@ -9,7 +9,7 @@ public class Build : PlayerAction
     private int _trapIndex = 0;
     private const float TrapPlacementDistance = 80f;
 
-    public Build()
+    public Build() : base("Build")
     {
         CoolDown = 5f;
     }
