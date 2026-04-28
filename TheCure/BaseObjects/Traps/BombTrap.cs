@@ -6,20 +6,24 @@ namespace TheCure.BaseObjects.Traps
 {
     public class BombTrap : Trap
     {
-        private const float ActivationDelay = 0.5f;
+        private const float ActivationDelay = 0.7f;
         private const int ExplosionDamage = 25;
-        private const float ExplosionRadius = 80f;
+        private const float ExplosionRadius = 100f;
+        private const float ExplosionFadeDuration = 0.3f;
+
         private bool _activated = false;
         private bool _exploded = false;
+        private float _explosionTimer = 0f;
 
         public BombTrap(Vector2 position, float duration = 12f) : base(position, duration)
         {
-            _color = Color.Orange;
+            _baseColor = Color.Orange;
+            _currentColor = Color.Orange;
         }
 
-        public override void Update(GameTime gameTime)
+        protected override void UpdateTrap(GameTime gameTime)
         {
-            base.Update(gameTime);
+            float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             if (!_activated && _elapsedTime >= ActivationDelay)
             {
@@ -29,7 +33,20 @@ namespace TheCure.BaseObjects.Traps
             if (_activated && !_exploded)
             {
                 float pulse = (float)Math.Sin(_elapsedTime * 4) * 0.3f + 0.7f;
-                _color = Color.Orange * pulse;
+                _currentColor = _baseColor * pulse;
+            }
+
+            if (_exploded)
+            {
+                _explosionTimer += deltaTime;
+                float fadeAlpha = 1f - (_explosionTimer / ExplosionFadeDuration);
+                _currentColor = Color.Red * fadeAlpha;
+
+                if (_explosionTimer >= ExplosionFadeDuration)
+                {
+                    Destroy();
+                    _isActive = false;
+                }
             }
         }
 
@@ -37,32 +54,47 @@ namespace TheCure.BaseObjects.Traps
         {
             if (_activated && !_exploded)
             {
-                Explode(mob);
+                Explode();
             }
         }
 
-        private void Explode(Mob mob)
+        private void Explode()
         {
             _exploded = true;
-            _color = Color.Red;
-
+            _currentColor = Color.Red;
             GameManager gameManager = GameManager.GetGameManager();
 
-            foreach (var enemy in gameManager.Enemies)
+            if (gameManager.Enemies != null)
             {
-                if (enemy != null)
+                foreach (var enemy in gameManager.Enemies)
                 {
-                    Vector2 toEnemy = enemy._collider.Center - _collider.Center;
-                    float distance = toEnemy.Length();
-
-                    if (distance < ExplosionRadius)
+                    if (enemy != null && enemy._collider != null)
                     {
-                        enemy.LoseHealth(ExplosionDamage);
+                        Vector2 toEnemy = enemy._collider.Center - _collider.Center;
+                        float distanceSquared = toEnemy.LengthSquared();
+                        float radiusSquared = ExplosionRadius * ExplosionRadius;
+
+                        if (distanceSquared < radiusSquared)
+                        {
+                            float distance = (float)Math.Sqrt(distanceSquared);
+                            float damageMultiplier = 1f - (distance / ExplosionRadius);
+                            int damageDealt = (int)(ExplosionDamage * damageMultiplier);
+
+                            if (damageDealt > 0)
+                            {
+                                enemy.LoseHealth(damageDealt);
+
+                                if (distanceSquared > 0)
+                                {
+                                    toEnemy.Normalize();
+                                    float knockBackForce = 250f * damageMultiplier;
+                                    enemy.ApplyKnockBack(toEnemy, knockBackForce, 0.5f);
+                                }
+                            }
+                        }
                     }
                 }
             }
-
-            _duration = _elapsedTime + 0.3f;
         }
     }
 }

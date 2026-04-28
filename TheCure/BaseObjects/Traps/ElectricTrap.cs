@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using TheCure.Mobs;
 
@@ -6,35 +7,73 @@ namespace TheCure.BaseObjects.Traps
 {
     public class ElectricTrap : Trap
     {
-        private const int DamageAmount = 10;
-        private const float StunDuration = 2f;
-        private const float TickInterval = 0.3f;
-        private float _tickTimer = 0f;
+        private const int DamagePerTick = 8;
+        private const float DamageTickInterval = 0.3f;
+        private const float StunDuration = 0.8f;
+        private const float StunForce = 300f;
+
+        private float _tickTimer = DamageTickInterval;
+        private HashSet<Mob> _affectedMobs = new HashSet<Mob>();
 
         public ElectricTrap(Vector2 position, float duration = 10f) : base(position, duration)
         {
-            _color = Color.Yellow;
+            _baseColor = Color.Yellow;
+            _currentColor = Color.Yellow;
         }
 
-        public override void Update(GameTime gameTime)
+        protected override void UpdateTrap(GameTime gameTime)
         {
-            _tickTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+            float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            float flicker = (float)Math.Sin(_elapsedTime * 6) * 0.4f + 0.6f;
-            _color = Color.Yellow * flicker;
+            _tickTimer -= deltaTime;
+            if (_tickTimer <= 0f)
+            {
+                _tickTimer = DamageTickInterval;
 
-            base.Update(gameTime);
+                foreach (var mob in _affectedMobs)
+                {
+                    if (mob != null && _isActive)
+                    {
+                        mob.LoseHealth(DamagePerTick);
+
+                        Vector2 pushDirection = mob._collider.Center - _collider.Center;
+                        if (pushDirection.LengthSquared() > 0)
+                        {
+                            pushDirection.Normalize();
+                            mob.ApplyKnockBack(pushDirection, StunForce, StunDuration);
+                        }
+                    }
+                }
+            }
+
+            float flicker = 0.5f + (0.5f * (float)Math.Sin(_elapsedTime * 8));
+            _currentColor = _baseColor * flicker;
+        }
+
+        public override void OnCollision(GameObject other)
+        {
+            if (!_isActive)
+                return;
+
+            if (other is Mob mob)
+            {
+                _affectedMobs.Add(mob);
+            }
         }
 
         protected override void OnTrapHit(Mob mob)
         {
-            mob.LoseHealth(DamageAmount);
-
-            Vector2 pushDirection = mob._collider.Center - _collider.Center;
-            if (pushDirection.LengthSquared() > 0)
+            if (!_affectedMobs.Contains(mob))
             {
-                pushDirection.Normalize();
-                mob.ApplyKnockBack(pushDirection, 200f, StunDuration);
+                _affectedMobs.Add(mob);
+                mob.LoseHealth(DamagePerTick);
+
+                Vector2 pushDirection = mob._collider.Center - _collider.Center;
+                if (pushDirection.LengthSquared() > 0)
+                {
+                    pushDirection.Normalize();
+                    mob.ApplyKnockBack(pushDirection, StunForce, StunDuration);
+                }
             }
         }
     }

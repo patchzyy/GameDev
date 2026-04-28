@@ -37,12 +37,13 @@ public class Build : PlayerAction
 
         Vector2 trapPosition = playerPos + direction * TrapPlacementDistance;
 
-        Trap trap = (_trapIndex % 4) switch
+        BaseObjects.Traps.Trap trap = (_trapIndex % 5) switch
         {
             0 => new SpikeTrap(trapPosition),
             1 => new FreezeTrap(trapPosition),
             2 => new BombTrap(trapPosition),
             3 => new ElectricTrap(trapPosition),
+            4 => new HealBombTrap(trapPosition),
             _ => new SpikeTrap(trapPosition)
         };
 
@@ -50,6 +51,6 @@ public class Build : PlayerAction
 
         gameManager.AddGameObject(trap);
 
-        Console.WriteLine($"Built {trap.GetType().Name} at position {trapPosition}");
+        System.Diagnostics.Debug.WriteLine($"Built {trap.GetType().Name} at position {trapPosition}");
     }
 }
