@@ -34,6 +34,9 @@ namespace TheCure
         private const float SeparationStrength = 22f;
 
         private const float IdleThreshold = 0.15f;
+        private const float AttackRange = 300f;
+        private const float CommandAttackRange = 460f;
+        private const float CommandEnemyPriorityRadius = 420f;
 
         private enum FriendlyState
         {
@@ -95,8 +98,15 @@ namespace TheCure
 
             _previousCenter = _collider.Center;
 
-            Vector2 target = GetRingTarget(gm);
-            target += GetSeparation(gm);
+            bool hasCommandPosition = gm.TryGetFriendlyCommandPosition(this, out Vector2 commandTarget);
+            Vector2 target = hasCommandPosition
+                ? commandTarget
+                : GetRingTarget(gm);
+
+            if (!hasCommandPosition || !gm.IsFriendlyCommandHolding())
+            {
+                target += GetSeparation(gm);
+            }
 
             MoveTo(target, dt);
 
@@ -262,21 +272,38 @@ namespace TheCure
                 return;
             }
 
-            Mob enemy = GetNearestEnemy();
-            if (enemy == null) return;
+            var gm = GameManager.GetGameManager();
+            Vector2? commandTarget = gm.IsFriendlyCommandActive()
+                ? gm.GetFriendlyCommandTarget()
+                : null;
 
-            float dist = Vector2.Distance(enemy._collider.Center, _collider.Center);
+            Mob enemy = GetNearestEnemy(commandTarget);
 
-            if (dist < 300f)
+            if (enemy != null)
             {
-                Vector2 dir = Vector2.Normalize(enemy._collider.Center - _collider.Center);
-                _weapon.Fire(_collider.Center, dir);
+                float dist = Vector2.Distance(enemy._collider.Center, _collider.Center);
+                float range = commandTarget.HasValue ? CommandAttackRange : AttackRange;
+
+                if (dist < range)
+                {
+                    Vector2 dir = Vector2.Normalize(enemy._collider.Center - _collider.Center);
+                    _weapon.Fire(_collider.Center, dir);
+                }
+            }
+            else if (commandTarget.HasValue)
+            {
+                Vector2 toCommandTarget = commandTarget.Value - _collider.Center;
+                if (toCommandTarget.LengthSquared() > 24f * 24f && toCommandTarget.Length() < CommandAttackRange)
+                {
+                    toCommandTarget.Normalize();
+                    _weapon.Fire(_collider.Center, toCommandTarget);
+                }
             }
 
             _weapon.UpdateCoolDown(gameTime);
         }
 
-        private Mob GetNearestEnemy()
+        private Mob GetNearestEnemy(Vector2? priorityPosition = null)
         {
             Mob best = null;
             float bestDist = float.MaxValue;
@@ -286,10 +313,20 @@ namespace TheCure
                 if (e == null) continue;
 
                 float dist = Vector2.Distance(e._collider.Center, _collider.Center);
+                float score = dist;
 
-                if (dist < bestDist)
+                if (priorityPosition.HasValue)
                 {
-                    bestDist = dist;
+                    float targetDist = Vector2.Distance(e._collider.Center, priorityPosition.Value);
+                    if (targetDist > CommandEnemyPriorityRadius)
+                        continue;
+
+                    score = targetDist * 0.75f + dist * 0.25f;
+                }
+
+                if (score < bestDist)
+                {
+                    bestDist = score;
                     best = e;
                 }
             }

@@ -47,6 +47,7 @@ public class UpgradeSelection
         _availableUpgrades = new List<Upgrade>
         {
             new HealthBombUnlockUpgrade(),
+            new CommandUnlockUpgrade(),
             boostUnlock,
             new BoostPowerUpgrade(boostUnlock),
         };
