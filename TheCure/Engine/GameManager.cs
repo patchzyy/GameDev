@@ -188,6 +188,11 @@ namespace TheCure
                         Enemies.Add(brute);
                     }
 
+                    if (gameObject is Friendly friendly && !Friendlies.Contains(friendly))
+                    {
+                        Friendlies.Add(friendly);
+                    }
+
                     _gameObjects.Add(gameObject);
                 }
 
