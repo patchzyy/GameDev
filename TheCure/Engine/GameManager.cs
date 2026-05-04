@@ -372,7 +372,7 @@ namespace TheCure
                 new Stat("Friendlies", _gameObjects.OfType<Friendly>().Count().ToString()),
             };
 
-            foreach (var boost in BoostManager.Get()._boosts)
+            foreach (var boost in BoostManager.Get().GetBoosts())
             {
                 stats.Add(new Stat("Boost", $"x{boost.GetUnlockedBoostMultiplier():0.00}"));
             }

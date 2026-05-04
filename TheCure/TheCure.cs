@@ -59,6 +59,7 @@ namespace TheCure
             _screenManager.Load();
             _inputManager.Load();
             _upgradeManager.Load();
+            _boostManager.Load();
         }
 
         protected override void Update(GameTime gameTime)

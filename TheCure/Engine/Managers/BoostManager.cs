@@ -8,7 +8,17 @@ namespace TheCure.Engine.Managers;
 
 public class BoostManager : Manager<BoostManager>
 {
-    public List<Boost> _boosts = new();
+    private List<Boost> _boosts;
+
+    public void Load()
+    {
+        _boosts = new List<Boost>();
+    }
+
+    public List<Boost> GetBoosts()
+    {
+        return _boosts;
+    }
 
     public void AddBoost(Boost boost)
     {
@@ -30,8 +40,8 @@ public class BoostManager : Manager<BoostManager>
             bool changed =
                 wasEnabled != boost.BoostEnabled ||
                 Math.Abs(before - after) > 0.0001f;
-            
-            
+
+
             if (changed)
             {
                 ApplyStatsForBoost(boost);
@@ -42,7 +52,7 @@ public class BoostManager : Manager<BoostManager>
     public void Upgrade<T>() where T : Boost
     {
         foreach (var boost in _boosts)
-        {   
+        {
             if (boost is not T) continue;
             boost.Upgrade();
         }
