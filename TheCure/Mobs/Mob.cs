@@ -38,14 +38,15 @@ public class Mob : GameObject
 
     public override void Load()
     {
-        var content = ContentsManager.Get().GetContent();
+        var cm = ContentsManager.Get();
+        var content = cm.GetContent();
         _texture = content.Load<Texture2D>(_textureName);
 
         int frameWidth = _texture.Width / _frameCount;
 
         _animatedSprite =
             new AnimatedSprite(_texture, frameWidth, _texture.Height, _frameCount, _frameRate, _isLooping);
-        _font = content.Load<SpriteFont>("HudFont");
+        _font = cm.HUDFont;
         _collider = new CircleCollider(Vector2.Zero, _animatedSprite.FrameWidth * _scale / 2f);
 
         SetCollider(_collider);

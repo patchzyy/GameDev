@@ -70,8 +70,6 @@ namespace TheCure
                     _weapon = new Handgun();
                     break;
             }
-
-            GameManager.Get().Friendlies.Add(this);
         }
 
         public override void Load()
@@ -199,6 +197,9 @@ namespace TheCure
                 if (other == this)
                     continue;
 
+                if (other == null || other._collider == null)
+                    continue;
+
                 Vector2 diff = _collider.Center - other._collider.Center;
                 float dist = diff.Length();
 
@@ -324,7 +325,7 @@ namespace TheCure
 
             foreach (var enemy in GameManager.Get().Enemies)
             {
-                if (enemy == null)
+                if (enemy == null || enemy._collider == null)
                     continue;
 
                 float dist = Vector2.Distance(enemy._collider.Center, _collider.Center);
