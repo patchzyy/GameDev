@@ -132,7 +132,8 @@ namespace TheCure
             _pauseQuitButton = new Button(new Rectangle(0, 0, buttonWidth, buttonHeight), "Quit", _buttonFont);
             _restartButton = new Button(new Rectangle(0, 0, buttonWidth, buttonHeight), "Opnieuw spelen", _buttonFont);
 
-            _startButton.SetAction(()=> CurrentGameState = GameState.Playing);
+            //_startButton.SetAction(()=> CurrentGameState = GameState.Playing);
+            _startButton.SetAction(() => CurrentGameState = GameState.Tutorial);
             _quitButton.SetAction(Game.Exit);
             _continueButton.SetAction(() => CurrentGameState = GameState.Playing);
             _pauseQuitButton.SetAction(Game.Exit);
@@ -261,6 +262,17 @@ namespace TheCure
             {
                 _startButton.Update(mouseState);
                 _quitButton.Update(mouseState);
+
+                return;
+            }
+
+            if (CurrentGameState == GameState.Tutorial)
+            {
+                if (InputManager.IsKeyPress(Keys.Space))
+                {
+                    ResetGame();
+                    CurrentGameState = GameState.Playing;
+                }
 
                 return;
             }
@@ -470,6 +482,49 @@ namespace TheCure
                     spriteBatch.End();
                     break;
 
+                case GameState.Tutorial:
+                        spriteBatch.Begin();
+
+                        spriteBatch.Draw(_backgroundTexture,
+                            new Rectangle(0, 0, Game.GraphicsDevice.Viewport.Width, Game.GraphicsDevice.Viewport.Height),
+                            Color.White);
+
+                        spriteBatch.Draw(DummyTexture,
+                            new Rectangle(0, 0, Game.GraphicsDevice.Viewport.Width, Game.GraphicsDevice.Viewport.Height),
+                            new Color(0, 0, 0, 180));
+
+                        string tutorialText =
+                    @"THE CURE
+
+DOEL
+Verander zombies in friendlies en overleef zo lang mogelijk.
+
+BESTURING
+WASD - Bewegen
+1-6  - Wapen wisselen
+MUIS - Schieten
+
+GAMEPLAY
+Schiet zombies --> maak friendlies
+Friendlies beschermen jou
+
+SCORE
++50 per zombie
+
+Druk op SPATIE om te starten";
+
+                        Vector2 size = _buttonFont.MeasureString(tutorialText);
+
+                        Vector2 pos = new Vector2(
+                            Game.GraphicsDevice.Viewport.Width / 2 - size.X / 2,
+                            Game.GraphicsDevice.Viewport.Height / 2 - size.Y / 2
+                        );
+
+                        spriteBatch.DrawString(_buttonFont, tutorialText, pos, Color.White);
+
+                        spriteBatch.End();
+                     
+                        break;
                 case GameState.Upgrade:
                     DrawGameObjects(spriteBatch, gameTime);
 

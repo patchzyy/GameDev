@@ -3,6 +3,7 @@
     public enum GameState
     {
         StartScreen,
+        Tutorial,
         Playing,
         Upgrade,
         Quit,
