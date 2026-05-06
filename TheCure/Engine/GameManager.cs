@@ -53,12 +53,18 @@ namespace TheCure
         private float _supplySpawnInterval = 15.0f;
         private float _friendlyBoostTimer = 0f;
         private int _friendlyBoostUpgradeLevel = 0;
+        private float _friendlyCommandTimer = 0f;
+        private float _friendlyCommandHoldTimer = 0f;
+        private Vector2 _friendlyCommandTarget = Vector2.Zero;
+        private readonly Dictionary<Friendly, Vector2> _friendlyCommandHoldPositions = new Dictionary<Friendly, Vector2>();
 
         private UpgradeSelection _upgradeSelection;
 
         private const float FriendlyBoostDuration = 8f;
         private const float FriendlyBoostBaseMultiplier = 1.05f;
         private const float FriendlyBoostUpgradeStep = 0.05f;
+        private const float FriendlyCommandBaseRadius = 52f;
+        private const float FriendlyCommandRingSpacing = 48f;
 
 
         //World borders
@@ -180,6 +186,9 @@ namespace TheCure
             _enemiesToSpawn = 1;
             _friendlyBoostTimer = 0f;
             _friendlyBoostUpgradeLevel = 0;
+            _friendlyCommandTimer = 0f;
+            _friendlyCommandHoldTimer = 0f;
+            _friendlyCommandHoldPositions.Clear();
 
             PlayerInteractionsHud.Reset();
             _upgradeSelection.Reset();
@@ -300,6 +309,7 @@ namespace TheCure
                 _spawnTimer += deltaTime;
                 _supplySpawnTimer += deltaTime;
                 _friendlyBoostTimer = Math.Max(0f, _friendlyBoostTimer - deltaTime);
+                UpdateFriendlyCommand(deltaTime);
 
                 UpdatePhase();
                 SpawnEnemies();
@@ -527,6 +537,120 @@ namespace TheCure
         public void ActivateFriendlyBoost()
         {
             _friendlyBoostTimer = FriendlyBoostDuration;
+        }
+
+        public void ActivateFriendlyCommand(Vector2 target, float commandDuration, float holdDuration)
+        {
+            _friendlyCommandTarget = ClampToPlayableBounds(target, 48f);
+            _friendlyCommandTimer = commandDuration;
+            _friendlyCommandHoldTimer = holdDuration;
+            _friendlyCommandHoldPositions.Clear();
+        }
+
+        private void UpdateFriendlyCommand(float deltaTime)
+        {
+            if (_friendlyCommandTimer > 0f)
+            {
+                Point mousePosition = InputManager.CurrentMouseState.Position;
+                _friendlyCommandTarget = ClampToPlayableBounds(ScreenToWorld(mousePosition.ToVector2()), 48f);
+
+                _friendlyCommandTimer = Math.Max(0f, _friendlyCommandTimer - deltaTime);
+
+                if (_friendlyCommandTimer <= 0f)
+                {
+                    CaptureFriendlyHoldPositions();
+                }
+
+                return;
+            }
+
+            if (_friendlyCommandHoldTimer > 0f)
+            {
+                _friendlyCommandHoldTimer = Math.Max(0f, _friendlyCommandHoldTimer - deltaTime);
+
+                if (_friendlyCommandHoldTimer <= 0f)
+                {
+                    _friendlyCommandHoldPositions.Clear();
+                }
+            }
+        }
+
+        private void CaptureFriendlyHoldPositions()
+        {
+            _friendlyCommandHoldPositions.Clear();
+
+            foreach (var friendly in Friendlies)
+            {
+                _friendlyCommandHoldPositions[friendly] = friendly._collider.Center;
+            }
+        }
+
+        public bool TryGetFriendlyCommandPosition(Friendly friendly, out Vector2 position)
+        {
+            if (_friendlyCommandTimer > 0f)
+            {
+                position = GetFriendlyCommandFormationPosition(friendly);
+                return true;
+            }
+
+            if (_friendlyCommandHoldTimer > 0f && _friendlyCommandHoldPositions.TryGetValue(friendly, out position))
+            {
+                return true;
+            }
+
+            position = Vector2.Zero;
+            return false;
+        }
+
+        private Vector2 GetFriendlyCommandFormationPosition(Friendly friendly)
+        {
+            int index = Friendlies.IndexOf(friendly);
+            if (index < 0)
+                return _friendlyCommandTarget;
+
+            if (index == 0)
+                return _friendlyCommandTarget;
+
+            index--;
+
+            int ring = 0;
+            int spots = 6;
+            int start = 0;
+
+            while (index >= start + spots)
+            {
+                start += spots;
+                ring++;
+                spots += 6;
+            }
+
+            int slot = index - start;
+
+            float angleStep = MathHelper.TwoPi / spots;
+            float angle = slot * angleStep - MathHelper.PiOver2;
+            float radius = FriendlyCommandBaseRadius + ring * FriendlyCommandRingSpacing;
+
+            return ClampToPlayableBounds(
+                _friendlyCommandTarget + new Vector2(
+                    (float)Math.Cos(angle),
+                    (float)Math.Sin(angle)
+                ) * radius,
+                32f);
+        }
+
+        public bool IsFriendlyCommandActive()
+        {
+            return _friendlyCommandTimer > 0f;
+        }
+
+        public bool IsFriendlyCommandHolding()
+        {
+            return _friendlyCommandTimer <= 0f && _friendlyCommandHoldTimer > 0f;
+        }
+
+        public Vector2 GetFriendlyCommandTarget()
+        {
+            return _friendlyCommandTarget;
         }
 
         public void UpgradeFriendlyBoost()
