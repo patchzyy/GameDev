@@ -8,20 +8,14 @@ using TheCure.Weapons;
 
 namespace TheCure
 {
-    public class Friendly : Mob
+    public class Friendly : LivingEntity
     {
         private Vector2 _spawnPosition;
         private Vector2 _previousCenter;
         private Vector2 _velocity;
 
         private BaseWeapon _weapon;
-
-        private AnimatedSprite _animatedSprite;
         private FriendlyState _currentState;
-
-        private Texture2D _idleTexture;
-        private Texture2D _runTexture;
-        private Texture2D _hitTexture;
 
         private const float BaseRadius = 120f;
         private const float RingSpacing = 75f;
@@ -70,22 +64,12 @@ namespace TheCure
 
         public override void Load(ContentManager content)
         {
-            _idleTexture = content.Load<Texture2D>("Character-Unknown-Idle");
-            _runTexture = content.Load<Texture2D>("Character-Unknown-Run");
-            _hitTexture = content.Load<Texture2D>("Character-Unknown-Idle-Shot");
-
-            SetAnimation(_idleTexture, 5, 1f, true);
-
-            SetHealthBar(_idleTexture, _maxHealth, _startHealth, Destroy, null);
-            SyncHealthBarPosition();
-
             base.Load(content);
-        }
 
-        private void SetAnimation(Texture2D texture, int frames, float fps, bool loop)
-        {
-            int frameWidth = texture.Width / frames;
-            _animatedSprite = new AnimatedSprite(texture, frameWidth, texture.Height, frames, fps, loop);
+            SetAnimation("Character-Unknown-Idle", 5, 1f, true);
+
+            SetHealthBar(_texture, _maxHealth, _startHealth, Destroy, null);
+            SyncHealthBarPosition();
         }
 
         public override void Update(GameTime gameTime)
@@ -104,9 +88,8 @@ namespace TheCure
 
             Vector2 movement = _collider.Center - _previousCenter;
 
+            UpdateFacingDirection(movement);
             UpdateState(movement);
-
-            _animatedSprite?.Update(gameTime);
 
             base.Update(gameTime);
         }
@@ -241,15 +224,15 @@ namespace TheCure
             switch (state)
             {
                 case FriendlyState.Run:
-                    SetAnimation(_runTexture, 8, 3f, true);
+                    SetAnimation("Character-Unknown-Run", 8, 3f, true);
                     break;
 
                 case FriendlyState.Hit:
-                    SetAnimation(_hitTexture, 6, 6f, false);
+                    SetAnimation("Character-Unknown-Idle-Shot", 6, 6f, false);
                     break;
 
                 default:
-                    SetAnimation(_idleTexture, 5, 1f, false);
+                    SetAnimation("Character-Unknown-Idle", 5, 1f, false);
                     break;
             }
         }
@@ -262,7 +245,7 @@ namespace TheCure
                 return;
             }
 
-            Mob enemy = GetNearestEnemy();
+            LivingEntity enemy = GetNearestEnemy();
             if (enemy == null) return;
 
             float dist = Vector2.Distance(enemy._collider.Center, _collider.Center);
@@ -276,9 +259,9 @@ namespace TheCure
             _weapon.UpdateCoolDown(gameTime);
         }
 
-        private Mob GetNearestEnemy()
+        private LivingEntity GetNearestEnemy()
         {
-            Mob best = null;
+            LivingEntity best = null;
             float bestDist = float.MaxValue;
 
             foreach (var e in GameManager.GetGameManager().Enemies)
@@ -300,13 +283,7 @@ namespace TheCure
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             Color tint = _isFlashing ? _flashColor : Color.White;
-            _animatedSprite?.Draw(
-                spriteBatch,
-                _collider.Center,
-                tint,
-                0f,
-                2f
-            );
+            DrawAnimatedSprite(spriteBatch, tint, _facingDirection);
 
             base.Draw(gameTime, spriteBatch);
         }

@@ -13,7 +13,7 @@ public class Dash : PlayerAction
     private float _dashTimer = 0f;
     private bool _isDashing = false;
     private Vector2 _dashDirection = Vector2.Zero;
-    private HashSet<Mob> _hitEnemies = new HashSet<Mob>();
+    private HashSet<LivingEntity> _hitEnemies = new HashSet<LivingEntity>();
 
     public Dash(string iconName ) : base(iconName)
     {
@@ -87,7 +87,7 @@ public class Dash : PlayerAction
         const float KnockBackForce = 600f;
         const float KnockBackDuration = 0.3f;
 
-        foreach (Mob enemy in gameManager.Enemies)
+        foreach (LivingEntity enemy in gameManager.Enemies)
         {
             if (_hitEnemies.Contains(enemy))
                 continue;

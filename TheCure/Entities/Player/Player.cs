@@ -3,11 +3,12 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using TheCure.Collision;
+using TheCure.Mobs;
 using TheCure.Weapons;
 
 namespace TheCure
 {
-    public class Player : GameObject
+    public class Player : LivingEntity
     {
         public float MoveSpeed;
         public float MaxHealth;
@@ -30,12 +31,19 @@ namespace TheCure
         private PlayerAnimationState _currentState;
         private float _hitTimer = 0f;
 
-        private Vector2 _facingDirection = Vector2.UnitX;
-
-        public Player(Point Position)
+        public Player(Point Position) : base(
+            textureName: "Character-Joe-Idle",
+            speed: Settings.GetValue(SettingsConst.PLAYER.MOVE_SPEED),
+            startHealth: Settings.GetValue(SettingsConst.PLAYER.MAX_HEALTH),
+            maxHealth: Settings.GetValue(SettingsConst.PLAYER.MAX_HEALTH),
+            frameCount: 5,
+            frameRate: 1f,
+            isLooping: true,
+            scale: 2f
+        )
         {
-            MoveSpeed = Settings.GetValue(SettingsConst.PLAYER.MOVE_SPEED);
-            MaxHealth = Settings.GetValue(SettingsConst.PLAYER.MAX_HEALTH);
+            MoveSpeed = _speed;
+            MaxHealth = _maxHealth;
 
             _rectangleCollider = new RectangleCollider(new Rectangle(Position, Point.Zero));
             SetCollider(_rectangleCollider);
@@ -49,8 +57,7 @@ namespace TheCure
 
         public override void Load(ContentManager content)
         {
-            // ===== CHARACTER JOE ONLY =====
-            SwitchAnimation("Character-Joe-Idle", 5, 1f, true);
+            SetAnimation("Character-Joe-Idle", 5, 1f, true);
 
             SetHealthBar(
                 content.Load<Texture2D>("Character-Joe-Idle"),
@@ -101,7 +108,7 @@ namespace TheCure
             {
                 moveDirection.Normalize();
                 _rotation = LinePieceCollider.GetAngle(moveDirection);
-                _facingDirection = moveDirection;
+                UpdateFacingDirection(moveDirection);
             }
 
             var dash = GameManager.GetGameManager().PlayerInteractionsHud.GetDash();
@@ -142,8 +149,7 @@ namespace TheCure
 
             _rectangleCollider.shape.X += (int)(_velocity.X * deltaTime);
             _rectangleCollider.shape.Y += (int)(_velocity.Y * deltaTime);
-
-            _animatedSprite?.Update(gameTime);
+            _collider.Center = _rectangleCollider.shape.Center.ToVector2();
 
             base.Update(gameTime);
         }
@@ -158,14 +164,7 @@ namespace TheCure
             }
 
             Color tint = _isFlashing ? _flashColor : Color.White;
-            _animatedSprite?.Draw(
-                spriteBatch,
-                _rectangleCollider.shape.Center.ToVector2(),
-                tint,
-                0f,
-                2f,
-                effects
-            );
+            DrawAnimatedSprite(spriteBatch, tint, _facingDirection);
             base.Draw(gameTime, spriteBatch);
         }
 
@@ -197,15 +196,15 @@ namespace TheCure
             switch (newState)
             {
                 case PlayerAnimationState.Run:
-                    SwitchAnimation("Character-Joe-Run", 8, 8f, true);
+                    SetAnimation("Character-Joe-Run", 8, 8f, true);
                     break;
 
                 case PlayerAnimationState.Hit:
-                    SwitchAnimation("Character-Joe-Idle-Shot", 6, 10f, false);
+                    SetAnimation("Character-Joe-Idle-Shot", 6, 10f, false);
                     break;
 
                 default:
-                    SwitchAnimation("Character-Joe-Idle", 5, 1f, true);
+                    SetAnimation("Character-Joe-Idle", 5, 1f, true);
                     break;
             }
         }

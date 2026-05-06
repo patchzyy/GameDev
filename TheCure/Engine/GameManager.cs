@@ -75,7 +75,7 @@ namespace TheCure
         public Texture2D DummyTexture { get; private set; }
         public GameState CurrentGameState { get; private set; }
         public HUD HUD { get; private set; }
-        public List<Mob> Enemies;
+        public List<LivingEntity> Enemies;
         public Camera Camera => _camera;
 
 
@@ -96,7 +96,7 @@ namespace TheCure
             _gameObjects = new List<GameObject>();
             _toBeRemoved = new List<GameObject>();
             _toBeAdded = new List<GameObject>();
-            Enemies = new List<Mob>();
+            Enemies = new List<LivingEntity>();
 
             InputManager = new InputManager();
             RNG = new Random();
@@ -347,9 +347,9 @@ namespace TheCure
 
                 foreach (var gameObject in _toBeRemoved)
                 {
-                    if (gameObject is Mob)
+                    if (gameObject is LivingEntity)
                     {
-                        Enemies.Remove(gameObject as Mob);
+                        Enemies.Remove(gameObject as LivingEntity);
                     }
 
 
