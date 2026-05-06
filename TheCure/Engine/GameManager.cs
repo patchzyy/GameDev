@@ -25,6 +25,12 @@ namespace TheCure
         private Texture2D _backgroundPauseTexture;
         private Texture2D _backgroundGameOverTexture;
         private Texture2D _gameplayBackgroundTexture;
+
+        private Texture2D _tutorialPlayerTexture;
+        private Texture2D _tutorialZombieTexture;
+        private Texture2D _tutorialFriendlyTexture;
+        private Texture2D _tutorialThrowTexture;
+        private Texture2D _tutorialDashTexture;
         private SpriteFont _titleFont;
         private SpriteFont _buttonFont;
         private Button _startButton;
@@ -207,6 +213,11 @@ namespace TheCure
             _backgroundGameOverTexture = content.Load<Texture2D>("GameOverBackground");
             _titleFont = content.Load<SpriteFont>("TitleFont");
             _buttonFont = content.Load<SpriteFont>("ButtonFont");
+            _tutorialPlayerTexture = content.Load<Texture2D>("Character-Joe-Idle");
+            _tutorialZombieTexture = content.Load<Texture2D>("Zombie-Atk");
+            _tutorialFriendlyTexture = content.Load<Texture2D>("Character-Unknown-Idle");
+            _tutorialThrowTexture = content.Load<Texture2D>("Throw");
+            _tutorialDashTexture = content.Load<Texture2D>("Dash");
 
             PlayerInteractionsHud = new PlayerInteractionsHUD();
             HUD = new HUD();
@@ -483,48 +494,83 @@ namespace TheCure
                     break;
 
                 case GameState.Tutorial:
-                        spriteBatch.Begin();
+                    spriteBatch.Begin();
 
-                        spriteBatch.Draw(_backgroundTexture,
-                            new Rectangle(0, 0, Game.GraphicsDevice.Viewport.Width, Game.GraphicsDevice.Viewport.Height),
-                            Color.White);
+                    spriteBatch.Draw(_backgroundTexture,
+                        new Rectangle(0, 0, Game.GraphicsDevice.Viewport.Width, Game.GraphicsDevice.Viewport.Height),
+                        Color.White);
 
-                        spriteBatch.Draw(DummyTexture,
-                            new Rectangle(0, 0, Game.GraphicsDevice.Viewport.Width, Game.GraphicsDevice.Viewport.Height),
-                            new Color(0, 0, 0, 180));
+                    spriteBatch.Draw(DummyTexture,
+                        new Rectangle(0, 0, Game.GraphicsDevice.Viewport.Width, Game.GraphicsDevice.Viewport.Height),
+                        new Color(0, 0, 0, 180));
 
-                        string tutorialText =
-                    @"THE CURE
+                    int centerX = Game.GraphicsDevice.Viewport.Width / 2;
 
-DOEL
-Verander zombies in friendlies en overleef zo lang mogelijk.
+                    string title = "THE CURE - TUTORIAL";
+                    Vector2 titleSize = _titleFont.MeasureString(title);
+                    spriteBatch.DrawString(_titleFont, title,
+                        new Vector2(centerX - titleSize.X / 2, 150),
+                        Color.White);
 
-BESTURING
-WASD - Bewegen
-1-6  - Wapen wisselen
-MUIS - Schieten
+                    int frameCount = 5;
+                    int frameWidth = _tutorialPlayerTexture.Width / frameCount;
+                    int frameHeight = _tutorialPlayerTexture.Height;
 
-GAMEPLAY
-Schiet zombies --> maak friendlies
-Friendlies beschermen jou
+                    Rectangle sourceRect = new Rectangle(0, 0, frameWidth, frameHeight);
 
-SCORE
-+50 per zombie
+                    spriteBatch.Draw(_tutorialPlayerTexture,
+                        new Rectangle(centerX - 275, 360, 64, 64),
+                        sourceRect,
+                        Color.White);
+                    spriteBatch.DrawString(_buttonFont, "Jij (Player)",
+                        new Vector2(centerX - 300, 450), Color.White);
 
-Druk op SPATIE om te starten";
+                    int zombieFrameCount = 7;
+                    int zombieFrameWidth = _tutorialPlayerTexture.Width / zombieFrameCount;
+                    int zombieFrameHeight = _tutorialPlayerTexture.Height;
 
-                        Vector2 size = _buttonFont.MeasureString(tutorialText);
+                    Rectangle zombieSourceRect = new Rectangle(0, 0, zombieFrameWidth, zombieFrameHeight);
+                    spriteBatch.Draw(_tutorialZombieTexture, new Rectangle(centerX - 75, 360, 64, 64), zombieSourceRect, Color.White);
+                    spriteBatch.DrawString(_buttonFont, "Zombie (Enemy)",
+                        new Vector2(centerX - 100, 450), Color.White);
 
-                        Vector2 pos = new Vector2(
-                            Game.GraphicsDevice.Viewport.Width / 2 - size.X / 2,
-                            Game.GraphicsDevice.Viewport.Height / 2 - size.Y / 2
-                        );
+                    int friendlyFrameCount = 5;
+                    int friendlyFrameWidth = _tutorialPlayerTexture.Width / friendlyFrameCount;
+                    int friendlyFrameHeight = _tutorialPlayerTexture.Height;
 
-                        spriteBatch.DrawString(_buttonFont, tutorialText, pos, Color.White);
+                    Rectangle friendlySourceRect = new Rectangle(0, 0, frameWidth, frameHeight);
+                    spriteBatch.Draw(_tutorialFriendlyTexture, new Rectangle(centerX + 135, 360, 64, 64), friendlySourceRect, Color.White);
+                    spriteBatch.DrawString(_buttonFont, "Friendly (Helper)",
+                        new Vector2(centerX + 100, 450), Color.White);
 
-                        spriteBatch.End();
-                     
-                        break;
+                    spriteBatch.DrawString(_buttonFont, "Schiet zombies -> maak friendlies",
+                        new Vector2(centerX - 200, 550), Color.White);
+
+                    spriteBatch.Draw(_tutorialThrowTexture, new Rectangle(centerX - 200, 625, 64, 64), Color.White);
+                    spriteBatch.DrawString(_buttonFont, "Wapen 1",
+                        new Vector2(centerX - 200, 700), Color.White);
+
+                    spriteBatch.Draw(_tutorialDashTexture, new Rectangle(centerX, 625, 64, 64), Color.White);
+                    spriteBatch.DrawString(_buttonFont, "Wapen 2",
+                        new Vector2(centerX, 700), Color.White);
+
+                    string controls =
+                @"WASD  - Bewegen
+MUIS  - Schieten
+1-6   - Wissel wapens";
+
+                    spriteBatch.DrawString(_buttonFont, controls,
+                        new Vector2(centerX - 200, 775), Color.White);
+
+                    string startText = "Druk op SPATIE om te starten";
+                    Vector2 startSize = _buttonFont.MeasureString(startText);
+
+                    spriteBatch.DrawString(_buttonFont, startText,
+                        new Vector2(centerX - startSize.X / 2, 925),
+                        Color.Yellow);
+
+                    spriteBatch.End();
+                    break;
                 case GameState.Upgrade:
                     DrawGameObjects(spriteBatch, gameTime);
 
