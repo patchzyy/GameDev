@@ -24,7 +24,6 @@ namespace TheCure
         private bool _isDying = false;
         private Action _onDeathComplete;
 
-        public float LastHealed;
         private Vector2 _spawnPosition;
 
         public Zombie() : base(
@@ -76,7 +75,7 @@ namespace TheCure
 
                 return;
             }
-            
+
             if (_isDying)
             {
                 _animatedSprite.Update(gameTime);
@@ -179,7 +178,7 @@ namespace TheCure
             SwitchAnimation("Zombie-Dead", 11, 5f, false);
             _currentState = ZombieAnimationState.Dead;
 
-            _onDeathComplete = null; 
+            _onDeathComplete = null;
         }
 
         public override void OnCollision(GameObject tmp)

@@ -43,13 +43,20 @@ public class UpgradeSelection
     public void Reset()
     {
         var boostUnlock = new BoostUnlockUpgrade();
+        var buildUnlock = new BuildUnlockUpgrade();
 
         _availableUpgrades = new List<Upgrade>
         {
             new HealthBombUnlockUpgrade(),
             new CommandUnlockUpgrade(),
             boostUnlock,
+            buildUnlock,
             new BoostPowerUpgrade(boostUnlock),
+            new SpikeTrapUnlockUpgrade { RequiredUpgrade = buildUnlock },
+            new FreezeTrapUnlockUpgrade { RequiredUpgrade = buildUnlock },
+            new BombTrapUnlockUpgrade { RequiredUpgrade = buildUnlock },
+            new ElectricTrapUnlockUpgrade { RequiredUpgrade = buildUnlock },
+            new HealBombTrapUnlockUpgrade { RequiredUpgrade = buildUnlock },
         };
 
         _unlockedUpgrades = new List<Upgrade>();
@@ -98,7 +105,6 @@ public class UpgradeSelection
         spriteBatch.Draw(gameManager.DummyTexture, mainRect, new Color(100, 255, 100, 200));
         spriteBatch.DrawString(_font, "Upgrades", new Vector2(mainRect.X + 10, mainRect.Y + 10), Color.White);
 
-        int buttonWidth = 200;
         int buttonHeight = 50;
         int buttonY = mainRect.Y + mainRect.Height - buttonHeight - 20;
         var count = _upgradeButtons.Count;
@@ -118,8 +124,8 @@ public class UpgradeSelection
             spriteBatch.DrawString(_font, upgrade.Name, new Vector2(buttonPanel.X + 10, buttonPanel.Y + 10),
                 Color.White);
 
-            spriteBatch.DrawString(_font, upgrade.Description, new Vector2(buttonPanel.X + 10, buttonPanel.Y + 40),
-                Color.White);
+            DrawWrappedText(spriteBatch, _font, upgrade.Description,
+                new Vector2(buttonPanel.X + 10, buttonPanel.Y + 40), Color.White, buttonPanel.Width - 20, 20);
 
             button.SetAction(() =>
             {
@@ -146,6 +152,34 @@ public class UpgradeSelection
             });
             button.SetPosition(buttonPanel.X + 15, buttonY);
             button.Draw(spriteBatch);
+        }
+    }
+
+    private void DrawWrappedText(SpriteBatch spriteBatch, SpriteFont font, string text, Vector2 position, Color color, float maxLineWidth, float lineHeight)
+    {
+        var words = text.Split(' ');
+        string currentLine = string.Empty;
+        float y = position.Y;
+
+        foreach (var word in words)
+        {
+            string testLine = string.IsNullOrEmpty(currentLine) ? word : currentLine + " " + word;
+            Vector2 size = font.MeasureString(testLine);
+            if (size.X > maxLineWidth && !string.IsNullOrEmpty(currentLine))
+            {
+                spriteBatch.DrawString(font, currentLine, new Vector2(position.X, y), color);
+                currentLine = word;
+                y += lineHeight;
+            }
+            else
+            {
+                currentLine = testLine;
+            }
+        }
+
+        if (!string.IsNullOrEmpty(currentLine))
+        {
+            spriteBatch.DrawString(font, currentLine, new Vector2(position.X, y), color);
         }
     }
 

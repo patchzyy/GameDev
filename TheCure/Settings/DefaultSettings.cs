@@ -43,6 +43,7 @@ namespace TheCure
             { SettingsConst.KEY_BINDS.ACTION_4, Keys.D4 },
             { SettingsConst.KEY_BINDS.ACTION_5, Keys.D5 },
             { SettingsConst.KEY_BINDS.ACTION_6, Keys.D6 },
+            { SettingsConst.KEY_BINDS.ACTION_7, Keys.D7 },
         };
     }
 }
