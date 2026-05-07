@@ -216,7 +216,7 @@ namespace TheCure
 
         public void Reset()
         {
-            _healthBar.ResetHealth();
+            _healthBar?.ResetHealth();
             _currentWeapon = _bulletWeapon;
             _weaponBuffTimer = 0f;
 

@@ -15,6 +15,6 @@ public class ElectricTrapUnlockUpgrade : Upgrade
 
     public void Unlock(List<Upgrade> unlockedUpgrades)
     {
-        GameManager.GetGameManager().PlayerInteractionsHud.GetBuild().AddTrapType(typeof(ElectricTrap));
+        PlayerActionsManager.Get().GetBuild().AddTrapType(typeof(ElectricTrap));
     }
 }

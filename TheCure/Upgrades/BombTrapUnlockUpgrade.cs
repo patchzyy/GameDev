@@ -15,6 +15,6 @@ public class BombTrapUnlockUpgrade : Upgrade
 
     public void Unlock(List<Upgrade> unlockedUpgrades)
     {
-        GameManager.GetGameManager().PlayerInteractionsHud.GetBuild().AddTrapType(typeof(BombTrap));
+        PlayerActionsManager.Get().GetBuild().AddTrapType(typeof(BombTrap));
     }
 }

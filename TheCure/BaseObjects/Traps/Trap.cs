@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using TheCure.Collision;
+using TheCure.Managers;
 using TheCure.Mobs;
 
 namespace TheCure.BaseObjects.Traps
@@ -30,9 +29,9 @@ namespace TheCure.BaseObjects.Traps
             _currentColor = Color.White;
         }
 
-        public override void Load(ContentManager content)
+        public override void Load()
         {
-            _texture = content.Load<Texture2D>("Bullet");
+            _texture = ContentsManager.Get().GetContent().Load<Texture2D>("Bullet");
         }
 
         public override void Update(GameTime gameTime)
@@ -54,7 +53,9 @@ namespace TheCure.BaseObjects.Traps
             base.Update(gameTime);
         }
 
-        protected virtual void UpdateTrap(GameTime gameTime) { }
+        protected virtual void UpdateTrap(GameTime gameTime)
+        {
+        }
 
         public override void OnCollision(GameObject other)
         {

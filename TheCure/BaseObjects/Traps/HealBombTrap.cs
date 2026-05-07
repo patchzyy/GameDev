@@ -30,7 +30,7 @@ namespace TheCure.BaseObjects.Traps
             {
                 _healTickTimer = HealTickInterval;
 
-                GameManager gameManager = GameManager.GetGameManager();
+                GameManager gameManager = GameManager.Get();
 
                 if (gameManager.Friendlies != null)
                 {
