@@ -18,6 +18,9 @@ public class PlayerInteractionsHUD
     private Keys _dashKey;
     private Dash _dash;
 
+    private Keys _buildKey;
+    private Build _build;
+
     private List<Keys> _actionKeys;
     private List<PlayerAction> _actions;
 
@@ -35,18 +38,22 @@ public class PlayerInteractionsHUD
         _dashKey = Settings.GetValue(SettingsConst.KEY_BINDS.ACTION_2);
         _dash = new Dash("Dash");
 
+        _buildKey = Settings.GetValue(SettingsConst.KEY_BINDS.ACTION_3);
+        _build = new Build();
+
         _actionKeys = new List<Keys>
         {
-            Settings.GetValue(SettingsConst.KEY_BINDS.ACTION_3),
             Settings.GetValue(SettingsConst.KEY_BINDS.ACTION_4),
             Settings.GetValue(SettingsConst.KEY_BINDS.ACTION_5),
             Settings.GetValue(SettingsConst.KEY_BINDS.ACTION_6),
+            Settings.GetValue(SettingsConst.KEY_BINDS.ACTION_7),
         };
 
         _actionKeyMap = new Dictionary<PlayerAction, Keys>()
         {
             { _shoot, _shootKey },
-            { _dash, _dashKey }
+            { _dash, _dashKey },
+            { _build, _buildKey }
         };
 
         _actions = new List<PlayerAction>();
@@ -58,6 +65,7 @@ public class PlayerInteractionsHUD
         _content = content;
         _shoot.Load(content);
         _dash.Load(content);
+        _build.Load(content);
         foreach (var action in _actions)
         {
             action.Load(content);
@@ -79,7 +87,8 @@ public class PlayerInteractionsHUD
         _actionKeyMap = new Dictionary<PlayerAction, Keys>()
         {
             { _shoot, _shootKey },
-            { _dash, _dashKey }
+            { _dash, _dashKey },
+            { _build, _buildKey }
         };
 
         foreach (var action in _actionKeyMap.Keys)
@@ -114,6 +123,8 @@ public class PlayerInteractionsHUD
 
     public Dash GetDash() => _dash;
 
+    public Build GetBuild() => _build;
+
     public void Draw(SpriteBatch spriteBatch, GameManager gameManager)
     {
         if (_actions.Count > 0)
@@ -124,7 +135,7 @@ public class PlayerInteractionsHUD
             MainPanel(spriteBatch, gameManager, x, _actions);
         }
 
-        MainPanel(spriteBatch, gameManager, 200, new List<PlayerAction> { _shoot, _dash });
+        MainPanel(spriteBatch, gameManager, 200, new List<PlayerAction> { _shoot, _dash, _build });
     }
 
     private void MainPanel(SpriteBatch spriteBatch, GameManager gameManager, int x, List<PlayerAction> actions)

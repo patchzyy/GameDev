@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using TheCure.BaseObjects.Traps;
 
@@ -8,10 +9,27 @@ public class Build : PlayerAction
 {
     private int _trapIndex = 0;
     private const float TrapPlacementDistance = 80f;
+    private List<Type> _availableTrapTypes = new List<Type> { typeof(SpikeTrap) }; // default
+    private Dictionary<Type, float> _trapDurations = new Dictionary<Type, float>
+    {
+        { typeof(SpikeTrap), 8f },
+        { typeof(FreezeTrap), 10f },
+        { typeof(BombTrap), 12f },
+        { typeof(ElectricTrap), 10f },
+        { typeof(HealBombTrap), 15f }
+    };
 
     public Build() : base("Build")
     {
         CoolDown = 5f;
+    }
+
+    public void AddTrapType(Type trapType)
+    {
+        if (!_availableTrapTypes.Contains(trapType))
+        {
+            _availableTrapTypes.Add(trapType);
+        }
     }
 
     protected override void OnExecute(GameTime gameTime, GameManager gameManager)
@@ -37,15 +55,14 @@ public class Build : PlayerAction
 
         Vector2 trapPosition = playerPos + direction * TrapPlacementDistance;
 
-        BaseObjects.Traps.Trap trap = (_trapIndex % 5) switch
+        if (_availableTrapTypes.Count == 0)
         {
-            0 => new SpikeTrap(trapPosition),
-            1 => new FreezeTrap(trapPosition),
-            2 => new BombTrap(trapPosition),
-            3 => new ElectricTrap(trapPosition),
-            4 => new HealBombTrap(trapPosition),
-            _ => new SpikeTrap(trapPosition)
-        };
+            return; // no traps available
+        }
+
+        Type trapType = _availableTrapTypes[_trapIndex % _availableTrapTypes.Count];
+        float duration = _trapDurations[trapType];
+        BaseObjects.Traps.Trap trap = (BaseObjects.Traps.Trap)Activator.CreateInstance(trapType, new object[] { trapPosition, duration });
 
         _trapIndex++;
 

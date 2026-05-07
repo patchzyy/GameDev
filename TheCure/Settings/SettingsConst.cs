@@ -60,6 +60,7 @@ namespace TheCure
             public static readonly SettingKey<Keys> ACTION_4 = new(_group, "ACTION_4");
             public static readonly SettingKey<Keys> ACTION_5 = new(_group, "ACTION_5");
             public static readonly SettingKey<Keys> ACTION_6 = new(_group, "ACTION_6");
+            public static readonly SettingKey<Keys> ACTION_7 = new(_group, "ACTION_7");
         }
     }
 }

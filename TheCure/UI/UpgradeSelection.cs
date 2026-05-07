@@ -43,12 +43,19 @@ public class UpgradeSelection
     public void Reset()
     {
         var boostUnlock = new BoostUnlockUpgrade();
+        var buildUnlock = new BuildUnlockUpgrade();
 
         _availableUpgrades = new List<Upgrade>
         {
             new HealthBombUnlockUpgrade(),
             boostUnlock,
+            buildUnlock,
             new BoostPowerUpgrade(boostUnlock),
+            new SpikeTrapUnlockUpgrade { RequiredUpgrade = buildUnlock },
+            new FreezeTrapUnlockUpgrade { RequiredUpgrade = buildUnlock },
+            new BombTrapUnlockUpgrade { RequiredUpgrade = buildUnlock },
+            new ElectricTrapUnlockUpgrade { RequiredUpgrade = buildUnlock },
+            new HealBombTrapUnlockUpgrade { RequiredUpgrade = buildUnlock },
         };
 
         _unlockedUpgrades = new List<Upgrade>();
