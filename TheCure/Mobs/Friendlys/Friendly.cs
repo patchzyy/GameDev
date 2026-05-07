@@ -102,15 +102,16 @@ namespace TheCure
         {
             float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
             var gm = GameManager.Get();
+            var commandManager = CommandManager.Get();
 
             _previousCenter = _collider.Center;
 
-            bool hasCommandPosition = gm.TryGetFriendlyCommandPosition(this, out Vector2 commandTarget);
+            bool hasCommandPosition = commandManager.TryGetFriendlyCommandPosition(this, out Vector2 commandTarget);
             Vector2 target = hasCommandPosition
                 ? commandTarget
                 : GetRingTarget(gm);
 
-            if (!hasCommandPosition || !gm.IsFriendlyCommandHolding())
+            if (!hasCommandPosition || !commandManager.IsFriendlyCommandHolding())
             {
                 target += GetSeparation(gm);
             }
@@ -282,9 +283,9 @@ namespace TheCure
                 return;
             }
 
-            var gm = GameManager.Get();
-            Vector2? commandTarget = gm.IsFriendlyCommandActive()
-                ? gm.GetFriendlyCommandTarget()
+            var commandManager = CommandManager.Get();
+            Vector2? commandTarget = commandManager.IsFriendlyCommandActive()
+                ? commandManager.GetFriendlyCommandTarget()
                 : null;
 
             Mob enemy = GetNearestEnemy(commandTarget);
