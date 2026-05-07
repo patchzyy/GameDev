@@ -1,3 +1,4 @@
+using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -17,14 +18,20 @@ namespace TheCure
         private Vector2 _previousCenter;
         private Vector2 _facingDirection = Vector2.UnitX;
 
+        private BruteAnimationState _currentState;
+        private bool _isSpawning = false;
+        private bool _isDying = false;
+
+        private Vector2 _spawnPosition;
+
         public Brute() : base(
-            textureName: "Zombie",
+            textureName: "Zombie-Walk",
             speed: 30f,
             startHealth: 15f,
             maxHealth: 15f,
-            frameCount: 5,
-            frameRate: 2.5f,
-            scale: 0.55f
+            frameCount: 7,
+            frameRate: 3.5f,
+            scale: 3.1f
         )
         {
             _stagger = 1.2f;
@@ -36,8 +43,14 @@ namespace TheCure
         {
             base.Load(content);
 
-            // no BecomeFriendly here, brute cannot be healed
+            _collider.Center = _spawnPosition;
+
             SetHealthBar(_texture, _maxHealth, _startHealth, Destroy, null);
+            SyncHealthBarPosition();
+
+            SwitchAnimation("Zombie-Dead", 11, 3.5f, false, true);
+            _currentState = BruteAnimationState.Spawn;
+            _isSpawning = true;
         }
 
         public override void Update(GameTime gameTime)
@@ -45,7 +58,34 @@ namespace TheCure
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
             _previousCenter = _collider.Center;
 
-            UpdateKnockBack(deltaTime);
+            if (_isSpawning)
+            {
+                _animatedSprite.Update(gameTime);
+                base.Update(gameTime);
+
+                if (_animatedSprite.IsFinished)
+                {
+                    _isSpawning = false;
+                    SwitchAnimation("Zombie-Walk", 7, 3.5f, true);
+                    _currentState = BruteAnimationState.Walk;
+                }
+
+                return;
+            }
+
+            if (_isDying)
+            {
+                _animatedSprite.Update(gameTime);
+                base.Update(gameTime);
+
+                if (_animatedSprite.IsFinished)
+                {
+                    GameManager.GetGameManager().AddScore(75, "Brute Killed");
+                    base.Destroy();
+                }
+
+                return;
+            }
 
             if (_attackNextCombat)
             {
@@ -61,6 +101,8 @@ namespace TheCure
             {
                 _facingDirection = Vector2.Normalize(movement);
             }
+
+            UpdateAnimation();
 
             base.Update(gameTime);
         }
@@ -108,13 +150,12 @@ namespace TheCure
         {
             if (tmp is Bullet bullet)
             {
-                // brute ignores healing bullets
                 if (!bullet.IsHealing)
                 {
                     LoseHealth(bullet.Damage);
                 }
 
-                tmp.Destroy();
+                bullet.Destroy();
             }
 
             if ((tmp is Friendly || tmp is Player) && _currentTarget == null)
@@ -133,23 +174,60 @@ namespace TheCure
 
         public override void Destroy()
         {
-            GameManager.GetGameManager().AddScore(75, "Brute Killed");
-            base.Destroy();
+            if (_isDying)
+                return;
+
+            _isDying = true;
+
+            SwitchAnimation("Zombie-Dead", 11, 3.5f, false);
+            _currentState = BruteAnimationState.Dead;
         }
 
-        public void RandomMove()
+        private void UpdateAnimation()
         {
-            var game = GameManager.GetGameManager();
-            _collider.Center = game.RandomLocationOutsideView((int)_collider.Radius);
+            if (_isDying || _isSpawning)
+                return;
+
+            if (_attackNextCombat)
+            {
+                if (_currentState != BruteAnimationState.Attack)
+                {
+                    SwitchAnimation("Zombie-Atk", 7, 5f, true);
+                    _currentState = BruteAnimationState.Attack;
+                }
+            }
+            else
+            {
+                if (_currentState != BruteAnimationState.Walk)
+                {
+                    SwitchAnimation("Zombie-Walk", 7, 3.5f, true);
+                    _currentState = BruteAnimationState.Walk;
+                }
+            }
+        }
+
+        public void Spawn(Vector2 position)
+        {
+            _spawnPosition = position;
         }
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             Rectangle destRect = GetAnimatedSpriteDestinationRectangle();
             DrawShadow(spriteBatch, destRect, 0.18f, 0.10f);
-            DrawAnimatedSprite(spriteBatch, Color.White, _facingDirection);
+
+            Color tint = _isFlashing ? _flashColor : Color.White;
+            DrawAnimatedSprite(spriteBatch, tint, _facingDirection);
 
             base.Draw(gameTime, spriteBatch);
         }
+    }
+
+    enum BruteAnimationState
+    {
+        Spawn,
+        Walk,
+        Attack,
+        Dead
     }
 }
