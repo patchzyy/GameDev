@@ -25,6 +25,12 @@ namespace TheCure
         private Texture2D _backgroundPauseTexture;
         private Texture2D _backgroundGameOverTexture;
         private Texture2D _gameplayBackgroundTexture;
+
+        private Texture2D _tutorialPlayerTexture;
+        private Texture2D _tutorialZombieTexture;
+        private Texture2D _tutorialFriendlyTexture;
+        private Texture2D _tutorialThrowTexture;
+        private Texture2D _tutorialDashTexture;
         private SpriteFont _titleFont;
         private SpriteFont _buttonFont;
         private Button _startButton;
@@ -138,7 +144,8 @@ namespace TheCure
             _pauseQuitButton = new Button(new Rectangle(0, 0, buttonWidth, buttonHeight), "Quit", _buttonFont);
             _restartButton = new Button(new Rectangle(0, 0, buttonWidth, buttonHeight), "Opnieuw spelen", _buttonFont);
 
-            _startButton.SetAction(()=> CurrentGameState = GameState.Playing);
+            //_startButton.SetAction(()=> CurrentGameState = GameState.Playing);
+            _startButton.SetAction(() => CurrentGameState = GameState.Tutorial);
             _quitButton.SetAction(Game.Exit);
             _continueButton.SetAction(() => CurrentGameState = GameState.Playing);
             _pauseQuitButton.SetAction(Game.Exit);
@@ -215,6 +222,11 @@ namespace TheCure
             _backgroundGameOverTexture = content.Load<Texture2D>("GameOverBackground");
             _titleFont = content.Load<SpriteFont>("TitleFont");
             _buttonFont = content.Load<SpriteFont>("ButtonFont");
+            _tutorialPlayerTexture = content.Load<Texture2D>("Character-Joe-Idle");
+            _tutorialZombieTexture = content.Load<Texture2D>("Zombie-Atk");
+            _tutorialFriendlyTexture = content.Load<Texture2D>("Character-Unknown-Idle");
+            _tutorialThrowTexture = content.Load<Texture2D>("Throw");
+            _tutorialDashTexture = content.Load<Texture2D>("Dash");
 
             PlayerInteractionsHud = new PlayerInteractionsHUD();
             HUD = new HUD();
@@ -270,6 +282,17 @@ namespace TheCure
             {
                 _startButton.Update(mouseState);
                 _quitButton.Update(mouseState);
+
+                return;
+            }
+
+            if (CurrentGameState == GameState.Tutorial)
+            {
+                if (InputManager.IsKeyPress(Keys.Space))
+                {
+                    ResetGame();
+                    CurrentGameState = GameState.Playing;
+                }
 
                 return;
             }
@@ -480,6 +503,84 @@ namespace TheCure
                     spriteBatch.End();
                     break;
 
+                case GameState.Tutorial:
+                    spriteBatch.Begin();
+
+                    spriteBatch.Draw(_backgroundTexture,
+                        new Rectangle(0, 0, Game.GraphicsDevice.Viewport.Width, Game.GraphicsDevice.Viewport.Height),
+                        Color.White);
+
+                    spriteBatch.Draw(DummyTexture,
+                        new Rectangle(0, 0, Game.GraphicsDevice.Viewport.Width, Game.GraphicsDevice.Viewport.Height),
+                        new Color(0, 0, 0, 180));
+
+                    int centerX = Game.GraphicsDevice.Viewport.Width / 2;
+
+                    string title = "THE CURE - TUTORIAL";
+                    Vector2 titleSize = _titleFont.MeasureString(title);
+                    spriteBatch.DrawString(_titleFont, title,
+                        new Vector2(centerX - titleSize.X / 2, 150),
+                        Color.White);
+
+                    int frameCount = 5;
+                    int frameWidth = _tutorialPlayerTexture.Width / frameCount;
+                    int frameHeight = _tutorialPlayerTexture.Height;
+
+                    Rectangle sourceRect = new Rectangle(0, 0, frameWidth, frameHeight);
+
+                    spriteBatch.Draw(_tutorialPlayerTexture,
+                        new Rectangle(centerX - 290, 360, 100, 100),
+                        sourceRect,
+                        Color.White);
+                    spriteBatch.DrawString(_buttonFont, "Jij (Player)",
+                        new Vector2(centerX - 300, 450), Color.White);
+
+                    int zombieFrameCount = 7;
+                    int zombieFrameWidth = _tutorialPlayerTexture.Width / zombieFrameCount;
+                    int zombieFrameHeight = _tutorialPlayerTexture.Height;
+
+                    Rectangle zombieSourceRect = new Rectangle(0, 0, zombieFrameWidth, zombieFrameHeight);
+                    spriteBatch.Draw(_tutorialZombieTexture, new Rectangle(centerX - 115, 360, 100, 100), zombieSourceRect, Color.White);
+                    spriteBatch.DrawString(_buttonFont, "Zombie (Enemy)",
+                        new Vector2(centerX - 130, 450), Color.White);
+
+                    int friendlyFrameCount = 5;
+                    int friendlyFrameWidth = _tutorialPlayerTexture.Width / friendlyFrameCount;
+                    int friendlyFrameHeight = _tutorialPlayerTexture.Height;
+
+                    Rectangle friendlySourceRect = new Rectangle(0, 0, frameWidth, frameHeight);
+                    spriteBatch.Draw(_tutorialFriendlyTexture, new Rectangle(centerX + 135, 360, 100, 100), friendlySourceRect, Color.White);
+                    spriteBatch.DrawString(_buttonFont, "Friendly (Helper)",
+                        new Vector2(centerX + 100, 450), Color.White);
+
+                    spriteBatch.DrawString(_buttonFont, "Schiet zombies -> maak friendlies",
+                        new Vector2(centerX - 200, 550), Color.White);
+
+                    spriteBatch.Draw(_tutorialThrowTexture, new Rectangle(centerX - 150, 625, 64, 64), Color.White);
+                    spriteBatch.DrawString(_buttonFont, "Wapen 1",
+                        new Vector2(centerX - 158, 700), Color.White);
+
+                    spriteBatch.Draw(_tutorialDashTexture, new Rectangle(centerX + 30, 625, 64, 64), Color.White);
+                    spriteBatch.DrawString(_buttonFont, "Wapen 2",
+                        new Vector2(centerX + 18, 700), Color.White);
+
+                    string controls =
+                @"WASD  - Bewegen
+MUIS  - Schieten
+1-2   - Wissel wapens";
+
+                    spriteBatch.DrawString(_buttonFont, controls,
+                        new Vector2(centerX - 120, 775), Color.White);
+
+                    string startText = "Druk op SPATIE om te starten";
+                    Vector2 startSize = _buttonFont.MeasureString(startText);
+
+                    spriteBatch.DrawString(_buttonFont, startText,
+                        new Vector2(centerX - startSize.X / 2, 925),
+                        Color.Yellow);
+
+                    spriteBatch.End();
+                    break;
                 case GameState.Upgrade:
                     DrawGameObjects(spriteBatch, gameTime);
 
@@ -492,7 +593,25 @@ namespace TheCure
                     break;
 
                 case GameState.Paused:
+                    int centerXPaused = Game.GraphicsDevice.Viewport.Width / 4;
                     DrawPauseMenu(spriteBatch);
+                    spriteBatch.Begin();
+                    spriteBatch.Draw(_tutorialThrowTexture, new Rectangle(centerXPaused - 450, 825, 64, 64), Color.White);
+                    spriteBatch.DrawString(_buttonFont, "Wapen 1",
+                        new Vector2(centerXPaused - 450, 900), Color.White);
+
+                    spriteBatch.Draw(_tutorialDashTexture, new Rectangle(centerXPaused - 350, 825, 64, 64), Color.White);
+                    spriteBatch.DrawString(_buttonFont, "Wapen 2",
+                        new Vector2(centerXPaused - 350, 900), Color.White);
+
+                    string controlsPaused =
+                @"WASD  - Bewegen
+MUIS  - Schieten
+1-2   - Wissel wapens";
+
+                    spriteBatch.DrawString(_buttonFont, controlsPaused,
+                        new Vector2(centerXPaused - 450, 950), Color.White);
+                    spriteBatch.End();
                     break;
 
                 case GameState.GameOver:
