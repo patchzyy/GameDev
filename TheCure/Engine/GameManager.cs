@@ -812,9 +812,6 @@ namespace TheCure
         {
             spriteBatch.Begin();
 
-            var spacing = 20f;
-            var currentY = 150f;
-
             spriteBatch.Draw(_backgroundGameOverTexture,
                 new Rectangle(0, 0, Game.GraphicsDevice.Viewport.Width, Game.GraphicsDevice.Viewport.Height),
                 Color.White);

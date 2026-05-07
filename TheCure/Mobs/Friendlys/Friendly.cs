@@ -16,7 +16,6 @@ namespace TheCure
 
         private BaseWeapon _weapon;
 
-        private AnimatedSprite _animatedSprite;
         private FriendlyState _currentState;
 
         private Texture2D _idleTexture;

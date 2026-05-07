@@ -105,7 +105,6 @@ public class UpgradeSelection
         spriteBatch.Draw(gameManager.DummyTexture, mainRect, new Color(100, 255, 100, 200));
         spriteBatch.DrawString(_font, "Upgrades", new Vector2(mainRect.X + 10, mainRect.Y + 10), Color.White);
 
-        int buttonWidth = 200;
         int buttonHeight = 50;
         int buttonY = mainRect.Y + mainRect.Height - buttonHeight - 20;
         var count = _upgradeButtons.Count;
