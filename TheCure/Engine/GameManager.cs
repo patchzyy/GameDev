@@ -557,7 +557,7 @@ namespace TheCure
                     string controls =
                 @"WASD  - Bewegen
 MUIS  - Schieten
-1-6   - Wissel wapens";
+1-2   - Wissel wapens";
 
                     spriteBatch.DrawString(_buttonFont, controls,
                         new Vector2(centerX - 200, 775), Color.White);
