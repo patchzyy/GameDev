@@ -125,8 +125,8 @@ public class UpgradeSelection
             spriteBatch.DrawString(_font, upgrade.Name, new Vector2(buttonPanel.X + 10, buttonPanel.Y + 10),
                 Color.White);
 
-            spriteBatch.DrawString(_font, upgrade.Description, new Vector2(buttonPanel.X + 10, buttonPanel.Y + 40),
-                Color.White);
+            DrawWrappedText(spriteBatch, _font, upgrade.Description,
+                new Vector2(buttonPanel.X + 10, buttonPanel.Y + 40), Color.White, buttonPanel.Width - 20, 20);
 
             button.SetAction(() =>
             {
@@ -153,6 +153,34 @@ public class UpgradeSelection
             });
             button.SetPosition(buttonPanel.X + 15, buttonY);
             button.Draw(spriteBatch);
+        }
+    }
+
+    private void DrawWrappedText(SpriteBatch spriteBatch, SpriteFont font, string text, Vector2 position, Color color, float maxLineWidth, float lineHeight)
+    {
+        var words = text.Split(' ');
+        string currentLine = string.Empty;
+        float y = position.Y;
+
+        foreach (var word in words)
+        {
+            string testLine = string.IsNullOrEmpty(currentLine) ? word : currentLine + " " + word;
+            Vector2 size = font.MeasureString(testLine);
+            if (size.X > maxLineWidth && !string.IsNullOrEmpty(currentLine))
+            {
+                spriteBatch.DrawString(font, currentLine, new Vector2(position.X, y), color);
+                currentLine = word;
+                y += lineHeight;
+            }
+            else
+            {
+                currentLine = testLine;
+            }
+        }
+
+        if (!string.IsNullOrEmpty(currentLine))
+        {
+            spriteBatch.DrawString(font, currentLine, new Vector2(position.X, y), color);
         }
     }
 

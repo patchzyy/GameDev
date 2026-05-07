@@ -135,7 +135,7 @@ public class PlayerInteractionsHUD
             MainPanel(spriteBatch, gameManager, x, _actions);
         }
 
-        MainPanel(spriteBatch, gameManager, 200, new List<PlayerAction> { _shoot, _dash, _build });
+        MainPanel(spriteBatch, gameManager, 200, new List<PlayerAction> { _shoot, _dash });
     }
 
     private void MainPanel(SpriteBatch spriteBatch, GameManager gameManager, int x, List<PlayerAction> actions)
