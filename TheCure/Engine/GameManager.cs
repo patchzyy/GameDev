@@ -60,7 +60,7 @@ namespace TheCure
             Game = game;
             _camera = new Camera(Game.GraphicsDevice.Viewport);
             CurrentGameState = GameState.StartScreen;
-            AddGameObject(PlayerManager.Get().Player);
+            _gameObjects.Add(PlayerManager.Get().Player);
             AddWorldWalls();
         }
 
@@ -84,6 +84,10 @@ namespace TheCure
 
             PlayerActionsManager.Get().Reset();
             UpgradeManager.Get().Reset();
+
+            PlayerManager.Get().Player.Reset();
+            PlayerActionsManager.Get().Reset();
+            HUD.Load();
 
             AddWorldWalls();
             _gameObjects.Add(PlayerManager.Get().Player);
