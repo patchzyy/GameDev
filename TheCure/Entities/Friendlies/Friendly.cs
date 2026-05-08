@@ -1,18 +1,18 @@
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using TheCure.Enemies;
 using TheCure.Engine.Managers;
+using TheCure.Entities;
 using TheCure.Managers;
-using TheCure.Mobs;
 using TheCure.Weapons;
 
 namespace TheCure
 {
-    public class Friendly : Mob
+    public class Friendly : LivingEntity
     {
         private Vector2 _spawnPosition;
         private Vector2 _previousCenter;
-        private Vector2 _velocity;
 
         private BaseWeapon _weapon;
         private float _sizeMultiplier;
@@ -53,6 +53,9 @@ namespace TheCure
                 scale: 1.7f
             )
         {
+            collider = new CircleCollider(position, 16f);
+            SetCollider(collider);
+
             _spawnPosition = position;
             _velocity = Vector2.Zero;
             _sizeMultiplier = Settings.GetValue(SettingsConst.FRIENDLY.SIZE);
@@ -79,7 +82,7 @@ namespace TheCure
             _runTexture = content.Load<Texture2D>("Character-Unknown-Run");
             _hitTexture = content.Load<Texture2D>("Character-Unknown-Idle-Shot");
 
-            _collider.Center = _spawnPosition;
+            ((CircleCollider)collider).Center = _spawnPosition;
 
             SetAnimation(_idleTexture, 5, 1f, true);
 
@@ -100,7 +103,7 @@ namespace TheCure
             float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
             var gm = GameManager.Get();
 
-            _previousCenter = _collider.Center;
+            _previousCenter = ((CircleCollider)collider).Center;
 
             Vector2 target = GetRingTarget(gm);
             target += GetSeparation(gm);
@@ -108,7 +111,7 @@ namespace TheCure
             MoveTo(target, dt);
             Attack(gameTime);
 
-            Vector2 movement = _collider.Center - _previousCenter;
+            Vector2 movement = ((CircleCollider)collider).Center - _previousCenter;
 
             UpdateState(movement);
 
@@ -130,7 +133,7 @@ namespace TheCure
 
             if (tmp is Wall wall)
             {
-                Vector2 collisionNormal = wall.ResolveCircleCollision(_collider, _previousCenter);
+                Vector2 collisionNormal = wall.ResolveCircleCollision((CircleCollider)collider, _previousCenter);
                 if (collisionNormal != Vector2.Zero)
                 {
                     float velocityIntoWall = Vector2.Dot(_velocity, collisionNormal);
@@ -152,7 +155,7 @@ namespace TheCure
             if (index < 0)
                 return _spawnPosition;
 
-            Vector2 player = PlayerManager.Get().Player.GetPosition().Center.ToVector2();
+            Vector2 player = PlayerManager.Get().Player.GetPosition();
 
             int ring = 0;
             int spots = 6;
@@ -187,10 +190,10 @@ namespace TheCure
                 if (other == this)
                     continue;
 
-                if (other == null || other._collider == null)
+                if (other == null || other.collider == null)
                     continue;
 
-                Vector2 diff = _collider.Center - other._collider.Center;
+                Vector2 diff = ((CircleCollider)collider).Center - ((CircleCollider)other.collider).Center;
                 float dist = diff.Length();
 
                 if (dist <= 0.01f || dist > SeparationDistance)
@@ -207,7 +210,7 @@ namespace TheCure
 
         private void MoveTo(Vector2 target, float dt)
         {
-            Vector2 toTarget = target - _collider.Center;
+            Vector2 toTarget = target - ((CircleCollider)collider).Center;
             float dist = toTarget.Length();
 
             if (dist < StopDistance)
@@ -227,7 +230,7 @@ namespace TheCure
             if (_velocity.LengthSquared() < 0.01f)
                 _velocity = Vector2.Zero;
 
-            _collider.Center += _velocity * dt;
+            ((CircleCollider)collider).Center += _velocity * dt;
         }
 
         private void UpdateState(Vector2 movement)
@@ -272,37 +275,37 @@ namespace TheCure
                 return;
             }
 
-            Mob enemy = GetNearestEnemy();
+            Enemy enemy = GetNearestEnemy();
             if (enemy == null)
                 return;
 
-            float dist = Vector2.Distance(enemy._collider.Center, _collider.Center);
+            float dist = Vector2.Distance(((CircleCollider)enemy.collider).Center, ((CircleCollider)collider).Center);
 
             if (dist < 300f)
             {
-                Vector2 dir = enemy._collider.Center - _collider.Center;
+                Vector2 dir = ((CircleCollider)enemy.collider).Center - ((CircleCollider)collider).Center;
 
                 if (dir.LengthSquared() > 0.0001f)
                 {
                     dir.Normalize();
-                    _weapon.Fire(_collider.Center, dir);
+                    _weapon.Fire(((CircleCollider)collider).Center, dir);
                 }
             }
 
             _weapon.UpdateCoolDown(gameTime);
         }
 
-        private Mob GetNearestEnemy()
+        private Enemy GetNearestEnemy()
         {
-            Mob best = null;
+            Enemy best = null;
             float bestDist = float.MaxValue;
 
             foreach (var enemy in GameManager.Get().Enemies)
             {
-                if (enemy == null || enemy._collider == null)
+                if (enemy == null || enemy.collider == null || (enemy is Zombie zombie && zombie.LastHealed < 3f))
                     continue;
 
-                float dist = Vector2.Distance(enemy._collider.Center, _collider.Center);
+                float dist = Vector2.Distance(((CircleCollider)enemy.collider).Center, ((CircleCollider)collider).Center);
 
                 if (dist < bestDist)
                 {

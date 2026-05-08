@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using TheCure.Engine.Managers;
 using TheCure.Managers;
-using TheCure.Mobs;
+using TheCure.Enemies;
 
 namespace TheCure
 {
@@ -38,7 +38,7 @@ namespace TheCure
         public Game Game { get; private set; }
         public GameState CurrentGameState { get; private set; }
         public HUD HUD { get; private set; }
-        public List<Mob> Enemies;
+        public List<Enemy> Enemies;
         public Camera Camera => _camera;
 
         public List<Friendly> Friendlies { get; private set; } = new List<Friendly>();
@@ -48,7 +48,7 @@ namespace TheCure
             _gameObjects = new List<GameObject>();
             _toBeRemoved = new List<GameObject>();
             _toBeAdded = new List<GameObject>();
-            Enemies = new List<Mob>();
+            Enemies = new List<Enemy>();
 
             RNG = new Random();
 
@@ -169,7 +169,7 @@ namespace TheCure
                     gameObject.Update(gameTime);
                 }
 
-                _camera.Update(PlayerManager.Get().Player.GetPosition().Center.ToVector2(), GetWorldBounds());
+                _camera.Update(PlayerManager.Get().Player.GetPosition(), GetWorldBounds());
                 HUD.Update(gameTime);
 
                 CheckCollision();
@@ -178,14 +178,9 @@ namespace TheCure
                 {
                     gameObject.Load();
 
-                    if (gameObject is Zombie zombie)
+                    if (gameObject is Enemy enemy)
                     {
-                        Enemies.Add(zombie);
-                    }
-
-                    if (gameObject is Brute brute)
-                    {
-                        Enemies.Add(brute);
+                        Enemies.Add(enemy);
                     }
 
                     if (gameObject is Friendly friendly && !Friendlies.Contains(friendly))
@@ -200,9 +195,9 @@ namespace TheCure
 
                 foreach (var gameObject in _toBeRemoved)
                 {
-                    if (gameObject is Mob mob)
+                    if (gameObject is Enemy enemy)
                     {
-                        Enemies.Remove(mob);
+                        Enemies.Remove(enemy);
                     }
 
                     if (gameObject is Friendly friendly)
@@ -339,9 +334,9 @@ namespace TheCure
         {
             var stats = new List<Stat>
             {
-                new Stat("Max Health", PlayerManager.Get().Player.MaxHealth.ToString()),
+                new Stat("Max Health", PlayerManager.Get().Player._maxHealth.ToString()),
                 new Stat("Move Speed",
-                    (PlayerManager.Get().Player.MoveSpeed / 10).ToString("0.0", CultureInfo.InvariantCulture)),
+                    (PlayerManager.Get().Player._speed / 10).ToString("0.0", CultureInfo.InvariantCulture)),
                 new Stat("Friendlies", _gameObjects.OfType<Friendly>().Count().ToString()),
             };
 
@@ -386,7 +381,7 @@ namespace TheCure
             var blockedViewBounds = _camera.GetViewBounds();
             blockedViewBounds.Inflate(margin, margin);
 
-            Vector2 playerPos = PlayerManager.Get().Player.GetPosition().Center.ToVector2();
+            Vector2 playerPos = PlayerManager.Get().Player.GetPosition();
             float minDistanceFromPlayer = margin;
 
             for (var i = 0; i < 20; i++)

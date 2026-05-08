@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using TheCure.Managers;
-using TheCure.Mobs;
+using TheCure.Enemies;
 
 namespace TheCure.PlayerActions;
 
@@ -14,7 +14,7 @@ public class Dash : PlayerAction
     private float _dashTimer = 0f;
     private bool _isDashing = false;
     private Vector2 _dashDirection = Vector2.Zero;
-    private HashSet<Mob> _hitEnemies = new HashSet<Mob>();
+    private HashSet<Enemy> _hitEnemies = new HashSet<Enemy>();
 
     public Dash(string iconName ) : base(iconName)
     {
@@ -33,7 +33,7 @@ public class Dash : PlayerAction
         var gameManager = GameManager.Get();
         Point mousePosition = InputManager.Get().CurrentMouseState.Position;
         Vector2 worldMousePosition = gameManager.ScreenToWorld(mousePosition.ToVector2());
-        Vector2 playerCenter = player.GetPosition().Center.ToVector2();
+        Vector2 playerCenter = player.GetPosition();
 
         Vector2 directionToMouse = worldMousePosition - playerCenter;
         if (directionToMouse.LengthSquared() < 10000)
@@ -89,7 +89,7 @@ public class Dash : PlayerAction
         const float KnockBackForce = 600f;
         const float KnockBackDuration = 0.3f;
 
-        foreach (Mob enemy in gameManager.Enemies)
+        foreach (Enemy enemy in gameManager.Enemies)
         {
             if (_hitEnemies.Contains(enemy))
                 continue;
@@ -97,7 +97,7 @@ public class Dash : PlayerAction
             if (player.CheckCollision(enemy))
             {
                 Vector2 knockBackDir = enemy.GetCollider().GetBoundingBox().Center.ToVector2() -
-                                       player.GetPosition().Center.ToVector2();
+                                       player.GetPosition();
 
                 enemy.ApplyKnockBack(knockBackDir, KnockBackForce, KnockBackDuration);
 
