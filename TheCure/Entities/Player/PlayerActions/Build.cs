@@ -39,7 +39,7 @@ public class Build : PlayerAction
         if (player == null)
             return;
 
-        Vector2 playerPos = player.GetPosition().Center.ToVector2();
+        Vector2 playerPos = player.GetPosition();
 
         Point mousePosition = InputManager.Get().CurrentMouseState.Position;
         Vector2 worldMousePosition = GameManager.Get().ScreenToWorld(mousePosition.ToVector2());

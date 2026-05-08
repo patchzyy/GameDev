@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using TheCure.Managers;
-using TheCure.Mobs;
+using TheCure.Enemies;
+using TheCure.Entities;
 
 namespace TheCure.BaseObjects.Traps
 {
@@ -16,7 +17,7 @@ namespace TheCure.BaseObjects.Traps
         protected Color _baseColor = Color.White;
         protected Color _currentColor = Color.White;
         protected const float TrapRadius = 20f;
-        protected HashSet<Mob> _hitMobs = new HashSet<Mob>();
+        protected HashSet<Enemy> _hitEnemies = new HashSet<Enemy>();
         protected bool _isActive = true;
 
         public Trap(Vector2 position, float duration = 10f)
@@ -62,14 +63,14 @@ namespace TheCure.BaseObjects.Traps
             if (!_isActive)
                 return;
 
-            if (other is Mob mob && !_hitMobs.Contains(mob))
+            if (other is Enemy enemy && !_hitEnemies.Contains(enemy))
             {
-                _hitMobs.Add(mob);
-                OnTrapHit(mob);
+                _hitEnemies.Add(enemy);
+                OnTrapHit(enemy);
             }
         }
 
-        protected abstract void OnTrapHit(Mob mob);
+        protected abstract void OnTrapHit(LivingEntity target);
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {

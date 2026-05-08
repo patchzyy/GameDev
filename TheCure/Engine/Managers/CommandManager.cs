@@ -78,7 +78,7 @@ public class CommandManager : Manager<CommandManager>
 
         foreach (var friendly in GameManager.Get().Friendlies)
         {
-            _friendlyCommandHoldPositions[friendly] = friendly._collider.Center;
+            _friendlyCommandHoldPositions[friendly] = ((CircleCollider)friendly.collider).Center;
         }
     }
 

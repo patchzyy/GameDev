@@ -62,6 +62,8 @@ namespace TheCure
             _spawnPosition = position;
             _velocity = Vector2.Zero;
             _sizeMultiplier = Settings.GetValue(SettingsConst.FRIENDLY.SIZE);
+            _velocity = Vector2.Zero;
+            _sizeMultiplier = Settings.GetValue(SettingsConst.FRIENDLY.SIZE);
 
             switch (weaponType)
             {
@@ -92,6 +94,7 @@ namespace TheCure
             SetHealthBar(_idleTexture, _maxHealth, _startHealth, Destroy, null);
             SyncHealthBarPosition();
 
+            StatManager.Get().UpdateFriendlyStats(this);
             StatManager.Get().UpdateFriendlyStats(this);
         }
 
@@ -259,6 +262,8 @@ namespace TheCure
         {
             if (_currentState == state)
                 return;
+            if (_currentState == state)
+                return;
 
             _currentState = state;
 
@@ -322,31 +327,20 @@ namespace TheCure
             }
         }
 
-        private Enemy GetNearestEnemy(Vector2? priorityPosition = null)
+        private Enemy GetNearestEnemy(Vector2? commandTarget)
         {
             Enemy best = null;
             float bestDist = float.MaxValue;
 
             foreach (var enemy in GameManager.Get().Enemies)
             {
-                if (enemy == null || enemy.collider == null || (enemy is Zombie zombie && zombie.LastHealed < 3f))
-                    continue;
+                if (enemy == null) continue;
 
                 float dist = Vector2.Distance(((CircleCollider)enemy.collider).Center, ((CircleCollider)collider).Center);
-                float score = dist;
 
-                if (priorityPosition.HasValue)
+                if (dist < bestDist)
                 {
-                    float targetDist = Vector2.Distance(((CircleCollider)enemy.collider).Center, priorityPosition.Value);
-                    if (targetDist > CommandEnemyPriorityRadius)
-                        continue;
-
-                    score = targetDist * 0.75f + dist * 0.25f;
-                }
-
-                if (score < bestDist)
-                {
-                    bestDist = score;
+                    bestDist = dist;
                     best = enemy;
                 }
             }

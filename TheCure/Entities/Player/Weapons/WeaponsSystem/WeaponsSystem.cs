@@ -41,7 +41,7 @@ public class WeaponsSystem
 
         if (CurrentWeapon != null && CurrentWeapon.CanFire)
         {
-            Vector2 position = PlayerManager.Get().Player.GetPosition().Center.ToVector2();
+            Vector2 position = PlayerManager.Get().Player.GetPosition();
 
             if (_currentWeaponMode == WeaponMode.Throw)
             {
