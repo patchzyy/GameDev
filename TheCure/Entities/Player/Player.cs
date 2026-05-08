@@ -162,6 +162,18 @@ namespace TheCure
             base.OnCollision(tmp);
         }
 
+        public override void LoseHealth(float amount)
+        {
+            var dash = PlayerActionsManager.Get().GetDash();
+            if (dash != null && dash.IsDashing)
+            {
+                System.Diagnostics.Debug.WriteLine("Player is protected by dash - no damage taken!");
+                return;
+            }
+
+            base.LoseHealth(amount);
+        }
+
         private void UpdateState()
         {
             if (_currentState == PlayerAnimationState.Hit)

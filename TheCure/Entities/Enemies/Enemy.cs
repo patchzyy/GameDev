@@ -35,6 +35,7 @@ namespace TheCure.Enemies
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             _previousCenter = ((CircleCollider)collider).Center;
+            UpdateKnockBack(deltaTime);
 
             if (HandleSpawning(gameTime))
                 return;
