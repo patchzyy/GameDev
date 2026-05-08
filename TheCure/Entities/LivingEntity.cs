@@ -83,8 +83,9 @@ namespace TheCure.Entities
         {
             if (_animatedSprite == null)
                 return new Rectangle(0, 0, 0, 0);
-            int scaledWidth = (int)(_animatedSprite.FrameWidth * _scale);
-            int scaledHeight = (int)(_animatedSprite.FrameHeight * _scale);
+            float scaledFactor = _scale * scaleMultiplier;
+            int scaledWidth = (int)(_animatedSprite.FrameWidth * scaledFactor);
+            int scaledHeight = (int)(_animatedSprite.FrameHeight * scaledFactor);
 
             return new Rectangle(
                 (int)((CircleCollider)collider).Center.X - scaledWidth / 2,
