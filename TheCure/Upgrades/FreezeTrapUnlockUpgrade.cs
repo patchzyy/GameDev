@@ -15,6 +15,6 @@ public class FreezeTrapUnlockUpgrade : Upgrade
 
     public void Unlock(List<Upgrade> unlockedUpgrades)
     {
-        GameManager.GetGameManager().PlayerInteractionsHud.GetBuild().AddTrapType(typeof(FreezeTrap));
+        PlayerActionsManager.Get().GetBuild().AddTrapType(typeof(FreezeTrap));
     }
 }

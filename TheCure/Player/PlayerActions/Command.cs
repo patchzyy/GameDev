@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using TheCure.Engine.Managers;
 
 namespace TheCure.PlayerActions
 {
@@ -12,12 +13,12 @@ namespace TheCure.PlayerActions
             CoolDown = 12f;
         }
 
-        protected override void OnExecute(GameTime gameTime, GameManager gameManager)
+        protected override void OnExecute(GameTime gameTime)
         {
-            Point mousePosition = gameManager.InputManager.CurrentMouseState.Position;
-            Vector2 worldMousePosition = gameManager.ScreenToWorld(mousePosition.ToVector2());
+            Point mousePosition = InputManager.Get().CurrentMouseState.Position;
+            Vector2 worldMousePosition = GameManager.Get().ScreenToWorld(mousePosition.ToVector2());
 
-            gameManager.ActivateFriendlyCommand(worldMousePosition, CommandDuration, HoldDuration);
+            CommandManager.Get().ActivateFriendlyCommand(worldMousePosition, CommandDuration, HoldDuration);
         }
     }
 }

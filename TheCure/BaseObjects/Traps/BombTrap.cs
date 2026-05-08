@@ -62,7 +62,7 @@ namespace TheCure.BaseObjects.Traps
         {
             _exploded = true;
             _currentColor = Color.Red;
-            GameManager gameManager = GameManager.GetGameManager();
+            GameManager gameManager = GameManager.Get();
 
             if (gameManager.Enemies != null)
             {

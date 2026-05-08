@@ -2,6 +2,7 @@ using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using TheCure.Managers;
 
 namespace TheCure.Weapons.Throw;
 
@@ -34,11 +35,12 @@ public abstract class Throwable : GameObject
         _shadow = new Shadow(_targetPosition);
     }
 
-    public override void Load(ContentManager content)
+    public override void Load()
     {
+        var content = ContentsManager.Get().GetContent();
         _texture = content.Load<Texture2D>(_textureName);
-        _shadow.Load(content);
-        base.Load(content);
+        _shadow.Load();
+        base.Load();
     }
 
     public override void Update(GameTime gameTime)
@@ -101,10 +103,11 @@ class Shadow : GameObject
         _collider = new CircleCollider(position, 5);
     }
 
-    public override void Load(ContentManager content)
+    public override void Load()
     {
+        var content = ContentsManager.Get().GetContent();
         Texture = content.Load<Texture2D>("Bullet");
-        base.Load(content);
+        base.Load();
     }
 
     public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)

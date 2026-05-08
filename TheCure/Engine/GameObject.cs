@@ -1,8 +1,8 @@
 ﻿using System;
-using TheCure.Collision;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using TheCure.Collision;
+using TheCure.Managers;
 
 namespace TheCure
 {
@@ -23,17 +23,17 @@ namespace TheCure
             this.collider = collider;
         }
 
-        public virtual void Load(ContentManager content)
+        public virtual void Load()
         {
         }
 
-        public virtual void HandleInput(InputManager inputManager)
+        public virtual void HandleInput()
         {
         }
 
         public bool CheckCollision(GameObject other)
         {
-            if (collider == null)
+            if (collider == null || other.collider == null)
                 return false;
 
             return collider.CheckIntersection(other.collider);
@@ -44,13 +44,13 @@ namespace TheCure
         }
 
         public virtual void Update(GameTime gameTime)
-        {            
+        {
             if (_isFlashing)
             {
                 _flashTimer -= (float)gameTime.ElapsedGameTime.TotalSeconds;
             }
 
-            if (_healthBar != null)
+            if (_healthBar != null && collider != null)
             {
                 _healthBar.UpdateHealthBar(collider.GetBoundingBox().Center, collider.GetBoundingBox().Height);
             }
@@ -66,12 +66,12 @@ namespace TheCure
 
         public virtual void Destroy()
         {
-            GameManager.GetGameManager().RemoveGameObject(this);
+            GameManager.Get().RemoveGameObject(this);
         }
 
         protected void SwitchAnimation(string name, int frames, float fps, bool loop, bool reverse = false)
         {
-            var texture = GameManager.GetGameManager()._content.Load<Texture2D>(name);
+            var texture = ContentsManager.Get().GetContent().Load<Texture2D>(name);
             int frameWidth = texture.Width / frames;
 
             _animatedSprite = new AnimatedSprite(texture, frameWidth, texture.Height, frames, fps, loop, reverse);

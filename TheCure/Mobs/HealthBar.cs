@@ -2,6 +2,7 @@
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using TheCure.Managers;
 
 namespace TheCure
 {
@@ -75,7 +76,7 @@ namespace TheCure
             if (_hideHealthBar)
                 return;
 
-            var dummyTexture = GameManager.GetGameManager().DummyTexture;
+            var dummyTexture = ContentsManager.Get().DummyTexture;
 
             if (_texture == null)
                 return;

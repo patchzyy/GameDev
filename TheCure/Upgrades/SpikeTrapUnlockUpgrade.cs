@@ -15,6 +15,6 @@ public class SpikeTrapUnlockUpgrade : Upgrade
 
     public void Unlock(List<Upgrade> unlockedUpgrades)
     {
-        GameManager.GetGameManager().PlayerInteractionsHud.GetBuild().AddTrapType(typeof(SpikeTrap));
+        PlayerActionsManager.Get().GetBuild().AddTrapType(typeof(SpikeTrap));
     }
 }

@@ -3,11 +3,12 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using TheCure.Managers;
 using TheCure.PlayerActions;
 
 namespace TheCure;
 
-public class PlayerInteractionsHUD
+public class PlayerActionsManager :Manager<PlayerActionsManager>
 {
     private int _scale;
     private SpriteFont _font;
@@ -26,10 +27,8 @@ public class PlayerInteractionsHUD
 
     private Dictionary<PlayerAction, Keys> _actionKeyMap;
 
-    private ContentManager _content;
 
-
-    public PlayerInteractionsHUD()
+    public PlayerActionsManager()
     {
         _scale = 5;
         _shootKey = Settings.GetValue(SettingsConst.KEY_BINDS.ACTION_1);
@@ -59,16 +58,15 @@ public class PlayerInteractionsHUD
         _actions = new List<PlayerAction>();
     }
 
-    public void Load(ContentManager content)
+    public void Load()
     {
-        _font = content.Load<SpriteFont>("HudFont");
-        _content = content;
-        _shoot.Load(content);
-        _dash.Load(content);
-        _build.Load(content);
+        _font = ContentsManager.Get().HUDFont;
+        _shoot.Load();
+        _dash.Load();
+        _build.Load();
         foreach (var action in _actions)
         {
-            action.Load(content);
+            action.Load();
         }
     }
 
@@ -78,7 +76,7 @@ public class PlayerInteractionsHUD
 
         _actionKeyMap.Add(action, _actionKeys[_actions.Count]);
         _actions.Add(action);
-        action.Load(_content);
+        action.Load();
     }
 
     public void Reset()
@@ -100,8 +98,7 @@ public class PlayerInteractionsHUD
 
     public void Update(GameTime gameTime)
     {
-        var gameManager = GameManager.GetGameManager();
-        var kbState = gameManager.InputManager.LastKeyboardState;
+        var kbState = InputManager.Get().LastKeyboardState;
 
         foreach (var pair in _actionKeyMap)
         {
@@ -111,7 +108,7 @@ public class PlayerInteractionsHUD
             if (!kbState.IsKeyDown(key))
                 continue;
 
-            action.Execute(gameTime, gameManager);
+            action.Execute(gameTime);
             break;
         }
 
@@ -125,8 +122,9 @@ public class PlayerInteractionsHUD
 
     public Build GetBuild() => _build;
 
-    public void Draw(SpriteBatch spriteBatch, GameManager gameManager)
+    public void Draw(SpriteBatch spriteBatch)
     {
+        var gameManager = GameManager.Get();
         if (_actions.Count > 0)
         {
             int screenWidth = gameManager.Game.GraphicsDevice.Viewport.Width;
@@ -152,26 +150,27 @@ public class PlayerInteractionsHUD
             panelHeight
         );
 
-        spriteBatch.Draw(gameManager.DummyTexture, panelRect, new Color(20, 25, 35, 220));
+        var dummyTexture = ContentsManager.Get().DummyTexture;
+        spriteBatch.Draw(dummyTexture, panelRect, new Color(20, 25, 35, 220));
 
         Color borderColor = new Color(100, 255, 100, 180);
-        spriteBatch.Draw(gameManager.DummyTexture, new Rectangle(panelRect.X, panelRect.Y, panelRect.Width, 2),
+        spriteBatch.Draw(dummyTexture, new Rectangle(panelRect.X, panelRect.Y, panelRect.Width, 2),
             borderColor);
-        spriteBatch.Draw(gameManager.DummyTexture,
+        spriteBatch.Draw(dummyTexture,
             new Rectangle(panelRect.X, panelRect.Y + panelRect.Height - 2, panelRect.Width, 2), borderColor);
-        spriteBatch.Draw(gameManager.DummyTexture, new Rectangle(panelRect.X, panelRect.Y, 2, panelRect.Height),
+        spriteBatch.Draw(dummyTexture, new Rectangle(panelRect.X, panelRect.Y, 2, panelRect.Height),
             borderColor);
-        spriteBatch.Draw(gameManager.DummyTexture,
+        spriteBatch.Draw(dummyTexture,
             new Rectangle(panelRect.X + panelRect.Width - 2, panelRect.Y, 2, panelRect.Height), borderColor);
 
         for (int i = 0; i < actions.Count; i++)
         {
-            IconPanel(spriteBatch, gameManager, panelRect.X + _scale + (i * 20 * _scale),
+            IconPanel(spriteBatch, panelRect.X + _scale + (i * 20 * _scale),
                 panelRect.Y + _scale, actions[i]);
         }
     }
 
-    private void IconPanel(SpriteBatch spriteBatch, GameManager gameManager, int x, int y, PlayerAction action)
+    private void IconPanel(SpriteBatch spriteBatch, int x, int y, PlayerAction action)
     {
         int panelWidth = 18 * _scale;
         int panelHeight = 18 * _scale;
@@ -184,24 +183,25 @@ public class PlayerInteractionsHUD
         );
 
         var bgColor = new Color(40, 45, 60, 255);
-        spriteBatch.Draw(gameManager.DummyTexture, panelRect, bgColor);
+        var dummyTexture = ContentsManager.Get().DummyTexture;
+        spriteBatch.Draw(dummyTexture, panelRect, bgColor);
 
         Color borderColor = new Color(100, 255, 100, 200);
-        spriteBatch.Draw(gameManager.DummyTexture, new Rectangle(x, y, panelWidth, 1), borderColor);
-        spriteBatch.Draw(gameManager.DummyTexture, new Rectangle(x, y + panelHeight - 1, panelWidth, 1), borderColor);
-        spriteBatch.Draw(gameManager.DummyTexture, new Rectangle(x, y, 1, panelHeight), borderColor);
-        spriteBatch.Draw(gameManager.DummyTexture, new Rectangle(x + panelWidth - 1, y, 1, panelHeight), borderColor);
+        spriteBatch.Draw(dummyTexture, new Rectangle(x, y, panelWidth, 1), borderColor);
+        spriteBatch.Draw(dummyTexture, new Rectangle(x, y + panelHeight - 1, panelWidth, 1), borderColor);
+        spriteBatch.Draw(dummyTexture, new Rectangle(x, y, 1, panelHeight), borderColor);
+        spriteBatch.Draw(dummyTexture, new Rectangle(x + panelWidth - 1, y, 1, panelHeight), borderColor);
 
-        DrawIcon(spriteBatch, gameManager, panelRect.X, panelRect.Y, panelWidth, panelHeight,
+        DrawIcon(spriteBatch,  panelRect.X, panelRect.Y, panelWidth, panelHeight,
             action.GetIconTexture());
 
-        InputPanel(spriteBatch, gameManager, panelRect.X + panelWidth - 4 * _scale,
+        InputPanel(spriteBatch,  panelRect.X + panelWidth - 4 * _scale,
             panelRect.Y + _scale, _actionKeyMap[action]);
 
-        CoolDownPanel(spriteBatch, gameManager, panelRect.X, panelRect.Y, panelWidth, panelHeight, action);
+        CoolDownPanel(spriteBatch,  panelRect.X, panelRect.Y, panelWidth, panelHeight, action);
     }
 
-    private void InputPanel(SpriteBatch spriteBatch, GameManager gameManager, int x, int y, Keys key)
+    private void InputPanel(SpriteBatch spriteBatch, int x, int y, Keys key)
     {
         int panelWidth = 3 * _scale;
         int panelHeight = 3 * _scale;
@@ -213,13 +213,14 @@ public class PlayerInteractionsHUD
             panelHeight
         );
 
-        spriteBatch.Draw(gameManager.DummyTexture, panelRect, new Color(100, 255, 100, 220));
+        var dummyTexture = ContentsManager.Get().DummyTexture;
+        spriteBatch.Draw(dummyTexture,panelRect, new Color(100, 255, 100, 220));
 
-        spriteBatch.Draw(gameManager.DummyTexture, new Rectangle(x, y, panelWidth, 1), new Color(200, 255, 200, 255));
-        spriteBatch.Draw(gameManager.DummyTexture, new Rectangle(x, y + panelHeight - 1, panelWidth, 1),
+        spriteBatch.Draw(dummyTexture, new Rectangle(x, y, panelWidth, 1), new Color(200, 255, 200, 255));
+        spriteBatch.Draw(dummyTexture, new Rectangle(x, y + panelHeight - 1, panelWidth, 1),
             new Color(200, 255, 200, 255));
-        spriteBatch.Draw(gameManager.DummyTexture, new Rectangle(x, y, 1, panelHeight), new Color(200, 255, 200, 255));
-        spriteBatch.Draw(gameManager.DummyTexture, new Rectangle(x + panelWidth - 1, y, 1, panelHeight),
+        spriteBatch.Draw(dummyTexture, new Rectangle(x, y, 1, panelHeight), new Color(200, 255, 200, 255));
+        spriteBatch.Draw(dummyTexture, new Rectangle(x + panelWidth - 1, y, 1, panelHeight),
             new Color(200, 255, 200, 255));
 
         var position = new Vector2(panelRect.X + _scale, panelRect.Y + (_scale / 2));
@@ -228,14 +229,14 @@ public class PlayerInteractionsHUD
         spriteBatch.DrawString(_font, text, position, new Color(0, 0, 0, 255));
     }
 
-    private void CoolDownPanel(SpriteBatch spriteBatch, GameManager gameManager, int x, int y, int panelWidth,
+    private void CoolDownPanel(SpriteBatch spriteBatch, int x, int y, int panelWidth,
         int panelHeight, PlayerAction action)
     {
         float remaining = action.GetRemainingCoolDown();
 
         if (remaining > 0)
         {
-            spriteBatch.Draw(gameManager.DummyTexture,
+            spriteBatch.Draw(ContentsManager.Get().DummyTexture,
                 new Rectangle(x, y, panelWidth, panelHeight),
                 new Color(100, 50, 50, (int)(100 * (remaining / 10f))));
 
@@ -247,7 +248,7 @@ public class PlayerInteractionsHUD
         }
     }
 
-    private void DrawIcon(SpriteBatch spriteBatch, GameManager gameManager, int x, int y, int panelWidth,
+    private void DrawIcon(SpriteBatch spriteBatch, int x, int y, int panelWidth,
         int panelHeight, Texture2D icon)
     {
         int iconWidth = (int)(panelWidth * 0.9);

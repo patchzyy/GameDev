@@ -15,6 +15,6 @@ public class CommandUnlockUpgrade : Upgrade
 
     public void Unlock(List<Upgrade> unlockedUpgrades)
     {
-        GameManager.GetGameManager().PlayerInteractionsHud.AddAction(new Command("Command"));
+        PlayerActionsManager.Get().AddAction(new Command("Command"));
     }
 }

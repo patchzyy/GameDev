@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using TheCure.Collision;
+using TheCure.Managers;
 
 namespace TheCure.Mobs;
 
@@ -35,15 +36,17 @@ public class Mob : GameObject
         _scale = scale;
     }
 
-    public override void Load(ContentManager content)
+    public override void Load()
     {
+        var cm = ContentsManager.Get();
+        var content = cm.GetContent();
         _texture = content.Load<Texture2D>(_textureName);
 
         int frameWidth = _texture.Width / _frameCount;
 
         _animatedSprite =
             new AnimatedSprite(_texture, frameWidth, _texture.Height, _frameCount, _frameRate, _isLooping);
-        _font = content.Load<SpriteFont>("HudFont");
+        _font = cm.HUDFont;
         _collider = new CircleCollider(Vector2.Zero, _animatedSprite.FrameWidth * _scale / 2f);
 
         SetCollider(_collider);
@@ -105,8 +108,9 @@ public class Mob : GameObject
             2
         );
 
-        spriteBatch.Draw(GameManager.GetGameManager().DummyTexture, shadowCore, Color.Black * coreAlpha);
-        spriteBatch.Draw(GameManager.GetGameManager().DummyTexture, shadowSoft, Color.Black * softAlpha);
+        var dummyTexture = ContentsManager.Get().DummyTexture;
+        spriteBatch.Draw(dummyTexture, shadowCore, Color.Black * coreAlpha);
+        spriteBatch.Draw(dummyTexture, shadowSoft, Color.Black * softAlpha);
     }
 
     protected void DrawAnimatedSprite(SpriteBatch spriteBatch, Color color, float scaleMultiplier = 1f)

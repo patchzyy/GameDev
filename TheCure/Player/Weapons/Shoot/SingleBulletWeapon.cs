@@ -10,7 +10,7 @@ namespace TheCure.Weapons
         {
             Bullet bullet = new Bullet(position, direction, 300f, true);
 
-            GameManager.GetGameManager().AddGameObject(bullet);
+            GameManager.Get().AddGameObject(bullet);
 
             ResetCoolDown();
         }

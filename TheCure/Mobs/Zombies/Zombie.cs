@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using TheCure.Managers;
 using TheCure.Mobs;
 using TheCure.Weapons;
 
@@ -11,7 +11,7 @@ namespace TheCure
     {
         private float _attackCoolDown;
         private float _stagger;
-        private int _attackDamage;
+        private float _attackDamage;
 
         private bool _attackNextCombat;
         private float _attackTimer;
@@ -41,9 +41,9 @@ namespace TheCure
             _attackCoolDown = Settings.GetValue(SettingsConst.ZOMBIE.ATTACK_COOL_DOWN);
         }
 
-        public override void Load(ContentManager content)
+        public override void Load()
         {
-            base.Load(content);
+            base.Load();
 
             _collider.Center = _spawnPosition;
 
@@ -87,7 +87,7 @@ namespace TheCure
 
                     if (_onDeathComplete == null)
                     {
-                        GameManager.GetGameManager().AddScore(50, "Zombie Killed");
+                        ScoreManager.Get().AddScore(50, "Zombie Killed");
                         base.Destroy();
                     }
                 }
@@ -95,7 +95,6 @@ namespace TheCure
                 return;
             }
 
-            // Movement / attack logic
             if (_attackNextCombat)
                 Attack(deltaTime);
             else
@@ -122,15 +121,16 @@ namespace TheCure
             }
 
             Vector2 targetPosition = _currentTarget == null
-                ? GameManager.GetGameManager().Player.GetPosition().Center.ToVector2()
+                ? PlayerManager.Get().Player.GetPosition().Center.ToVector2()
                 : _currentTarget.GetCollider().GetBoundingBox().Center.ToVector2();
 
             Vector2 direction = targetPosition - _collider.Center;
 
-            if (direction != Vector2.Zero)
+            if (direction.LengthSquared() > 0.0001f)
+            {
                 direction.Normalize();
-
-            _collider.Center += direction * (_speed / 2f) * deltaTime;
+                _collider.Center += direction * (_speed / 2f) * deltaTime;
+            }
         }
 
         private void Attack(float deltaTime)
@@ -141,7 +141,10 @@ namespace TheCure
                 return;
             }
 
-            _currentTarget.LoseHealth(_attackDamage);
+            if (_currentTarget != null)
+            {
+                _currentTarget.LoseHealth(_attackDamage);
+            }
 
             _attackNextCombat = false;
             _attackTimer = _attackCoolDown;
@@ -161,10 +164,10 @@ namespace TheCure
 
             _onDeathComplete = () =>
             {
-                var gm = GameManager.GetGameManager();
+                var gm = GameManager.Get();
                 gm.AddGameObject(new Friendly(FriendlyWeapons.HandGun, spawnPosition));
                 gm.RemoveGameObject(this);
-                gm.AddScore(100, "Zombie Healed");
+                ScoreManager.Get().AddScore(100, "Zombie Healed");
             };
         }
 

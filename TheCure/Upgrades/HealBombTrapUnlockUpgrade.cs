@@ -15,6 +15,6 @@ public class HealBombTrapUnlockUpgrade : Upgrade
 
     public void Unlock(List<Upgrade> unlockedUpgrades)
     {
-        GameManager.GetGameManager().PlayerInteractionsHud.GetBuild().AddTrapType(typeof(HealBombTrap));
+        PlayerActionsManager.Get().GetBuild().AddTrapType(typeof(HealBombTrap));
     }
 }

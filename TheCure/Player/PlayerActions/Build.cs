@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using TheCure.BaseObjects.Traps;
+using TheCure.Managers;
 
 namespace TheCure.PlayerActions;
 
@@ -32,16 +33,16 @@ public class Build : PlayerAction
         }
     }
 
-    protected override void OnExecute(GameTime gameTime, GameManager gameManager)
+    protected override void OnExecute(GameTime gameTime)
     {
-        Player player = gameManager.Player;
+        Player player = PlayerManager.Get().Player;
         if (player == null)
             return;
 
         Vector2 playerPos = player.GetPosition().Center.ToVector2();
 
-        Point mousePosition = gameManager.InputManager.CurrentMouseState.Position;
-        Vector2 worldMousePosition = gameManager.ScreenToWorld(mousePosition.ToVector2());
+        Point mousePosition = InputManager.Get().CurrentMouseState.Position;
+        Vector2 worldMousePosition = GameManager.Get().ScreenToWorld(mousePosition.ToVector2());
 
         Vector2 direction = worldMousePosition - playerPos;
         if (direction.LengthSquared() > 100)
@@ -66,7 +67,7 @@ public class Build : PlayerAction
 
         _trapIndex++;
 
-        gameManager.AddGameObject(trap);
+        GameManager.Get().AddGameObject(trap);
 
         System.Diagnostics.Debug.WriteLine($"Built {trap.GetType().Name} at position {trapPosition}");
     }
