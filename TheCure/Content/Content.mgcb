@@ -152,18 +152,6 @@
 /processorParam:TextureFormat=Color
 /build:Character-Unknown-Idle.png
 
-#begin Character-Unknown-Idle.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:Character-Unknown-Idle.png
-
 #begin Character-Unknown-Run.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -230,6 +218,24 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:player.png
+
+#begin SFX/9mm Single Isolated.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:SFX/9mm Single Isolated.wav;SFX/Gunshot.wav
+
+#begin SFX/ZombieDying.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:SFX/ZombieDying.wav
+
+#begin SFX/ZombieHit.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:SFX/ZombieHit.wav
 
 #begin ship_body.png
 /importer:TextureImporter
