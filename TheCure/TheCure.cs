@@ -25,7 +25,6 @@ namespace TheCure
             _graphics.PreferredBackBufferWidth = 1920;
             _graphics.PreferredBackBufferHeight = 1080;
             _graphics.IsFullScreen = true;
-            _graphics.ApplyChanges();
 
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
@@ -40,11 +39,15 @@ namespace TheCure
             _inputManager = InputManager.Get();
             _upgradeManager = UpgradeManager.Get();
             _boostManager = BoostManager.Get();
+            _graphics.ApplyChanges();
 
             _contentsManager.Initialize(Content, this);
 
             Player player =
-                new Player(new Point(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height / 2));
+                new Player(new Vector2(
+                    GraphicsDevice.Viewport.Width / 2,
+                    GraphicsDevice.Viewport.Height / 2
+                ));
 
             _playerManager.Initialize(player);
             _gameManager.Initialize(this);

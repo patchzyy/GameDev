@@ -54,8 +54,7 @@ namespace TheCure
 
         private void DrawHealthBar(SpriteBatch spriteBatch, GameManager gameManager)
         {
-            Rectangle playerBounds = PlayerManager.Get().Player.GetPosition();
-            Vector2 playerCenter = playerBounds.Center.ToVector2();
+            Vector2 playerCenter = PlayerManager.Get().Player.GetPosition();
 
             Rectangle cameraBounds = gameManager.Camera.GetViewBounds();
 
@@ -99,7 +98,7 @@ namespace TheCure
                 new Rectangle((int)barPosition.X, (int)barPosition.Y, barWidth, barHeight),
                 new Color(50, 50, 60, 255));
 
-            float healthRatio = PlayerManager.Get().Player.CurrentHealth() / PlayerManager.Get().Player.MaxHealth;
+            float healthRatio = PlayerManager.Get().Player.CurrentHealth() / PlayerManager.Get().Player._maxHealth;
             Color healthColor = healthRatio > 0.5f ? new Color(34, 177, 76, 255) :
                 healthRatio > 0.2f ? new Color(255, 193, 7, 255) :
                 new Color(244, 67, 54, 255);
@@ -109,7 +108,7 @@ namespace TheCure
                 healthColor);
 
             string healthText =
-                $"{PlayerManager.Get().Player.CurrentHealth():F0} / {PlayerManager.Get().Player.MaxHealth:F0}";
+                $"{PlayerManager.Get().Player.CurrentHealth():F0} / {PlayerManager.Get().Player._maxHealth:F0}";
             Vector2 healthTextSize = _font.MeasureString(healthText);
             spriteBatch.DrawString(_font, healthText,
                 new Vector2(barPosition.X + barWidth / 2 - healthTextSize.X / 2,

@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
-using TheCure.Mobs;
+using TheCure.Enemies;
+using TheCure.Entities;
 
 namespace TheCure.BaseObjects.Traps
 {
@@ -13,7 +14,7 @@ namespace TheCure.BaseObjects.Traps
         private const float StunForce = 300f;
 
         private float _tickTimer = DamageTickInterval;
-        private HashSet<Mob> _affectedMobs = new HashSet<Mob>();
+        private HashSet<Enemy> _affectedEnemies = new HashSet<Enemy>();
 
         public ElectricTrap(Vector2 position, float duration = 10f) : base(position, duration)
         {
@@ -30,17 +31,17 @@ namespace TheCure.BaseObjects.Traps
             {
                 _tickTimer = DamageTickInterval;
 
-                foreach (var mob in _affectedMobs)
+                foreach (var enemy in _affectedEnemies)
                 {
-                    if (mob != null && _isActive)
+                    if (enemy != null && _isActive)
                     {
-                        mob.LoseHealth(DamagePerTick);
+                        enemy.LoseHealth(DamagePerTick);
 
-                        Vector2 pushDirection = mob._collider.Center - _collider.Center;
+                        Vector2 pushDirection = ((CircleCollider)enemy.collider).Center - ((CircleCollider)collider).Center;
                         if (pushDirection.LengthSquared() > 0)
                         {
                             pushDirection.Normalize();
-                            mob.ApplyKnockBack(pushDirection, StunForce, StunDuration);
+                            enemy.ApplyKnockBack(pushDirection, StunForce, StunDuration);
                         }
                     }
                 }
@@ -55,24 +56,24 @@ namespace TheCure.BaseObjects.Traps
             if (!_isActive)
                 return;
 
-            if (other is Mob mob)
+            if (other is Enemy enemy)
             {
-                _affectedMobs.Add(mob);
+                _affectedEnemies.Add(enemy);
             }
         }
 
-        protected override void OnTrapHit(Mob mob)
+        protected override void OnTrapHit(LivingEntity target)
         {
-            if (!_affectedMobs.Contains(mob))
+            if (target is Enemy enemy && !_affectedEnemies.Contains(enemy))
             {
-                _affectedMobs.Add(mob);
-                mob.LoseHealth(DamagePerTick);
+                _affectedEnemies.Add(enemy);
+                enemy.LoseHealth(DamagePerTick);
 
-                Vector2 pushDirection = mob._collider.Center - _collider.Center;
+                Vector2 pushDirection = ((CircleCollider)enemy.collider).Center - ((CircleCollider)collider).Center;
                 if (pushDirection.LengthSquared() > 0)
                 {
                     pushDirection.Normalize();
-                    mob.ApplyKnockBack(pushDirection, StunForce, StunDuration);
+                    enemy.ApplyKnockBack(pushDirection, StunForce, StunDuration);
                 }
             }
         }

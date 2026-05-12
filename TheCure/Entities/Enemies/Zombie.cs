@@ -1,30 +1,15 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using TheCure.Enemies;
 using TheCure.Managers;
-using TheCure.Mobs;
 using TheCure.Weapons;
 
 namespace TheCure
 {
-    public class Zombie : Mob
+    public class Zombie : Enemy
     {
-        private float _attackCoolDown;
-        private float _stagger;
-        private float _attackDamage;
-
-        private bool _attackNextCombat;
-        private float _attackTimer;
-        private GameObject _currentTarget;
-        private Vector2 _previousCenter;
-        private Vector2 _facingDirection = Vector2.UnitX;
-
         private ZombieAnimationState _currentState;
-        private bool _isSpawning = false;
-        private bool _isDying = false;
-        private Action _onDeathComplete;
-
-        private Vector2 _spawnPosition;
 
         public Zombie() : base(
             textureName: "Zombie-Walk",
@@ -38,14 +23,13 @@ namespace TheCure
         {
             _stagger = Settings.GetValue(SettingsConst.ZOMBIE.STAGGER);
             _attackDamage = Settings.GetValue(SettingsConst.ZOMBIE.ATTACK_DAMAGE);
-            _attackCoolDown = Settings.GetValue(SettingsConst.ZOMBIE.ATTACK_COOL_DOWN);
+            _attackCooldown = Settings.GetValue(SettingsConst.ZOMBIE.ATTACK_COOL_DOWN);
         }
-
         public override void Load()
         {
             base.Load();
 
-            _collider.Center = _spawnPosition;
+            ((CircleCollider)collider).Center = _spawnPosition;
 
             SetHealthBar(_texture, _maxHealth, _startHealth, Destroy, BecomeFriendly);
             SyncHealthBarPosition();
@@ -58,98 +42,11 @@ namespace TheCure
         public override void Update(GameTime gameTime)
         {
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-            _previousCenter = _collider.Center;
-
-            if (_isSpawning)
-            {
-                _animatedSprite.Update(gameTime);
-                base.Update(gameTime);
-
-                if (_animatedSprite.IsFinished)
-                {
-                    _isSpawning = false;
-                    SwitchAnimation("Zombie-Walk", 7, 5f, true);
-                    _currentState = ZombieAnimationState.Walk;
-                }
-
-                return;
-            }
-
-            if (_isDying)
-            {
-                _animatedSprite.Update(gameTime);
-                base.Update(gameTime);
-
-                if (_animatedSprite.IsFinished)
-                {
-                    _onDeathComplete?.Invoke();
-
-                    if (_onDeathComplete == null)
-                    {
-                        ScoreManager.Get().AddScore(50, "Zombie Killed");
-                        base.Destroy();
-                    }
-                }
-
-                return;
-            }
-
-            if (_attackNextCombat)
-                Attack(deltaTime);
-            else
-                Move(deltaTime);
-
-            Vector2 movement = _collider.Center - _previousCenter;
-
-            if (movement.LengthSquared() > 0.0001f)
-                _facingDirection = Vector2.Normalize(movement);
-
             LastHealed += deltaTime;
-
-            UpdateAnimation();
-
             base.Update(gameTime);
         }
 
-        private void Move(float deltaTime)
-        {
-            if (_stagger > 0f && _attackNextCombat)
-            {
-                _stagger -= deltaTime;
-                return;
-            }
 
-            Vector2 targetPosition = _currentTarget == null
-                ? PlayerManager.Get().Player.GetPosition().Center.ToVector2()
-                : _currentTarget.GetCollider().GetBoundingBox().Center.ToVector2();
-
-            Vector2 direction = targetPosition - _collider.Center;
-
-            if (direction.LengthSquared() > 0.0001f)
-            {
-                direction.Normalize();
-                _collider.Center += direction * (_speed / 2f) * deltaTime;
-            }
-        }
-
-        private void Attack(float deltaTime)
-        {
-            if (_attackTimer > 0f)
-            {
-                _attackTimer -= deltaTime;
-                return;
-            }
-
-            if (_currentTarget != null)
-            {
-                _currentTarget.LoseHealth(_attackDamage);
-            }
-
-            _attackNextCombat = false;
-            _attackTimer = _attackCoolDown;
-            _currentTarget = null;
-        }
 
         private void BecomeFriendly()
         {
@@ -157,7 +54,7 @@ namespace TheCure
                 return;
 
             _isDying = true;
-            Vector2 spawnPosition = _collider.Center;
+            Vector2 spawnPosition = ((CircleCollider)collider).Center;
 
             SwitchAnimation("Zombie-Dead", 11, 5f, false);
             _currentState = ZombieAnimationState.Dead;
@@ -209,15 +106,15 @@ namespace TheCure
 
             if (tmp is Wall wall)
             {
-                wall.ResolveCircleCollision(_collider, _previousCenter);
+                wall.ResolveCircleCollision((CircleCollider)collider, _previousCenter);
             }
 
             base.OnCollision(tmp);
         }
 
-        private void UpdateAnimation()
+        protected override void UpdateAnimation()
         {
-            if (_isDying)
+            if (_isDying || _isSpawning)
                 return;
 
             if (_attackNextCombat)
@@ -248,6 +145,22 @@ namespace TheCure
             DrawAnimatedSprite(spriteBatch, tint, _facingDirection);
 
             base.Draw(gameTime, spriteBatch);
+        }
+
+        protected override void OnSpawnFinish()
+        {
+            SwitchAnimation("Zombie-Walk", 7, 5f, true);
+            _currentState = ZombieAnimationState.Walk;
+        }
+
+        protected override void OnDeathFinish()
+        {
+            _onDeathComplete?.Invoke();
+            if (_onDeathComplete == null)
+            {
+                ScoreManager.Get().AddScore(50, "Zombie Killed");
+                base.Destroy();
+            }
         }
 
         public void Spawn(Vector2 position)

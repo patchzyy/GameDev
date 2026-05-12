@@ -1,18 +1,18 @@
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using TheCure.Enemies;
 using TheCure.Engine.Managers;
+using TheCure.Entities;
 using TheCure.Managers;
-using TheCure.Mobs;
 using TheCure.Weapons;
 
 namespace TheCure
 {
-    public class Friendly : Mob
+    public class Friendly : LivingEntity
     {
         private Vector2 _spawnPosition;
         private Vector2 _previousCenter;
-        private Vector2 _velocity;
 
         private BaseWeapon _weapon;
         private float _sizeMultiplier;
@@ -56,7 +56,12 @@ namespace TheCure
                 scale: 1.7f
             )
         {
+            collider = new CircleCollider(position, 16f);
+            SetCollider(collider);
+
             _spawnPosition = position;
+            _velocity = Vector2.Zero;
+            _sizeMultiplier = Settings.GetValue(SettingsConst.FRIENDLY.SIZE);
             _velocity = Vector2.Zero;
             _sizeMultiplier = Settings.GetValue(SettingsConst.FRIENDLY.SIZE);
 
@@ -82,13 +87,14 @@ namespace TheCure
             _runTexture = content.Load<Texture2D>("Character-Unknown-Run");
             _hitTexture = content.Load<Texture2D>("Character-Unknown-Idle-Shot");
 
-            _collider.Center = _spawnPosition;
+            ((CircleCollider)collider).Center = _spawnPosition;
 
             SetAnimation(_idleTexture, 5, 1f, true);
 
             SetHealthBar(_idleTexture, _maxHealth, _startHealth, Destroy, null);
             SyncHealthBarPosition();
 
+            StatManager.Get().UpdateFriendlyStats(this);
             StatManager.Get().UpdateFriendlyStats(this);
         }
 
@@ -104,7 +110,7 @@ namespace TheCure
             var gm = GameManager.Get();
             var commandManager = CommandManager.Get();
 
-            _previousCenter = _collider.Center;
+            _previousCenter = ((CircleCollider)collider).Center;
 
             bool hasCommandPosition = commandManager.TryGetFriendlyCommandPosition(this, out Vector2 commandTarget);
             Vector2 target = hasCommandPosition
@@ -119,7 +125,7 @@ namespace TheCure
             MoveTo(target, dt);
             Attack(gameTime);
 
-            Vector2 movement = _collider.Center - _previousCenter;
+            Vector2 movement = ((CircleCollider)collider).Center - _previousCenter;
 
             UpdateState(movement);
 
@@ -141,7 +147,7 @@ namespace TheCure
 
             if (tmp is Wall wall)
             {
-                Vector2 collisionNormal = wall.ResolveCircleCollision(_collider, _previousCenter);
+                Vector2 collisionNormal = wall.ResolveCircleCollision((CircleCollider)collider, _previousCenter);
                 if (collisionNormal != Vector2.Zero)
                 {
                     float velocityIntoWall = Vector2.Dot(_velocity, collisionNormal);
@@ -163,7 +169,7 @@ namespace TheCure
             if (index < 0)
                 return _spawnPosition;
 
-            Vector2 player = PlayerManager.Get().Player.GetPosition().Center.ToVector2();
+            Vector2 player = PlayerManager.Get().Player.GetPosition();
 
             int ring = 0;
             int spots = 6;
@@ -198,10 +204,10 @@ namespace TheCure
                 if (other == this)
                     continue;
 
-                if (other == null || other._collider == null)
+                if (other == null || other.collider == null)
                     continue;
 
-                Vector2 diff = _collider.Center - other._collider.Center;
+                Vector2 diff = ((CircleCollider)collider).Center - ((CircleCollider)other.collider).Center;
                 float dist = diff.Length();
 
                 if (dist <= 0.01f || dist > SeparationDistance)
@@ -218,7 +224,7 @@ namespace TheCure
 
         private void MoveTo(Vector2 target, float dt)
         {
-            Vector2 toTarget = target - _collider.Center;
+            Vector2 toTarget = target - ((CircleCollider)collider).Center;
             float dist = toTarget.Length();
 
             if (dist < StopDistance)
@@ -238,7 +244,7 @@ namespace TheCure
             if (_velocity.LengthSquared() < 0.01f)
                 _velocity = Vector2.Zero;
 
-            _collider.Center += _velocity * dt;
+            ((CircleCollider)collider).Center += _velocity * dt;
         }
 
         private void UpdateState(Vector2 movement)
@@ -254,6 +260,8 @@ namespace TheCure
 
         private void SetState(FriendlyState state)
         {
+            if (_currentState == state)
+                return;
             if (_currentState == state)
                 return;
 
@@ -288,30 +296,30 @@ namespace TheCure
                 ? commandManager.GetFriendlyCommandTarget()
                 : null;
 
-            Mob enemy = GetNearestEnemy(commandTarget);
+            Enemy enemy = GetNearestEnemy(commandTarget);
 
             if (enemy != null)
             {
-                float dist = Vector2.Distance(enemy._collider.Center, _collider.Center);
+                float dist = Vector2.Distance(((CircleCollider)enemy.collider).Center, ((CircleCollider)collider).Center);
                 float range = commandTarget.HasValue ? CommandAttackRange : AttackRange;
 
                 if (dist < range)
                 {
-                    Vector2 dir = enemy._collider.Center - _collider.Center;
+                    Vector2 dir = ((CircleCollider)enemy.collider).Center - ((CircleCollider)collider).Center;
 
                     if (dir.LengthSquared() > 0.0001f)
                     {
                         dir.Normalize();
-                        _weapon.Fire(_collider.Center, dir);
+                        _weapon.Fire(((CircleCollider)collider).Center, dir);
                     }
                 }
                 else if (commandTarget.HasValue)
                 {
-                    Vector2 toCommandTarget = commandTarget.Value - _collider.Center;
+                    Vector2 toCommandTarget = commandTarget.Value - ((CircleCollider)collider).Center;
                     if (toCommandTarget.LengthSquared() > 24f * 24f && toCommandTarget.Length() < CommandAttackRange)
                     {
                         toCommandTarget.Normalize();
-                        _weapon.Fire(_collider.Center, toCommandTarget);
+                        _weapon.Fire(((CircleCollider)collider).Center, toCommandTarget);
                     }
                 }
 
@@ -319,31 +327,20 @@ namespace TheCure
             }
         }
 
-        private Mob GetNearestEnemy(Vector2? priorityPosition = null)
+        private Enemy GetNearestEnemy(Vector2? commandTarget)
         {
-            Mob best = null;
+            Enemy best = null;
             float bestDist = float.MaxValue;
 
             foreach (var enemy in GameManager.Get().Enemies)
             {
-                if (enemy == null || enemy._collider == null)
-                    continue;
+                if (enemy == null) continue;
 
-                float dist = Vector2.Distance(enemy._collider.Center, _collider.Center);
-                float score = dist;
+                float dist = Vector2.Distance(((CircleCollider)enemy.collider).Center, ((CircleCollider)collider).Center);
 
-                if (priorityPosition.HasValue)
+                if (dist < bestDist)
                 {
-                    float targetDist = Vector2.Distance(enemy._collider.Center, priorityPosition.Value);
-                    if (targetDist > CommandEnemyPriorityRadius)
-                        continue;
-
-                    score = targetDist * 0.75f + dist * 0.25f;
-                }
-
-                if (score < bestDist)
-                {
-                    bestDist = score;
+                    bestDist = dist;
                     best = enemy;
                 }
             }

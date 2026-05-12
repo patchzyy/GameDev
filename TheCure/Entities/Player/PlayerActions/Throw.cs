@@ -26,7 +26,7 @@ public class Throw : PlayerAction
     {
         var gameManager = GameManager.Get();
         Point mousePosition = InputManager.Get().CurrentMouseState.Position;
-        var position = PlayerManager.Get().Player.GetPosition().Center.ToVector2();
+        var position = PlayerManager.Get().Player.GetPosition();
         Vector2 worldMousePosition = gameManager.ScreenToWorld(mousePosition.ToVector2());
 
         _bomb.Fire(position, worldMousePosition);

@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
-using TheCure.Mobs;
+using TheCure.Enemies;
+using TheCure.Entities;
 
 namespace TheCure.BaseObjects.Traps
 {
@@ -23,11 +24,13 @@ namespace TheCure.BaseObjects.Traps
             _damageTimer -= (float)gameTime.ElapsedGameTime.TotalSeconds;
         }
 
-        protected override void OnTrapHit(Mob mob)
+        protected override void OnTrapHit(LivingEntity target)
         {
-            mob.LoseHealth(DamagePerHit);
-
-            _damageTimer = DamageInterval;
+            if (target is Enemy enemy)
+            {
+                enemy.LoseHealth(DamagePerHit);
+                _damageTimer = DamageInterval;
+            }
         }
     }
 }

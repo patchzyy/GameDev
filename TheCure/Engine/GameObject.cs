@@ -8,7 +8,7 @@ namespace TheCure
 {
     public abstract class GameObject
     {
-        protected Collider collider;
+        public Collider collider;
         protected AnimatedSprite _animatedSprite;
         protected HealthBar _healthBar;
         protected float _flashTimer = 0f;

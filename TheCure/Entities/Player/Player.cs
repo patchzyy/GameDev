@@ -2,21 +2,16 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using TheCure.Collision;
+using TheCure.Entities;
 using TheCure.Managers;
 using TheCure.Weapons;
 
 namespace TheCure
 {
-    public class Player : GameObject
+    public class Player : LivingEntity
     {
-        public float MoveSpeed;
-        public float MaxHealth;
-
-        internal readonly RectangleCollider _rectangleCollider;
-        internal Vector2 _velocity;
         internal float _rotation;
-
-        private Rectangle _previousBounds;
+        private Vector2 _previousCenter;
 
         public WeaponsSystem WeaponsSystem = new WeaponsSystem();
 
@@ -27,21 +22,24 @@ namespace TheCure
         private PlayerAnimationState _currentState;
         private float _hitTimer = 0f;
 
-        private Vector2 _facingDirection = Vector2.UnitX;
-
-        public Player(Point position)
+        public Player(Vector2 position) : base(
+            textureName: "Character-Joe-Idle",
+            speed: Settings.GetValue(SettingsConst.PLAYER.MOVE_SPEED),
+            startHealth: Settings.GetValue(SettingsConst.PLAYER.MAX_HEALTH),
+            maxHealth: Settings.GetValue(SettingsConst.PLAYER.MAX_HEALTH),
+            frameCount: 5,
+            frameRate: 1f,
+            isLooping: true,
+            scale: 2f
+        )
         {
-            MoveSpeed = Settings.GetValue(SettingsConst.PLAYER.MOVE_SPEED);
-            MaxHealth = Settings.GetValue(SettingsConst.PLAYER.MAX_HEALTH);
-
-            _rectangleCollider = new RectangleCollider(new Rectangle(position, Point.Zero));
-            SetCollider(_rectangleCollider);
+            collider = new CircleCollider(position, 16f);
+            SetCollider(collider);
 
             _velocity = Vector2.Zero;
             _rotation = 0f;
 
             _currentWeapon = _bulletWeapon;
-            _previousBounds = _rectangleCollider.shape;
         }
 
         public override void Load()
@@ -53,25 +51,13 @@ namespace TheCure
 
             SetHealthBar(
                 idleTexture,
-                MaxHealth,
-                MaxHealth,
+                _maxHealth,
+                _maxHealth,
                 () => GameManager.Get().SetGameState(GameState.GameOver),
                 null,
                 true
             );
-
-            if (_animatedSprite != null)
-            {
-                _rectangleCollider.shape.Size = new Point(
-                    (int)(_animatedSprite.FrameWidth * 2f),
-                    (int)(_animatedSprite.FrameHeight * 2f)
-                );
-
-                _rectangleCollider.shape.Location -= new Point(
-                    _rectangleCollider.shape.Width / 2,
-                    _rectangleCollider.shape.Height / 2
-                );
-            }
+            SyncHealthBarPosition();
 
             base.Load();
         }
@@ -104,7 +90,7 @@ namespace TheCure
 
             var dash = PlayerActionsManager.Get().GetDash();
             if (dash == null || !dash.IsDashing)
-                _velocity = moveDirection * MoveSpeed;
+                _velocity = moveDirection * _speed;
         }
 
         public override void Update(GameTime gameTime)
@@ -134,12 +120,11 @@ namespace TheCure
 
             UpdateState();
 
-            _previousBounds = _rectangleCollider.shape;
+            _previousCenter = ((CircleCollider)collider).Center;
 
-            _rectangleCollider.shape.X += (int)(_velocity.X * deltaTime);
-            _rectangleCollider.shape.Y += (int)(_velocity.Y * deltaTime);
+            ((CircleCollider)collider).Center += _velocity * deltaTime;
 
-            _animatedSprite?.Update(gameTime);
+            //_animatedSprite?.Update(gameTime);
 
             base.Update(gameTime);
         }
@@ -154,14 +139,7 @@ namespace TheCure
             }
 
             Color tint = _isFlashing ? _flashColor : Color.White;
-            _animatedSprite?.Draw(
-                spriteBatch,
-                _rectangleCollider.shape.Center.ToVector2(),
-                tint,
-                0f,
-                2f,
-                effects
-            );
+            DrawAnimatedSprite(spriteBatch, tint, _facingDirection);
 
             base.Draw(gameTime, spriteBatch);
         }
@@ -170,8 +148,30 @@ namespace TheCure
         {
             if (tmp is Wall wall)
             {
-                wall.ResolveRectangleCollision(_rectangleCollider, _previousBounds, ref _velocity);
+                Vector2 collisionNormal = wall.ResolveCircleCollision((CircleCollider)collider, _previousCenter);
+                if (collisionNormal != Vector2.Zero)
+                {
+                    float velocityIntoWall = Vector2.Dot(_velocity, collisionNormal);
+                    if (velocityIntoWall < 0f)
+                    {
+                        _velocity -= collisionNormal * velocityIntoWall;
+                    }
+                }
             }
+
+            base.OnCollision(tmp);
+        }
+
+        public override void LoseHealth(float amount)
+        {
+            var dash = PlayerActionsManager.Get().GetDash();
+            if (dash != null && dash.IsDashing)
+            {
+                System.Diagnostics.Debug.WriteLine("Player is protected by dash - no damage taken!");
+                return;
+            }
+
+            base.LoseHealth(amount);
         }
 
         private void UpdateState()
@@ -220,8 +220,8 @@ namespace TheCure
             _currentWeapon = _bulletWeapon;
             _weaponBuffTimer = 0f;
 
-            _rectangleCollider.shape.Location =
-                new Point(
+            ((CircleCollider)collider).Center =
+                new Vector2(
                     GameManager.Get().Game.GraphicsDevice.Viewport.Width / 2,
                     GameManager.Get().Game.GraphicsDevice.Viewport.Height / 2
                 );
@@ -230,9 +230,9 @@ namespace TheCure
             _rotation = 0f;
         }
 
-        public Rectangle GetPosition()
+        public Vector2 GetPosition()
         {
-            return _rectangleCollider.shape;
+            return ((CircleCollider)collider).Center;
         }
     }
 

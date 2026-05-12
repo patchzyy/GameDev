@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
-using TheCure.Mobs;
+using TheCure.Enemies;
+using TheCure.Entities;
 
 namespace TheCure.BaseObjects.Traps
 {
@@ -36,9 +37,9 @@ namespace TheCure.BaseObjects.Traps
                 {
                     foreach (var friendly in gameManager.Friendlies)
                     {
-                        if (friendly != null && friendly._collider != null)
+                        if (friendly != null && ((CircleCollider)friendly.collider != null))
                         {
-                            Vector2 toFriendly = friendly._collider.Center - _collider.Center;
+                            Vector2 toFriendly = ((CircleCollider)friendly.collider).Center - ((CircleCollider)_collider).Center;
                             float distance = toFriendly.Length();
 
                             if (distance < HealRadius)
@@ -53,9 +54,9 @@ namespace TheCure.BaseObjects.Traps
                 {
                     foreach (var enemy in gameManager.Enemies)
                     {
-                        if (enemy != null && enemy._collider != null)
+                        if (enemy != null && ((CircleCollider)enemy.collider != null))
                         {
-                            Vector2 toEnemy = enemy._collider.Center - _collider.Center;
+                            Vector2 toEnemy = ((CircleCollider)enemy.collider).Center - ((CircleCollider)_collider).Center;
                             float distance = toEnemy.Length();
 
                             if (distance < HealRadius)
@@ -71,15 +72,15 @@ namespace TheCure.BaseObjects.Traps
             _currentColor = _baseColor * pulse;
         }
 
-        protected override void OnTrapHit(Mob mob)
+        protected override void OnTrapHit(LivingEntity target)
         {
-            if (mob is Friendly friendly)
+            if (target is Friendly friendly)
             {
                 friendly.GainHealth(HealAmountPerTick * 2);
             }
-            else
+            else if (target is Enemy enemy)
             {
-                mob.LoseHealth(ConversionDamage * 2);
+                enemy.LoseHealth(ConversionDamage * 2);
             }
         }
     }

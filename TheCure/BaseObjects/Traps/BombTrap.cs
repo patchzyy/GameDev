@@ -1,6 +1,7 @@
 using System;
 using Microsoft.Xna.Framework;
-using TheCure.Mobs;
+using TheCure.Enemies;
+using TheCure.Entities;
 
 namespace TheCure.BaseObjects.Traps
 {
@@ -50,9 +51,9 @@ namespace TheCure.BaseObjects.Traps
             }
         }
 
-        protected override void OnTrapHit(Mob mob)
+        protected override void OnTrapHit(LivingEntity target)
         {
-            if (_activated && !_exploded)
+            if (target is Enemy && _activated && !_exploded)
             {
                 Explode();
             }
@@ -68,9 +69,9 @@ namespace TheCure.BaseObjects.Traps
             {
                 foreach (var enemy in gameManager.Enemies)
                 {
-                    if (enemy != null && enemy._collider != null)
+                    if (enemy != null && ((CircleCollider)enemy.collider) != null)
                     {
-                        Vector2 toEnemy = enemy._collider.Center - _collider.Center;
+                        Vector2 toEnemy = ((CircleCollider)enemy.collider).Center - ((CircleCollider)collider).Center;
                         float distanceSquared = toEnemy.LengthSquared();
                         float radiusSquared = ExplosionRadius * ExplosionRadius;
 
