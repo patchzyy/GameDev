@@ -90,6 +90,7 @@ namespace TheCure
                 if (bullet.IsHealing)
                 {
                     GainHealth(1);
+                    SoundManager.Get().PlayHeal();
                     LastHealed = 0f;
                 }
                 else

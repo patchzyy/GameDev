@@ -88,7 +88,7 @@ namespace TheCure.Enemies
             }
 
             _currentTarget?.LoseHealth(_attackDamage);
-
+            SoundManager.Get().PlayFriendlyHit();
             _attackNextCombat = false;
             _attackTimer = _attackCooldown;
             _currentTarget = null;

@@ -225,11 +225,35 @@
 /processorParam:Quality=Best
 /build:SFX/9mm Single Isolated.wav;SFX/Gunshot.wav
 
+#begin SFX/FriendlyHit.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:SFX/FriendlyHit.wav
+
+#begin SFX/PlayerBullet.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:SFX/PlayerBullet.wav
+
+#begin SFX/UpgradeUnlock.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:SFX/UpgradeUnlock.wav
+
 #begin SFX/ZombieDying.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
 /build:SFX/ZombieDying.wav
+
+#begin SFX/ZombieHeal.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:SFX/ZombieHeal.wav
 
 #begin SFX/ZombieHit.wav
 /importer:WavImporter
