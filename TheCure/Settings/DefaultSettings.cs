@@ -9,16 +9,16 @@ namespace TheCure
         public static readonly Dictionary<SettingKey, object> Values = new()
         {
             // PLAYER
-            { SettingsConst.PLAYER.MAX_HEALTH, 10f },
+            { SettingsConst.PLAYER.MAX_HEALTH, 100f },
             { SettingsConst.PLAYER.MOVE_SPEED, 300f },
 
             // ZOMBIE
             { SettingsConst.ZOMBIE.SPEED, 60f },
             { SettingsConst.ZOMBIE.STAGGER, 1f },
-            { SettingsConst.ZOMBIE.ATTACK_DAMAGE, 1f },
+            { SettingsConst.ZOMBIE.ATTACK_DAMAGE, 10f },
             { SettingsConst.ZOMBIE.ATTACK_COOL_DOWN, 1f },
-            { SettingsConst.ZOMBIE.START_HEALTH, 3f },
-            { SettingsConst.ZOMBIE.MAX_HEALTH, 10f },
+            { SettingsConst.ZOMBIE.START_HEALTH, 30f },
+            { SettingsConst.ZOMBIE.MAX_HEALTH, 100f },
 
             // SPAWNING
             { SettingsConst.SPAWNING.ZOMBIE_SPAWN_INTERVAL, 2f },
@@ -30,12 +30,15 @@ namespace TheCure
             // FRIENDLY
             { SettingsConst.FRIENDLY.FOLLOW_DISTANCE, 60f },
             { SettingsConst.FRIENDLY.MOVE_SPEED, 50f },
-            { SettingsConst.FRIENDLY.START_HEALTH, 10f },
-            { SettingsConst.FRIENDLY.MAX_HEALTH, 10f },
-            { SettingsConst.FRIENDLY.ATTACK_DAMAGE, 1f },
+            { SettingsConst.FRIENDLY.START_HEALTH, 100f },
+            { SettingsConst.FRIENDLY.MAX_HEALTH, 100f },
+            { SettingsConst.FRIENDLY.ATTACK_DAMAGE, 10f },
             { SettingsConst.FRIENDLY.SIZE, 1f },
             { SettingsConst.FRIENDLY.RADIUS, 20f },
             { SettingsConst.FRIENDLY.START_WEAPON, FriendlyWeapons.HandGun },
+            
+            // SingleBulletWeapon
+            { SettingsConst.SINGLE_BULLET_WEAPON.DAMAGE, 10f },
 
             // KEY BINDS
             //PLAYER ACTIONS

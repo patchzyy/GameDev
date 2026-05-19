@@ -170,6 +170,12 @@ namespace TheCure
                 UpgradeManager.Get().UpdateButtons(gameTime);
                 return;
             }
+            
+            if (CurrentGameState == GameState.PassiveUpgrade)
+            {
+                PassivesManager.Get().UpdateButtons(gameTime);
+                return;
+            }
 
             if (CurrentGameState == GameState.Playing)
             {
@@ -339,6 +345,12 @@ namespace TheCure
 
                 case GameState.Paused:
                     ScreenManager.Get().DrawPauseMenu(spriteBatch);
+                    break;
+
+                case GameState.PassiveUpgrade:
+                    spriteBatch.Begin();
+                    PassivesManager.Get().Draw(spriteBatch, this);
+                    spriteBatch.End();
                     break;
 
                 case GameState.GameOver:

@@ -50,6 +50,13 @@ namespace TheCure
             public static readonly SettingKey<float> RADIUS = new(_group, "RADIUS");
         }
 
+        public static class SINGLE_BULLET_WEAPON
+        {
+            private static string _group = "SINGLE_BULLET_WEAPON";
+
+            public static readonly SettingKey<float> DAMAGE = new(_group, "DAMAGE");
+        }
+
         public static class KEY_BINDS
         {
             private static string _group = "KEY_BINDS";

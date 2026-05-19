@@ -17,7 +17,7 @@ namespace TheCure
 
         private float _life = 3.0f;
 
-        public Bullet(Vector2 location, Vector2 direction, float speed, bool isHealing = false, float damage = 1f)
+        public Bullet(Vector2 location, Vector2 direction, float speed, bool isHealing = false, float damage = 10f)
         {
             _collider = new CircleCollider(location, 4);
             SetCollider(_collider);
