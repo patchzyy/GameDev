@@ -16,6 +16,7 @@ namespace TheCure
         private ScreenManager _screenManager;
         private InputManager _inputManager;
         private UpgradeManager _upgradeManager;
+        private PassivesManager _passivesManager;
         private BoostManager _boostManager;
         private SoundManager _soundManager;
         private bool _isEscapeKeyPressed = false;
@@ -25,7 +26,7 @@ namespace TheCure
             _graphics = new GraphicsDeviceManager(this);
             _graphics.PreferredBackBufferWidth = 1920;
             _graphics.PreferredBackBufferHeight = 1080;
-            _graphics.IsFullScreen = true;
+            _graphics.IsFullScreen = false;
 
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
@@ -39,6 +40,7 @@ namespace TheCure
             _screenManager = ScreenManager.Get();
             _inputManager = InputManager.Get();
             _upgradeManager = UpgradeManager.Get();
+            _passivesManager = PassivesManager.Get();
             _boostManager = BoostManager.Get();
             _soundManager = SoundManager.Get();
             _graphics.ApplyChanges();
@@ -64,6 +66,7 @@ namespace TheCure
             _screenManager.Load();
             _inputManager.Load();
             _upgradeManager.Load();
+            _passivesManager.Load();    
             _boostManager.Load();
             _soundManager.Load();
         }

@@ -23,7 +23,8 @@ namespace TheCure
 
         public float CurrentHealth => _currentHealth;
 
-        public HealthBar(Texture2D texture, float maxHealth, float startHealth, Action onDeath, Action? onMaxHealth, bool hide = false)
+        public HealthBar(Texture2D texture, float maxHealth, float startHealth, Action onDeath, Action? onMaxHealth,
+            bool hide = false)
         {
             _maxHealth = maxHealth;
             _startHealth = startHealth;
@@ -60,6 +61,13 @@ namespace TheCure
             }
         }
 
+        public void ReloadHealth(float health)
+        {
+            _currentHealth = health;
+            _startHealth = health;
+            _maxHealth = health;
+        }
+
         public void ResetHealth()
         {
             _currentHealth = _startHealth;
@@ -92,7 +100,8 @@ namespace TheCure
 
             var borderRectangle = new Rectangle(drawX - 1, drawY - 1, barWidth + 2, barHeight + 2);
             var backgroundRectangle = new Rectangle(drawX, drawY, barWidth, barHeight);
-            var fillRect = new Rectangle(drawX + 1, drawY + 1, Math.Max(1, (int)((barWidth - 2) * (_currentHealth / _maxHealth))), barHeight - 2);
+            var fillRect = new Rectangle(drawX + 1, drawY + 1,
+                Math.Max(1, (int)((barWidth - 2) * (_currentHealth / _maxHealth))), barHeight - 2);
 
             spriteBatch.Draw(dummyTexture, borderRectangle, Color.Black * 0.9f);
             spriteBatch.Draw(dummyTexture, backgroundRectangle, new Color(30, 30, 30, 220));

@@ -3,18 +3,17 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using TheCure.Managers;
+using TheCure.Passives;
 using TheCure.Upgrades;
 
 namespace TheCure;
 
-public class UpgradeManager:Manager<UpgradeManager>
+public class PassivesManager:Manager<PassivesManager>
 {
     private List<Upgrade> _availableUpgrades;
 
     private List<Upgrade> _unlockedUpgrades;
     private List<Upgrade> _selectedUpgrades;
-
-    private int _lastScore = 0;
 
     private UpgradesUI _upgradesUI;
 
@@ -25,30 +24,20 @@ public class UpgradeManager:Manager<UpgradeManager>
         _upgradesUI.Load();
 
         Reset();
+        PickRandomUpgrade();
     }
 
     public void Reset()
     {
-        var boostUnlock = new BoostUnlockUpgrade();
-        var buildUnlock = new BuildUnlockUpgrade();
 
         _availableUpgrades = new List<Upgrade>
         {
-            new HealthBombUnlockUpgrade(),
-            new CommandUnlockUpgrade(),
-            boostUnlock,
-            buildUnlock,
-            new BoostPowerUpgrade(boostUnlock),
-            new SpikeTrapUnlockUpgrade { RequiredUpgrade = buildUnlock },
-            new FreezeTrapUnlockUpgrade { RequiredUpgrade = buildUnlock },
-            new BombTrapUnlockUpgrade { RequiredUpgrade = buildUnlock },
-            new ElectricTrapUnlockUpgrade { RequiredUpgrade = buildUnlock },
-            new HealBombTrapUnlockUpgrade { RequiredUpgrade = buildUnlock },
+            new HealthPassiveUpgrade(),
+            new HealingPassiveUpgrade(),
         };
 
         _unlockedUpgrades = new List<Upgrade>();
         _selectedUpgrades = new List<Upgrade>();
-        _lastScore = 0;
         _upgradesUI.Reset();
     }
 
@@ -63,16 +52,13 @@ public class UpgradeManager:Manager<UpgradeManager>
 
         while (selectableUpgrades.Count < 4)
         {
-            selectableUpgrades.Add(new GainHealthUpgrade());
+            selectableUpgrades.Add(new HealthPassiveUpgrade());
         }
 
         for (int i = 0; i < 4; i++)
         {
-            var randomIndex = random.Next(0, selectableUpgrades.Count);
-            var upgrade = selectableUpgrades[randomIndex];
-
+            var upgrade = selectableUpgrades[random.Next(0, selectableUpgrades.Count)];
             _selectedUpgrades.Add(upgrade);
-            selectableUpgrades.RemoveAt(randomIndex);
         }
     }
 
@@ -91,29 +77,7 @@ public class UpgradeManager:Manager<UpgradeManager>
             _unlockedUpgrades.Add(upgrade);
         }
 
-        if (upgrade.UnlockedOnce)
-        {
-            _availableUpgrades.Remove(upgrade);
-        }
-
-        GameManager.Get().SetGameState(GameState.Playing);
-    }
-
-    public void Update(GameTime gameTime)
-    {
-        if (_selectedUpgrades.Count == 0)
-        {
-            PickRandomUpgrade();
-        }
-
-        var score = ScoreManager.Get().GetScore();
-
-        if (score > _lastScore & score % 100 == 0 && GameManager.Get().CurrentGameState != GameState.Upgrade)
-        {
-            _lastScore = score;
-            GameManager.Get().SetGameState(GameState.Upgrade);
-            SoundManager.Get().PlayUpgradeUnlock();
-        }
+        GameManager.Get().SetGameState(GameState.GameOver);
     }
 
     public void UpdateButtons(GameTime gameTime)

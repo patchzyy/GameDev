@@ -1,2 +1,8 @@
 {
+  "PLAYER": {
+    "MAX_HEALTH": 100
+  },
+  "SINGLE_BULLET_WEAPON": {
+    "DAMAGE": 10
+  }
 }

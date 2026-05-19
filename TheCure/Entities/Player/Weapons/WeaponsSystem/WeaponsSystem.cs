@@ -8,12 +8,22 @@ public class WeaponsSystem
     private WeaponMode _currentWeaponMode;
 
     private BaseWeapon CurrentWeapon { get; set; }
-    
-    private readonly SingleBulletWeapon _singleBulletWeapon = new SingleBulletWeapon();
+
+    private SingleBulletWeapon _singleBulletWeapon = new SingleBulletWeapon();
 
     public WeaponsSystem()
     {
         SetShootWeapon(ShootWeapons.SingleBullet);
+    }
+
+    public void Reset()
+    {
+        SetShootWeapon(ShootWeapons.SingleBullet);
+    }
+
+    public void Reload()
+    {
+        _singleBulletWeapon = new SingleBulletWeapon();
     }
 
     public void Update(GameTime gameTime)

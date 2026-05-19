@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using TheCure.Collision;
 using TheCure.Entities;
 using TheCure.Managers;
 using TheCure.Weapons;
@@ -14,10 +13,6 @@ namespace TheCure
         private Vector2 _previousCenter;
 
         public WeaponsSystem WeaponsSystem = new WeaponsSystem();
-
-        internal BaseWeapon _currentWeapon;
-        internal readonly SingleBulletWeapon _bulletWeapon = new SingleBulletWeapon();
-        internal float _weaponBuffTimer = 0f;
 
         private PlayerAnimationState _currentState;
         private float _hitTimer = 0f;
@@ -38,8 +33,6 @@ namespace TheCure
 
             _velocity = Vector2.Zero;
             _rotation = 0f;
-
-            _currentWeapon = _bulletWeapon;
         }
 
         public override void Load()
@@ -53,13 +46,18 @@ namespace TheCure
                 idleTexture,
                 _maxHealth,
                 _maxHealth,
-                () => GameManager.Get().SetGameState(GameState.GameOver),
-                null,
+                OnDeath,
                 true
             );
             SyncHealthBarPosition();
 
             base.Load();
+        }
+
+        private void OnDeath()
+        {
+            PassivesManager.Get().PickRandomUpgrade();
+            GameManager.Get().SetGameState(GameState.PassiveUpgrade);
         }
 
         public override void HandleInput()
@@ -98,16 +96,6 @@ namespace TheCure
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             WeaponsSystem.Update(gameTime);
-            _currentWeapon?.UpdateCoolDown(gameTime);
-
-            if (_weaponBuffTimer > 0)
-            {
-                _weaponBuffTimer -= deltaTime;
-                if (_weaponBuffTimer <= 0)
-                {
-                    _currentWeapon = _bulletWeapon;
-                }
-            }
 
             if (_hitTimer > 0)
             {
@@ -208,6 +196,15 @@ namespace TheCure
             }
         }
 
+        public void ReloadStats()
+        {
+            _speed = Settings.GetValue(SettingsConst.PLAYER.MOVE_SPEED);
+            _startHealth = Settings.GetValue(SettingsConst.PLAYER.MAX_HEALTH);
+            _maxHealth = Settings.GetValue(SettingsConst.PLAYER.MAX_HEALTH);
+
+            _healthBar?.ReloadHealth(_startHealth);
+        }
+
         public void TakeHit()
         {
             SetState(PlayerAnimationState.Hit);
@@ -217,8 +214,7 @@ namespace TheCure
         public void Reset()
         {
             _healthBar?.ResetHealth();
-            _currentWeapon = _bulletWeapon;
-            _weaponBuffTimer = 0f;
+            WeaponsSystem.Reset();
 
             ((CircleCollider)collider).Center =
                 new Vector2(

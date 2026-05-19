@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using TheCure.Enemies;
 using TheCure.Managers;
@@ -89,7 +88,7 @@ namespace TheCure
             {
                 if (bullet.IsHealing)
                 {
-                    GainHealth(1);
+                    GainHealth(bullet.Damage);
                     SoundManager.Get().PlayHeal();
                     LastHealed = 0f;
                 }
