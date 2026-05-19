@@ -22,6 +22,7 @@ namespace TheCure
 
         private float _initialSpawnInterval = 5.0f;
         private float _currentSpawnInterval;
+        private readonly List<Rectangle> _worldObstacleBounds = new();
 
         private int _enemiesToSpawn = 1;
         private int _maxEnemiesOnScreen;
@@ -60,8 +61,9 @@ namespace TheCure
             Game = game;
             _camera = new Camera(Game.GraphicsDevice.Viewport);
             CurrentGameState = GameState.StartScreen;
-            _gameObjects.Add(PlayerManager.Get().Player);
             AddWorldWalls();
+            GenerateWorldObjects();
+            _gameObjects.Add(PlayerManager.Get().Player);
         }
 
         public void ResetGame()
@@ -90,6 +92,7 @@ namespace TheCure
             HUD.Load();
 
             AddWorldWalls();
+            GenerateWorldObjects();
             _gameObjects.Add(PlayerManager.Get().Player);
 
             for (var i = 0; i < 1; i++)
@@ -415,6 +418,9 @@ namespace TheCure
                 if (Vector2.Distance(candidate, playerPos) < minDistanceFromPlayer)
                     continue;
 
+                if (!IsAreaFree(candidate, 24f + padding))
+                    continue;
+
                 return candidate;
             }
 
@@ -441,6 +447,9 @@ namespace TheCure
                 if (Vector2.Distance(point, playerPos) < minDistanceFromPlayer)
                     continue;
 
+                if (!IsAreaFree(point, 24f + padding))
+                    continue;
+
                 var distance = Vector2.DistanceSquared(point, playerPos);
                 if (distance > bestDistance)
                 {
@@ -450,6 +459,23 @@ namespace TheCure
             }
 
             return bestPoint;
+        }
+
+        private bool IsAreaFree(Vector2 position, float radius)
+        {
+            var candidate = new Rectangle(
+                (int)(position.X - radius),
+                (int)(position.Y - radius),
+                (int)(radius * 2),
+                (int)(radius * 2));
+
+            foreach (var blockedBounds in _worldObstacleBounds)
+            {
+                if (blockedBounds.Intersects(candidate))
+                    return false;
+            }
+
+            return true;
         }
 
         public Rectangle GetPlayableBounds()
@@ -502,11 +528,32 @@ namespace TheCure
                 _playableBounds.Height));
         }
 
+        private void GenerateWorldObjects()
+        {
+            _worldObstacleBounds.Clear();
+            ProceduralWorldGenerator.Generate(this, AddStaticWorldObject);
+        }
+
         private void AddWorldWall(Rectangle bounds)
         {
             var wall = new Wall(bounds);
             wall.Load();
             _gameObjects.Add(wall);
+        }
+
+        private void AddStaticWorldObject(GameObject gameObject)
+        {
+            if (gameObject.collider != null)
+            {
+                _worldObstacleBounds.Add(gameObject.collider.GetBoundingBox());
+            }
+
+            if (Game != null && ContentsManager.Get().GetContent() != null)
+            {
+                gameObject.Load();
+            }
+
+            _gameObjects.Add(gameObject);
         }
 
         private void DrawGameObjects(SpriteBatch spriteBatch, GameTime gameTime)
