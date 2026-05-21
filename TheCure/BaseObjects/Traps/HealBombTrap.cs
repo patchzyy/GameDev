@@ -1,6 +1,7 @@
 using System;
-using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using TheCure.Managers;
 using TheCure.Enemies;
 using TheCure.Entities;
 
@@ -14,55 +15,71 @@ namespace TheCure.BaseObjects.Traps
         private const int ConversionDamage = 10;
 
         private float _healTickTimer = HealTickInterval;
-        private HashSet<Friendly> _healedFriendlies = new HashSet<Friendly>();
 
-        public HealBombTrap(Vector2 position, float duration = 15f) : base(position, duration)
+        private bool _isExploding = false;
+        private float _throwAnimTime = 0f;
+        private const float ThrowAnimDuration = 6 * 0.08f; // frames * fps
+
+        public HealBombTrap(Vector2 position, float duration = 15f)
+            : base(position, duration)
         {
             _baseColor = Color.LimeGreen;
             _currentColor = Color.LimeGreen;
+        }
+
+        public override void Load()
+        {
+ 
         }
 
         protected override void UpdateTrap(GameTime gameTime)
         {
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
+            if (!_isExploding)
+            {
+                SwitchAnimation("Bomb-throw", 6, 0.08f, false);
+
+                _throwAnimTime += deltaTime;
+
+                if (_throwAnimTime >= ThrowAnimDuration)
+                {
+                    _isExploding = true;
+                }
+            }
+            else
+            {
+                SwitchAnimation("Bomb-explosion", 6, 0.08f, false);
+            }
+
             _healTickTimer -= deltaTime;
+
             if (_healTickTimer <= 0f)
             {
                 _healTickTimer = HealTickInterval;
 
-                GameManager gameManager = GameManager.Get();
+                var gm = GameManager.Get();
 
-                if (gameManager.Friendlies != null)
+                if (gm.Friendlies != null)
                 {
-                    foreach (var friendly in gameManager.Friendlies)
+                    foreach (var f in gm.Friendlies)
                     {
-                        if (friendly != null && ((CircleCollider)friendly.collider != null))
+                        if (f?.collider is CircleCollider fc &&
+                            Vector2.Distance(fc.Center, _collider.Center) < HealRadius)
                         {
-                            Vector2 toFriendly = ((CircleCollider)friendly.collider).Center - ((CircleCollider)_collider).Center;
-                            float distance = toFriendly.Length();
-
-                            if (distance < HealRadius)
-                            {
-                                friendly.GainHealth(HealAmountPerTick);
-                            }
+                            f.GainHealth(HealAmountPerTick);
                         }
                     }
                 }
 
-                if (gameManager.Enemies != null)
+                if (gm.Enemies != null)
                 {
-                    foreach (var enemy in gameManager.Enemies)
+                    foreach (var e in gm.Enemies)
                     {
-                        if (enemy != null && ((CircleCollider)enemy.collider != null))
+                        if (e?.collider is CircleCollider ec &&
+                            Vector2.Distance(ec.Center, _collider.Center) < HealRadius)
                         {
-                            Vector2 toEnemy = ((CircleCollider)enemy.collider).Center - ((CircleCollider)_collider).Center;
-                            float distance = toEnemy.Length();
-
-                            if (distance < HealRadius)
-                            {
-                                enemy.LoseHealth(ConversionDamage);
-                            }
+                            e.LoseHealth(ConversionDamage);
                         }
                     }
                 }
@@ -75,13 +92,9 @@ namespace TheCure.BaseObjects.Traps
         protected override void OnTrapHit(LivingEntity target)
         {
             if (target is Friendly friendly)
-            {
                 friendly.GainHealth(HealAmountPerTick * 2);
-            }
             else if (target is Enemy enemy)
-            {
                 enemy.LoseHealth(ConversionDamage * 2);
-            }
         }
     }
 }
