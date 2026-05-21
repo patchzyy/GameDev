@@ -35,7 +35,7 @@ class HealBombExplosion : GameObject
         {
             if (healsToGive > 0)
             {
-                other.GainHealth(1);
+                other.GainHealth(10);
                 healsToGive--;
             }
             else

@@ -7,6 +7,11 @@ public class Handgun : BaseWeapon
 {
     public override float FireRate => 2f;
 
+    public Handgun()
+    {
+        damage = 10f;
+    }
+
     public override void Fire(Vector2 position, Vector2 direction)
     {
         Bullet bullet = new Bullet(position, direction, 300f, damage: damage);
