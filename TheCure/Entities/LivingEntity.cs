@@ -51,9 +51,11 @@ namespace TheCure.Entities
             _animatedSprite =
             new AnimatedSprite(_texture, frameWidth, _texture.Height, _frameCount, _frameRate, _isLooping);
             _font = cm.HUDFont;
-            collider = new CircleCollider(Vector2.Zero, _animatedSprite.FrameWidth * _scale / 2f);
-
-            SetCollider(collider);
+            if (collider == null)
+            {
+                collider = new CircleCollider(Vector2.Zero, _animatedSprite.FrameWidth * _scale / 2f);
+                SetCollider(collider);
+            }
         }
 
         public override void Update(GameTime gameTime)
