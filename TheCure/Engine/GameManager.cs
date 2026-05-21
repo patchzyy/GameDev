@@ -52,7 +52,7 @@ namespace TheCure
 
             RNG = new Random();
 
-            CurrentGameState = GameState.StartScreen;
+            CurrentGameState = GameState.HealSelection;
             _currentSpawnInterval = _initialSpawnInterval;
         }
 
@@ -60,7 +60,6 @@ namespace TheCure
         {
             Game = game;
             _camera = new Camera(Game.GraphicsDevice.Viewport);
-            CurrentGameState = GameState.StartScreen;
             AddWorldWalls();
             GenerateWorldObjects();
             _gameObjects.Add(PlayerManager.Get().Player);
@@ -87,7 +86,6 @@ namespace TheCure
             PlayerActionsManager.Get().Reset();
             UpgradeManager.Get().Reset();
 
-            PlayerManager.Get().Player.Reset();
             PlayerActionsManager.Get().Reset();
             HUD.Load();
 
@@ -316,6 +314,10 @@ namespace TheCure
         {
             switch (CurrentGameState)
             {
+                case GameState.HealSelection:
+                    ScreenManager.Get().DrawHealSelectScreen(spriteBatch);
+                    break;
+                
                 case GameState.StartScreen:
                     ScreenManager.Get().DrawStartScreen(spriteBatch);
                     break;

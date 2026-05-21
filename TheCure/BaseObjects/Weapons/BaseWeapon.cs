@@ -14,6 +14,8 @@ namespace TheCure.Weapons
 
         public bool CanFire => CoolDown <= 0f;
 
+        public float RemainingCoolDown => Math.Max(0f, CoolDown);
+
         public void UpdateCoolDown(GameTime gameTime)
         {
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;

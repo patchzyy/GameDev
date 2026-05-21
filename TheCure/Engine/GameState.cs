@@ -9,6 +9,7 @@
         PassiveUpgrade,
         Quit,
         Paused,
-        GameOver
+        GameOver,
+        HealSelection,
     }
 }

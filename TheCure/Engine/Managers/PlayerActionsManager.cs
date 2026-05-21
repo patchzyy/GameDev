@@ -79,6 +79,11 @@ public class PlayerActionsManager :Manager<PlayerActionsManager>
         action.Load();
     }
 
+    public void ReloadShoot()
+    {
+        _shoot.Load();
+    }
+
     public void Reset()
     {
         _actions.Clear();

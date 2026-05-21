@@ -17,7 +17,7 @@ namespace TheCure.PlayerActions
             _iconName = iconName;
         }
 
-        public void Load()
+        public virtual void Load()
         {
             var content = ContentsManager.Get().GetContent();
             _iconTexture = content.Load<Texture2D>(_iconName);
@@ -25,7 +25,7 @@ namespace TheCure.PlayerActions
 
         public Texture2D GetIconTexture() => _iconTexture;
 
-        public float GetRemainingCoolDown() => _remainingCoolDown;
+        public virtual float GetRemainingCoolDown() => _remainingCoolDown;
 
         public virtual void Update(GameTime gameTime)
         {
@@ -38,7 +38,7 @@ namespace TheCure.PlayerActions
             _remainingCoolDown = 0f;
         }
 
-        public void Execute(GameTime gameTime)
+        public virtual void Execute(GameTime gameTime)
         {
             if (_remainingCoolDown > 0f)
                 return;
