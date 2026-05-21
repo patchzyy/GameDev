@@ -336,7 +336,7 @@ namespace TheCure
             {
                 if (enemy == null) continue;
 
-                if (enemy is Zombie zombie && zombie.LastHealed < 3f)
+                if (enemy is Zombie zombie && zombie.LastHealed < 7f)
                     continue;
 
                 float dist = Vector2.Distance(((CircleCollider)enemy.collider).Center, ((CircleCollider)collider).Center);
