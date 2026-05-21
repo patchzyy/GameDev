@@ -28,7 +28,7 @@ namespace TheCure
             scale: 2f
         )
         {
-            collider = new CircleCollider(position, 16f);
+            collider = new CircleCollider(position, 10f);
             SetCollider(collider);
 
             _velocity = Vector2.Zero;
