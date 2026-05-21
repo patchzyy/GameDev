@@ -29,7 +29,9 @@ namespace TheCure.BaseObjects.Traps
 
         public override void Load()
         {
- 
+            SwitchAnimation("Bomb-throw", 6, 12f, false);
+
+            base.Load();
         }
 
         protected override void UpdateTrap(GameTime gameTime)
@@ -38,19 +40,21 @@ namespace TheCure.BaseObjects.Traps
 
             if (!_isExploding)
             {
-                SwitchAnimation("Bomb-throw", 6, 0.08f, false);
-
-                _throwAnimTime += deltaTime;
-
-                if (_throwAnimTime >= ThrowAnimDuration)
+                if (_animatedSprite != null && _animatedSprite.IsFinished)
                 {
                     _isExploding = true;
+
+                    SwitchAnimation("Bomb-explosion", 6, 12f, false);
                 }
             }
             else
             {
-                SwitchAnimation("Bomb-explosion", 6, 0.08f, false);
+                if (_animatedSprite != null && _animatedSprite.IsFinished)
+                {
+                    Destroy();
+                }
             }
+
 
             _healTickTimer -= deltaTime;
 
