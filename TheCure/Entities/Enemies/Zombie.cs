@@ -57,6 +57,7 @@ namespace TheCure
             Vector2 spawnPosition = ((CircleCollider)collider).Center;
 
             SwitchAnimation("Zombie-Dead", 11, 5f, false);
+            SoundManager.Get().PlayZombieDeath();
             _currentState = ZombieAnimationState.Dead;
 
             _onDeathComplete = () =>
@@ -76,6 +77,7 @@ namespace TheCure
             _isDying = true;
 
             SwitchAnimation("Zombie-Dead", 11, 5f, false);
+            SoundManager.Get().PlayZombieDeath();
             _currentState = ZombieAnimationState.Dead;
 
             _onDeathComplete = null;
@@ -88,10 +90,12 @@ namespace TheCure
                 if (bullet.IsHealing)
                 {
                     GainHealth(1);
+                    SoundManager.Get().PlayHeal();
                     LastHealed = 0f;
                 }
                 else
                 {
+                    SoundManager.Get().PlayZombieHit();
                     LoseHealth(bullet.Damage);
                 }
 

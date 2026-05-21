@@ -17,6 +17,7 @@ namespace TheCure
         private InputManager _inputManager;
         private UpgradeManager _upgradeManager;
         private BoostManager _boostManager;
+        private SoundManager _soundManager;
         private bool _isEscapeKeyPressed = false;
 
         public TheCure()
@@ -39,6 +40,7 @@ namespace TheCure
             _inputManager = InputManager.Get();
             _upgradeManager = UpgradeManager.Get();
             _boostManager = BoostManager.Get();
+            _soundManager = SoundManager.Get();
             _graphics.ApplyChanges();
 
             _contentsManager.Initialize(Content, this);
@@ -63,6 +65,7 @@ namespace TheCure
             _inputManager.Load();
             _upgradeManager.Load();
             _boostManager.Load();
+            _soundManager.Load();
         }
 
         protected override void Update(GameTime gameTime)

@@ -194,6 +194,7 @@ public class UpgradeManager:Manager<UpgradeManager>
         {
             _lastScore = score;
             GameManager.Get().SetGameState(GameState.Upgrade);
+            SoundManager.Get().PlayUpgradeUnlock();
         }
     }
 
