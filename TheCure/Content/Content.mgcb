@@ -50,6 +50,7 @@
 /build:base_turret.png
 
 #begin Bomb-explosion.png
+#begin BG-GrassPatches.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -72,6 +73,7 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Bomb-throw.png
+/build:BG-GrassPatches.png
 
 #begin Boost.png
 /importer:TextureImporter
@@ -242,6 +244,60 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:player.png
+
+#begin SFX/9mm Single Isolated.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:SFX/9mm Single Isolated.wav;SFX/Gunshot.wav
+
+#begin SFX/FriendlyHit.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:SFX/FriendlyHit.wav
+
+#begin SFX/PlayerBullet.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:SFX/PlayerBullet.wav
+
+#begin SFX/UpgradeUnlock.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:SFX/UpgradeUnlock.wav
+
+#begin SFX/ZombieDying.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:SFX/ZombieDying.wav
+
+#begin SFX/ZombieHeal.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:SFX/ZombieHeal.wav
+
+#begin SFX/ZombieHit.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:SFX/ZombieHit.wav
+
+#begin Objects.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Objects.png
 
 #begin ship_body.png
 /importer:TextureImporter

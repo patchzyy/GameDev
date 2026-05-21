@@ -12,6 +12,8 @@ public class ContentsManager : Manager<ContentsManager>
     public Texture2D BackgroundGamePlayTexture;
     public Texture2D BackgroundPauseTexture;
     public Texture2D BackgroundGameOverTexture;
+    public Texture2D WorldObjectsTexture;
+    public Texture2D GrassPatchesTexture;
     
     public Texture2D DummyTexture;
     
@@ -37,6 +39,8 @@ public class ContentsManager : Manager<ContentsManager>
         BackgroundGamePlayTexture = _content.Load<Texture2D>("BackGround");
         BackgroundPauseTexture = _content.Load<Texture2D>("BackgroundPause");
         BackgroundGameOverTexture = _content.Load<Texture2D>("GameOverBackground");
+        WorldObjectsTexture = _content.Load<Texture2D>("Objects");
+        GrassPatchesTexture = _content.Load<Texture2D>("BG-GrassPatches");
         TitleFont = _content.Load<SpriteFont>("TitleFont");
         ButtonFont = _content.Load<SpriteFont>("ButtonFont");
         HUDFont = _content.Load<SpriteFont>("HudFont");

@@ -150,6 +150,7 @@ namespace TheCure
             if (_healthBar != null)
             {
                 _healthBar.IncreaseHealth(amount);
+                SoundManager.Get().PlayHeal();
                 LastHealed = 0f;
 
                 _flashTimer = _flashDuration;

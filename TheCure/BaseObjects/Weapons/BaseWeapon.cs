@@ -8,6 +8,8 @@ namespace TheCure.Weapons
         protected float CoolDown = 0f;
         protected float DamageMultiplier = 1f;
 
+        public float damage;
+
         public abstract float FireRate { get; }
 
         public bool CanFire => CoolDown <= 0f;

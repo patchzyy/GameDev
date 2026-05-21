@@ -6,6 +6,7 @@
         Tutorial,
         Playing,
         Upgrade,
+        PassiveUpgrade,
         Quit,
         Paused,
         GameOver
