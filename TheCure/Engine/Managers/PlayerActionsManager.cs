@@ -19,9 +19,6 @@ public class PlayerActionsManager :Manager<PlayerActionsManager>
     private Keys _dashKey;
     private Dash _dash;
 
-    private Keys _buildKey;
-    private Build _build;
-
     private List<Keys> _actionKeys;
     private List<PlayerAction> _actions;
 
@@ -37,11 +34,9 @@ public class PlayerActionsManager :Manager<PlayerActionsManager>
         _dashKey = Settings.GetValue(SettingsConst.KEY_BINDS.ACTION_2);
         _dash = new Dash("Dash");
 
-        _buildKey = Settings.GetValue(SettingsConst.KEY_BINDS.ACTION_3);
-        _build = new Build();
-
         _actionKeys = new List<Keys>
         {
+            Settings.GetValue(SettingsConst.KEY_BINDS.ACTION_3),
             Settings.GetValue(SettingsConst.KEY_BINDS.ACTION_4),
             Settings.GetValue(SettingsConst.KEY_BINDS.ACTION_5),
             Settings.GetValue(SettingsConst.KEY_BINDS.ACTION_6),
@@ -52,7 +47,6 @@ public class PlayerActionsManager :Manager<PlayerActionsManager>
         {
             { _shoot, _shootKey },
             { _dash, _dashKey },
-            { _build, _buildKey }
         };
 
         _actions = new List<PlayerAction>();
@@ -63,7 +57,6 @@ public class PlayerActionsManager :Manager<PlayerActionsManager>
         _font = ContentsManager.Get().HUDFont;
         _shoot.Load();
         _dash.Load();
-        _build.Load();
         foreach (var action in _actions)
         {
             action.Load();
@@ -86,7 +79,6 @@ public class PlayerActionsManager :Manager<PlayerActionsManager>
         {
             { _shoot, _shootKey },
             { _dash, _dashKey },
-            { _build, _buildKey }
         };
 
         foreach (var action in _actionKeyMap.Keys)
@@ -119,9 +111,7 @@ public class PlayerActionsManager :Manager<PlayerActionsManager>
     }
 
     public Dash GetDash() => _dash;
-
-    public Build GetBuild() => _build;
-
+    
     public void Draw(SpriteBatch spriteBatch)
     {
         var gameManager = GameManager.Get();

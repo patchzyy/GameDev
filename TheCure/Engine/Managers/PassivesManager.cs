@@ -8,7 +8,7 @@ using TheCure.Upgrades;
 
 namespace TheCure;
 
-public class PassivesManager:Manager<PassivesManager>
+public class PassivesManager : Manager<PassivesManager>
 {
     private List<Upgrade> _availableUpgrades;
 
@@ -24,12 +24,10 @@ public class PassivesManager:Manager<PassivesManager>
         _upgradesUI.Load();
 
         Reset();
-        PickRandomUpgrade();
     }
 
     public void Reset()
     {
-
         _availableUpgrades = new List<Upgrade>
         {
             new HealthPassiveUpgrade(),
@@ -45,6 +43,7 @@ public class PassivesManager:Manager<PassivesManager>
     {
         _selectedUpgrades.Clear();
         _upgradesUI.Reset();
+        SoundManager.Get().PlayUpgradeUnlock();
 
         var random = new Random();
         var selectableUpgrades = _availableUpgrades.FindAll(upgrade =>
