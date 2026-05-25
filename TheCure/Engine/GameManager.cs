@@ -20,6 +20,8 @@ namespace TheCure
         private float _gameTimeElapsed = 0f;
         private float _spawnTimer = 0f;
 
+        private bool IsGameplayRunning => CurrentGameState == GameState.Playing;
+
         private float _initialSpawnInterval = 5.0f;
         private float _currentSpawnInterval;
         private readonly List<Rectangle> _worldObstacleBounds = new();
@@ -153,6 +155,7 @@ namespace TheCure
             UpgradeManager.Get().Update(gameTime);
             ScoreManager.Get().Update(gameTime);
             BoostManager.Get().Update(gameTime);
+            UpdateGameplayTimers(gameTime);
 
             if (CurrentGameState == GameState.Tutorial)
             {
@@ -170,7 +173,7 @@ namespace TheCure
                 UpgradeManager.Get().UpdateButtons(gameTime);
                 return;
             }
-            
+
             if (CurrentGameState == GameState.PassiveUpgrade)
             {
                 PassivesManager.Get().UpdateButtons(gameTime);
@@ -179,11 +182,6 @@ namespace TheCure
 
             if (CurrentGameState == GameState.Playing)
             {
-                var deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-                _gameTimeElapsed += deltaTime;
-                _spawnTimer += deltaTime;
-
                 CommandManager.Get().Update(gameTime);
                 UpdatePhase();
                 SpawnEnemies();
@@ -235,6 +233,16 @@ namespace TheCure
 
                 _toBeRemoved.Clear();
             }
+        }
+
+        private void UpdateGameplayTimers(GameTime gameTime)
+        {
+            if (!IsGameplayRunning)
+                return;
+
+            var deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            _gameTimeElapsed += deltaTime;
+            _spawnTimer += deltaTime;
         }
 
         private void UpdatePhase()
