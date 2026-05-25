@@ -15,6 +15,6 @@ public class BuildUnlockUpgrade : Upgrade
 
     public void Unlock(List<Upgrade> unlockedUpgrades)
     {
-       PlayerActionsManager.Get().AddAction(new Build());
+       // PlayerActionsManager.Get().AddAction(new Build());
     }
 }

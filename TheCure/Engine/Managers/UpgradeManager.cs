@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using TheCure.Managers;
@@ -7,11 +8,13 @@ using TheCure.Upgrades;
 
 namespace TheCure;
 
-public class UpgradeManager:Manager<UpgradeManager>
+public class UpgradeManager : Manager<UpgradeManager>
 {
     private List<Upgrade> _availableUpgrades;
+    private List<Upgrade> _availableActions;
 
     private List<Upgrade> _unlockedUpgrades;
+    private List<Upgrade> _unlockedActions;
     private List<Upgrade> _selectedUpgrades;
 
     private int _lastScore = 0;
@@ -30,23 +33,26 @@ public class UpgradeManager:Manager<UpgradeManager>
     public void Reset()
     {
         var boostUnlock = new BoostUnlockUpgrade();
-        var buildUnlock = new BuildUnlockUpgrade();
 
-        _availableUpgrades = new List<Upgrade>
+        _availableActions = new List<Upgrade>
         {
             new HealthBombUnlockUpgrade(),
             new CommandUnlockUpgrade(),
+            new SpikeTrapUnlockUpgrade(),
+            new FreezeTrapUnlockUpgrade(),
+            new BombTrapUnlockUpgrade(),
+            new ElectricTrapUnlockUpgrade(),
+            new HealBombTrapUnlockUpgrade(),
             boostUnlock,
-            buildUnlock,
+        };
+
+        _availableUpgrades = new List<Upgrade>
+        {
             new BoostPowerUpgrade(boostUnlock),
-            new SpikeTrapUnlockUpgrade { RequiredUpgrade = buildUnlock },
-            new FreezeTrapUnlockUpgrade { RequiredUpgrade = buildUnlock },
-            new BombTrapUnlockUpgrade { RequiredUpgrade = buildUnlock },
-            new ElectricTrapUnlockUpgrade { RequiredUpgrade = buildUnlock },
-            new HealBombTrapUnlockUpgrade { RequiredUpgrade = buildUnlock },
         };
 
         _unlockedUpgrades = new List<Upgrade>();
+        _unlockedActions = new List<Upgrade>();
         _selectedUpgrades = new List<Upgrade>();
         _lastScore = 0;
         _upgradesUI.Reset();
@@ -57,9 +63,21 @@ public class UpgradeManager:Manager<UpgradeManager>
         _selectedUpgrades.Clear();
         _upgradesUI.Reset();
 
+
+        var selection = new List<Upgrade>();
+        if (_unlockedActions.Count >= 5)
+        {
+            selection = _availableUpgrades;
+        }
+        else
+        {
+            selection = _availableUpgrades.Concat(_availableActions).ToList();
+        }
+
         var random = new Random();
-        var selectableUpgrades = _availableUpgrades.FindAll(upgrade =>
-            upgrade.RequiredUpgrade == null || _unlockedUpgrades.Contains(upgrade.RequiredUpgrade));
+        var selectableUpgrades = selection.FindAll(upgrade =>
+            upgrade.RequiredUpgrade == null || _unlockedUpgrades.Contains(upgrade.RequiredUpgrade) ||
+            _unlockedActions.Contains(upgrade.RequiredUpgrade));
 
         while (selectableUpgrades.Count < 4)
         {
@@ -86,16 +104,28 @@ public class UpgradeManager:Manager<UpgradeManager>
         upgrade.Unlock(_unlockedUpgrades);
         _selectedUpgrades.Clear();
 
-        if (!_unlockedUpgrades.Contains(upgrade))
+        if (_availableActions.Contains(upgrade))
         {
+            _availableActions.Remove(upgrade);
+            _unlockedActions.Add(upgrade);
+            GameManager.Get().SetGameState(GameState.Playing);
+            return;
+        }
+
+        if (_availableUpgrades.Contains(upgrade))
+        {
+            if (upgrade.UnlockedOnce)
+            {
+                _availableUpgrades.Remove(upgrade);
+            }
+
             _unlockedUpgrades.Add(upgrade);
+            GameManager.Get().SetGameState(GameState.Playing);
+            return;
         }
 
-        if (upgrade.UnlockedOnce)
-        {
-            _availableUpgrades.Remove(upgrade);
-        }
-
+        // Heal fallback
+        _unlockedUpgrades.Add(upgrade);
         GameManager.Get().SetGameState(GameState.Playing);
     }
 

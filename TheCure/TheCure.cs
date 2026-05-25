@@ -26,7 +26,7 @@ namespace TheCure
             _graphics = new GraphicsDeviceManager(this);
             _graphics.PreferredBackBufferWidth = 1920;
             _graphics.PreferredBackBufferHeight = 1080;
-            _graphics.IsFullScreen = false;
+            _graphics.IsFullScreen = true;
 
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
