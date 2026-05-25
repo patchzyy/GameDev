@@ -2,5 +2,7 @@ namespace TheCure.Weapons;
 
 public enum ShootWeapons
 {
-    SingleBullet
+    SingleBullet,
+    Movement,
+    Instant,
 }

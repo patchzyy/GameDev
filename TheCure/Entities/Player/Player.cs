@@ -11,11 +11,14 @@ namespace TheCure
     {
         internal float _rotation;
         private Vector2 _previousCenter;
+        public Vector2 FacingDirection = Vector2.Zero;
 
         public WeaponsSystem WeaponsSystem = new WeaponsSystem();
 
         private PlayerAnimationState _currentState;
         private float _hitTimer = 0f;
+
+        public Keys _fireKey;
 
         public Player(Vector2 position) : base(
             textureName: "Character-Joe-Idle",
@@ -30,6 +33,7 @@ namespace TheCure
         {
             collider = new CircleCollider(position, 10f);
             SetCollider(collider);
+            _fireKey = Settings.GetValue(SettingsConst.KEY_BINDS.ACTION_1);
 
             _velocity = Vector2.Zero;
             _rotation = 0f;
@@ -64,14 +68,12 @@ namespace TheCure
         {
             base.HandleInput();
 
-            var inputManager = InputManager.Get();
-
-            if (inputManager.CurrentMouseState.LeftButton == ButtonState.Pressed)
+            KeyboardState keyState = Keyboard.GetState();
+            if (keyState.IsKeyDown(_fireKey))
             {
                 WeaponsSystem.Fire();
             }
 
-            KeyboardState keyState = Keyboard.GetState();
             Vector2 moveDirection = Vector2.Zero;
 
             if (keyState.IsKeyDown(Keys.W)) moveDirection.Y = -1;
@@ -83,7 +85,7 @@ namespace TheCure
             {
                 moveDirection.Normalize();
                 _rotation = LinePieceCollider.GetAngle(moveDirection);
-                _facingDirection = moveDirection;
+                FacingDirection = moveDirection;
             }
 
             var dash = PlayerActionsManager.Get().GetDash();
@@ -214,7 +216,6 @@ namespace TheCure
         public void Reset()
         {
             _healthBar?.ResetHealth();
-            WeaponsSystem.Reset();
 
             ((CircleCollider)collider).Center =
                 new Vector2(

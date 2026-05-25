@@ -1,6 +1,9 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using TheCure.Upgrades;
+using TheCure.Weapons;
+using TheCure.Weapons.Throw;
 
 namespace TheCure.Managers;
 
@@ -11,6 +14,10 @@ public class ScreenManager : Manager<ScreenManager>
     private Button _continueButton;
     private Button _pauseQuitButton;
     private Button _restartButton;
+    private Button _healSelectButton1;
+    private Button _healSelectButton2;
+    private Button _healSelectButton3;
+    private Button _healSelectButton4;
 
     private Texture2D _tutorialPlayerTexture;
     private Texture2D _tutorialZombieTexture;
@@ -47,6 +54,16 @@ public class ScreenManager : Manager<ScreenManager>
         {
             _startButton.Update(mouseState);
             _quitButton.Update(mouseState);
+
+            return;
+        }
+
+        if (state == GameState.HealSelection)
+        {
+            _healSelectButton1.Update(mouseState);
+            _healSelectButton2.Update(mouseState);
+            _healSelectButton3.Update(mouseState);
+            _healSelectButton4.Update(mouseState);
 
             return;
         }
@@ -98,6 +115,15 @@ public class ScreenManager : Manager<ScreenManager>
         _restartButton = new Button(new Rectangle(0, 0, buttonWidth, buttonHeight), "Opnieuw spelen",
             ContentsManager.Get().ButtonFont);
 
+        _healSelectButton1 = new Button(new Rectangle(0, 0, buttonWidth, buttonHeight), "Heal Bomb als base",
+            ContentsManager.Get().ButtonFont);
+        _healSelectButton2 = new Button(new Rectangle(0, 0, buttonWidth, buttonHeight), "Instant heal",
+            ContentsManager.Get().ButtonFont);
+        _healSelectButton3 = new Button(new Rectangle(0, 0, buttonWidth, buttonHeight), "Heal in movement",
+            ContentsManager.Get().ButtonFont);
+        _healSelectButton4 = new Button(new Rectangle(0, 0, buttonWidth, buttonHeight), "Heal shoot",
+            ContentsManager.Get().ButtonFont);
+
         var gameManager = GameManager.Get();
 
         _startButton.SetAction(() => gameManager.SetGameState(GameState.Tutorial));
@@ -105,6 +131,33 @@ public class ScreenManager : Manager<ScreenManager>
         _continueButton.SetAction(() => gameManager.SetGameState(GameState.Playing));
         _pauseQuitButton.SetAction(gameManager.Game.Exit);
         _restartButton.SetAction(RestartButtonAction);
+
+        _healSelectButton1.SetAction(() => HealSelectButtonAction(HealType.HealBomb));
+        _healSelectButton2.SetAction(() => HealSelectButtonAction(HealType.Instant));
+        _healSelectButton3.SetAction(() => HealSelectButtonAction(HealType.Movement));
+        _healSelectButton4.SetAction(() => HealSelectButtonAction(HealType.Shoot));
+    }
+
+    private void HealSelectButtonAction(HealType type)
+    {
+        switch (type)
+        {
+            case HealType.HealBomb:
+                PlayerManager.Get().Player.WeaponsSystem.SetThrowWeapon(ThrowWeapons.HealBomb);
+                break;
+            case HealType.Movement:
+                PlayerManager.Get().Player.WeaponsSystem.SetShootWeapon(ShootWeapons.Movement);
+                break;
+            case HealType.Instant:
+                PlayerManager.Get().Player.WeaponsSystem.SetShootWeapon(ShootWeapons.Instant);
+                break;
+            case HealType.Shoot:
+                PlayerManager.Get().Player.WeaponsSystem.SetShootWeapon(ShootWeapons.SingleBullet);
+                break;
+        }
+
+        PlayerActionsManager.Get().ReloadShoot();
+        GameManager.Get().SetGameState(GameState.StartScreen);
     }
 
     private void RestartButtonAction()
@@ -125,6 +178,38 @@ public class ScreenManager : Manager<ScreenManager>
         _continueButton.SetPosition(centerX - buttonWidth / 2, (int)(game.GraphicsDevice.Viewport.Height * 0.5f));
         _restartButton.SetPosition(centerX - buttonWidth / 2, (int)(game.GraphicsDevice.Viewport.Height * 0.5f));
         _pauseQuitButton.SetPosition(centerX - buttonWidth / 2, (int)(game.GraphicsDevice.Viewport.Height * 0.68f));
+
+        _healSelectButton1.SetPosition(centerX - buttonWidth / 2,
+            (int)(game.GraphicsDevice.Viewport.Height * 0.75f) + 60);
+        _healSelectButton2.SetPosition(centerX - buttonWidth / 2,
+            (int)(game.GraphicsDevice.Viewport.Height * 0.75f) + 120);
+        _healSelectButton3.SetPosition(centerX - buttonWidth / 2,
+            (int)(game.GraphicsDevice.Viewport.Height * 0.75f) + 180);
+        _healSelectButton4.SetPosition(centerX - buttonWidth / 2, (int)(game.GraphicsDevice.Viewport.Height * 0.75f));
+    }
+
+    public void DrawHealSelectScreen(SpriteBatch spriteBatch)
+    {
+        var game = GameManager.Get().Game;
+        spriteBatch.Begin();
+        var content = ContentsManager.Get();
+
+        spriteBatch.Draw(content.BackgroundTexture,
+            new Rectangle(0, 0, game.GraphicsDevice.Viewport.Width, game.GraphicsDevice.Viewport.Height),
+            Color.White);
+
+        string title = "Kies je heal type";
+        Vector2 titleSize = content.TitleFont.MeasureString(title);
+        spriteBatch.DrawString(content.TitleFont, title,
+            new Vector2(game.GraphicsDevice.Viewport.Width / 2 - titleSize.X / 2, 150),
+            Color.White);
+
+        _healSelectButton1.Draw(spriteBatch);
+        _healSelectButton2.Draw(spriteBatch);
+        _healSelectButton3.Draw(spriteBatch);
+        _healSelectButton4.Draw(spriteBatch);
+
+        spriteBatch.End();
     }
 
     public void DrawGameOver(SpriteBatch spriteBatch)
@@ -215,7 +300,7 @@ public class ScreenManager : Manager<ScreenManager>
             new Vector2(centerXPaused - 350, 900), Color.White);
 
         string controlsPaused =
-@"WASD  - Bewegen
+            @"WASD  - Bewegen
 MUIS  - Schieten
 1-2   - Wissel wapens";
 
@@ -320,7 +405,7 @@ MUIS  - Schieten
             new Vector2(centerX + 18, 700), Color.White);
 
         string controls =
-@"WASD  - Bewegen
+            @"WASD  - Bewegen
 MUIS  - Schieten
 1-2   - Wissel wapens";
 

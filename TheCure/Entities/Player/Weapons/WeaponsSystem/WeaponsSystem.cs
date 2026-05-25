@@ -1,15 +1,23 @@
+using System;
 using Microsoft.Xna.Framework;
 using TheCure.Managers;
+using TheCure.Weapons.Throw;
 
 namespace TheCure.Weapons;
 
 public class WeaponsSystem
 {
-    private WeaponMode _currentWeaponMode;
+    public WeaponMode CurrentWeaponMode;
 
-    private BaseWeapon CurrentWeapon { get; set; }
+    public BaseWeapon CurrentWeapon { get; set; }
 
     private SingleBulletWeapon _singleBulletWeapon = new SingleBulletWeapon();
+
+    private HealBomb _healBombWeapon = new HealBomb();
+
+    private MovementWeapon _movementWeapon = new MovementWeapon();
+
+    private InstantWeapon _instantWeapon = new InstantWeapon();
 
     public WeaponsSystem()
     {
@@ -24,6 +32,9 @@ public class WeaponsSystem
     public void Reload()
     {
         _singleBulletWeapon = new SingleBulletWeapon();
+        _healBombWeapon = new HealBomb();
+        _instantWeapon = new InstantWeapon();
+        _movementWeapon = new MovementWeapon();
     }
 
     public void Update(GameTime gameTime)
@@ -33,13 +44,39 @@ public class WeaponsSystem
 
     public void SetShootWeapon(ShootWeapons weapon)
     {
-        _currentWeaponMode = WeaponMode.Shoot;
+        CurrentWeaponMode = WeaponMode.Shoot;
         switch (weapon)
         {
             case ShootWeapons.SingleBullet:
+                Console.WriteLine("Single bullet weapon selected");
                 CurrentWeapon = _singleBulletWeapon;
                 break;
+            case ShootWeapons.Movement:
+                Console.WriteLine("Movement weapon selected");
+                CurrentWeapon = _movementWeapon;
+                break;
+            case ShootWeapons.Instant:
+                Console.WriteLine("Instant weapon selected");
+                CurrentWeapon = _instantWeapon;
+                break;
         }
+    }
+
+    public void SetThrowWeapon(ThrowWeapons weapon)
+    {
+        CurrentWeaponMode = WeaponMode.Throw;
+        switch (weapon)
+        {
+            case ThrowWeapons.HealBomb:
+                Console.WriteLine("Heal bomb weapon selected");
+                CurrentWeapon = _healBombWeapon;
+                break;
+        }
+    }
+
+    public float GetFireRate()
+    {
+        return CurrentWeapon.FireRate;
     }
 
     public void Fire()
@@ -53,12 +90,13 @@ public class WeaponsSystem
         {
             Vector2 position = PlayerManager.Get().Player.GetPosition();
 
-            if (_currentWeaponMode == WeaponMode.Throw)
+            if (CurrentWeaponMode == WeaponMode.Throw)
             {
                 CurrentWeapon.Fire(position, worldMousePosition);
             }
 
-            if (_currentWeaponMode == WeaponMode.Shoot)
+            if (CurrentWeaponMode ==
+                WeaponMode.Shoot)
             {
                 Vector2 aimDirection =
                     LinePieceCollider.GetDirection(position, worldMousePosition);
