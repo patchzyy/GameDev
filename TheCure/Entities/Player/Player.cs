@@ -219,8 +219,8 @@ namespace TheCure
 
             ((CircleCollider)collider).Center =
                 new Vector2(
-                    GameManager.Get().Game.GraphicsDevice.Viewport.Width / 2,
-                    GameManager.Get().Game.GraphicsDevice.Viewport.Height / 2
+                    GameManager.Get().GetPlayableBounds().Center.X,
+                    GameManager.Get().GetPlayableBounds().Center.Y
                 );
 
             _velocity = Vector2.Zero;

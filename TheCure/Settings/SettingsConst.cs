@@ -57,6 +57,14 @@ namespace TheCure
             public static readonly SettingKey<float> DAMAGE = new(_group, "DAMAGE");
         }
 
+        public static class VIDEO
+        {
+            public static readonly SettingKey<int> WIDTH = new("VIDEO", "WIDTH");
+
+            public static readonly SettingKey<int> HEIGHT = new("VIDEO", "HEIGHT");
+            public static readonly SettingKey<DisplayModeSetting> DISPLAY_MODE = new("VIDEO", "DISPLAY_MODE");
+        }
+
         public static class KEY_BINDS
         {
             private static string _group = "KEY_BINDS";
