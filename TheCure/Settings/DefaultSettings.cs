@@ -40,6 +40,11 @@ namespace TheCure
             // SingleBulletWeapon
             { SettingsConst.SINGLE_BULLET_WEAPON.DAMAGE, 10f },
 
+            // VIDEO
+            { SettingsConst.VIDEO.WIDTH, 1920 },
+            { SettingsConst.VIDEO.HEIGHT, 1080 },
+            { SettingsConst.VIDEO.DISPLAY_MODE, DisplayModeSetting.Windowed },
+
             // KEY BINDS
             //PLAYER ACTIONS
             { SettingsConst.KEY_BINDS.ACTION_1, Keys.D1 },

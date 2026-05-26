@@ -6,13 +6,15 @@ namespace TheCure
     public class Camera
     {
         private Vector2 _position;
-        private Viewport _viewport;
+        private readonly GraphicsDevice _graphicsDevice;
 
-        public Camera(Viewport viewport)
+        public Camera(GraphicsDevice graphicsDevice)
         {
-            _viewport = viewport;
+            _graphicsDevice = graphicsDevice;
             _position = Vector2.Zero;
         }
+
+        private Viewport Viewport => _graphicsDevice.Viewport;
 
         public Vector2 Position
         {
@@ -28,8 +30,8 @@ namespace TheCure
 
         public void Update(Vector2 target)
         {
-            _position.X = target.X - _viewport.Width / 2;
-            _position.Y = target.Y - _viewport.Height / 2;
+            _position.X = target.X - Viewport.Width / 2;
+            _position.Y = target.Y - Viewport.Height / 2;
         }
 
         public void Update(Vector2 target, Rectangle worldBounds)
@@ -37,8 +39,8 @@ namespace TheCure
             Update(target);
 
             // cap camera
-            int maxX = worldBounds.Right - _viewport.Width;
-            int maxY = worldBounds.Bottom - _viewport.Height;
+            int maxX = worldBounds.Right - Viewport.Width;
+            int maxY = worldBounds.Bottom - Viewport.Height;
 
             if (maxX < worldBounds.Left)
             {
@@ -61,7 +63,7 @@ namespace TheCure
 
         public Rectangle GetViewBounds()
         {
-            return new Rectangle((int)_position.X, (int)_position.Y, _viewport.Width, _viewport.Height);
+            return new Rectangle((int)_position.X, (int)_position.Y, Viewport.Width, Viewport.Height);
         }
 
         public Matrix GetViewMatrix()

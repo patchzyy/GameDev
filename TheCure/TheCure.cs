@@ -23,10 +23,11 @@ namespace TheCure
 
         public TheCure()
         {
+            Settings.Load();
             _graphics = new GraphicsDeviceManager(this);
-            _graphics.PreferredBackBufferWidth = 1920;
-            _graphics.PreferredBackBufferHeight = 1080;
-            _graphics.IsFullScreen = true;
+            _graphics.PreferredBackBufferWidth = Settings.GetValue(SettingsConst.VIDEO.WIDTH);
+            _graphics.PreferredBackBufferHeight = Settings.GetValue(SettingsConst.VIDEO.HEIGHT);
+            _graphics.IsFullScreen = Settings.GetValue(SettingsConst.VIDEO.DISPLAY_MODE) == DisplayModeSetting.Fullscreen;
 
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
@@ -100,6 +101,45 @@ namespace TheCure
             _inputManager.Update();
 
             base.Update(gameTime);
+        }
+
+        public void ApplyVideoSettings(int width, int height, DisplayModeSetting mode)
+        {
+            _graphics.IsFullScreen = false;
+            Window.IsBorderless = false;
+            
+            _graphics.ApplyChanges();
+
+            switch (mode)
+            {
+                case DisplayModeSetting.Windowed:
+                    _graphics.PreferredBackBufferWidth = width;
+                    _graphics.PreferredBackBufferHeight = height;
+                    
+                    break;
+
+                case DisplayModeSetting.Borderless:
+                    var displayMode = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode;
+                    Window.IsBorderless = true;
+
+                    _graphics.PreferredBackBufferWidth = displayMode.Width;
+                    _graphics.PreferredBackBufferHeight = displayMode.Height;
+
+                    break;
+
+                case DisplayModeSetting.Fullscreen:
+                    _graphics.PreferredBackBufferWidth = width;
+                    _graphics.PreferredBackBufferHeight = height;
+
+                    _graphics.IsFullScreen = true;
+                    break;
+            }
+
+            _graphics.ApplyChanges();
+
+            Settings.Save(SettingsConst.VIDEO.WIDTH, width);
+            Settings.Save(SettingsConst.VIDEO.HEIGHT, height);
+            Settings.Save(SettingsConst.VIDEO.DISPLAY_MODE, mode);
         }
 
         protected override void Draw(GameTime gameTime)

@@ -59,7 +59,7 @@ namespace TheCure
         public void Initialize(Game game)
         {
             Game = game;
-            _camera = new Camera(Game.GraphicsDevice.Viewport);
+            _camera = new Camera(Game.GraphicsDevice);
             AddWorldWalls();
             GenerateWorldObjects();
             _gameObjects.Add(PlayerManager.Get().Player);
@@ -349,6 +349,10 @@ namespace TheCure
                     ScreenManager.Get().DrawPauseMenu(spriteBatch);
                     break;
 
+                case GameState.Settings:
+                    ScreenManager.Get().DrawSettings(spriteBatch);
+                    break;
+
                 case GameState.PassiveUpgrade:
                     spriteBatch.Begin();
                     PassivesManager.Get().Draw(spriteBatch, this);
@@ -587,7 +591,7 @@ namespace TheCure
         private void DrawTiledGameplayBackground(SpriteBatch spriteBatch)
         {
             var content = ContentsManager.Get();
-            var worldBounds = GetWorldBounds();
+            var worldBounds = GetPlayableBounds();
 
             for (var x = worldBounds.Left; x < worldBounds.Right; x += content.BackgroundGamePlayTexture.Width)
             {

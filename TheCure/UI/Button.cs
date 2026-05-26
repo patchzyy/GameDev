@@ -13,6 +13,7 @@ namespace TheCure
 
         private SpriteFont _font;
         private bool _isHovering;
+        private bool _wasPressed;
         public event Action Action;
 
         public Button(Rectangle rectangle, string text, SpriteFont font)
@@ -33,21 +34,21 @@ namespace TheCure
             Action = action;
         }
 
+        public void SetText(string text)
+        {
+            Text = text;
+        }
+
         public void Update(MouseState mouseState)
         {
-            if (Rectangle.Contains(mouseState.X, mouseState.Y))
-            {
-                _isHovering = true;
-            }
-            else
-            {
-                _isHovering = false;
-            }
+            _isHovering = Rectangle.Contains(mouseState.X, mouseState.Y);
 
-            if (mouseState.LeftButton == ButtonState.Pressed && _isHovering)
-            {
+            bool isPressed = mouseState.LeftButton == ButtonState.Pressed;
+
+            if (isPressed && !_wasPressed && _isHovering)
                 Action?.Invoke();
-            }
+
+            _wasPressed = isPressed;
         }
 
         public void Draw(SpriteBatch spriteBatch)
