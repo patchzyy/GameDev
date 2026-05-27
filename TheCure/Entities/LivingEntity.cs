@@ -111,8 +111,7 @@ namespace TheCure.Entities
             SpriteEffects effects = facingDirection.X < 0f ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
             float scale = _scale * scaleMultiplier;
-            var destinationRectangle = GetAnimatedSpriteDestinationRectangle(scaleMultiplier);
-            var position = destinationRectangle.Center.ToVector2();
+            var position = ((CircleCollider)collider).Center;
 
             _animatedSprite.Draw(spriteBatch, position, color, 0f, scale, effects, 0f);
         }
