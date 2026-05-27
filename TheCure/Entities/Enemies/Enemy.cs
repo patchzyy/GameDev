@@ -3,6 +3,8 @@ using Microsoft.Xna.Framework;
 using TheCure.Managers;
 using TheCure.Entities;
 
+
+
 namespace TheCure.Enemies
 {
     public abstract class Enemy : LivingEntity
@@ -23,6 +25,9 @@ namespace TheCure.Enemies
 
         protected Vector2 _previousCenter;
         protected Vector2 _spawnPosition;
+
+        protected System.Collections.Generic.List<Vector2> _currentPath;
+        protected float _pathUpdateTimer;
 
         public Enemy(string textureName, float speed, float startHealth, float maxHealth, int frameCount = 1,
             float frameRate = 1f, bool isLooping = true, float scale = 1f) : base(textureName, speed, startHealth,
@@ -70,7 +75,40 @@ namespace TheCure.Enemies
                 ? PlayerManager.Get().Player.GetPosition()
                 : _currentTarget.GetCollider().GetBoundingBox().Center.ToVector2();
 
-            Vector2 direction = targetPosition - ((CircleCollider)collider).Center;
+            //Niet elke frame het pad berekenen, dat scheelt rekenkracht!
+            _pathUpdateTimer -= deltaTime;
+            if (_pathUpdateTimer <= 0f)
+            {
+                _currentPath = Pathfinder.FindPath(((CircleCollider)collider).Center, targetPosition);
+                // Willekeurige timer zodat niet alle zombies alles aanroepen,
+                // anders krijg je namelijk lagspikes
+                _pathUpdateTimer = 0.5f + (float)GameManager.Get().RNG.NextDouble() * 0.5f;
+            }
+
+            Vector2 direction = Vector2.Zero;
+
+            if (_currentPath != null && _currentPath.Count > 0)
+            {
+                // Navigeer langs t pa
+                Vector2 currentWaypoint = _currentPath[0];
+                direction = currentWaypoint - ((CircleCollider)collider).Center;
+
+                // Zijn we dichtbij genoeg? Pak de volgende waypoint
+                if (direction.LengthSquared() < 64f * 0.5f * 64f * 0.5f) // halverwege 
+                {
+                    _currentPath.RemoveAt(0);
+                    if (_currentPath.Count > 0)
+                    {
+                        currentWaypoint = _currentPath[0];
+                        direction = currentWaypoint - ((CircleCollider)collider).Center;
+                    }
+                }
+            }
+            else
+            {
+                // fallback
+                direction = targetPosition - ((CircleCollider)collider).Center;
+            }
 
             if (direction.LengthSquared() > 0.0001f)
             {

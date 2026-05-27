@@ -22,7 +22,7 @@ namespace TheCure
 
         private float _initialSpawnInterval = 5.0f;
         private float _currentSpawnInterval;
-        private readonly List<Rectangle> _worldObstacleBounds = new();
+        public readonly List<Rectangle> WorldObstacleBounds = new();
 
         private int _enemiesToSpawn = 1;
         private int _maxEnemiesOnScreen;
@@ -483,7 +483,7 @@ namespace TheCure
                 (int)(radius * 2),
                 (int)(radius * 2));
 
-            foreach (var blockedBounds in _worldObstacleBounds)
+            foreach (var blockedBounds in WorldObstacleBounds)
             {
                 if (blockedBounds.Intersects(candidate))
                     return false;
@@ -544,8 +544,9 @@ namespace TheCure
 
         private void GenerateWorldObjects()
         {
-            _worldObstacleBounds.Clear();
+            WorldObstacleBounds.Clear();
             ProceduralWorldGenerator.Generate(this, AddStaticWorldObject);
+            Pathfinder.InitGrid(WorldObstacleBounds);
         }
 
         private void AddWorldWall(Rectangle bounds)
@@ -559,7 +560,7 @@ namespace TheCure
         {
             if (gameObject.collider != null)
             {
-                _worldObstacleBounds.Add(gameObject.collider.GetBoundingBox());
+                WorldObstacleBounds.Add(gameObject.collider.GetBoundingBox());
             }
 
             if (Game != null && ContentsManager.Get().GetContent() != null)
