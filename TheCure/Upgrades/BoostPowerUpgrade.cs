@@ -11,6 +11,7 @@ public class BoostPowerUpgrade : Upgrade
     public string Description { get; } = "Increase Boost strength by +0.05x";
     public Action Action { get; }
     public bool Unlocked { get; set; }
+    public UpgradeType Type { get; } = UpgradeType.Passive;
     public Upgrade RequiredUpgrade { get; set; }
     public bool UnlockedOnce { get; set; } = false;
 

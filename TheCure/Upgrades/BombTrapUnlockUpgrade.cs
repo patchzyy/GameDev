@@ -11,9 +11,9 @@ public class BombTrapUnlockUpgrade : Upgrade
     public string Description { get; } = "Unlock the Bomb Trap for building";
     public Action Action { get; }
     public bool Unlocked { get; set; }
+    public UpgradeType Type { get; } = UpgradeType.Action;
     public Upgrade RequiredUpgrade { get; set; } = null;
     public bool UnlockedOnce { get; set; } = true;
-
     public void Unlock(List<Upgrade> unlockedUpgrades)
     {
         PlayerActionsManager.Get().AddAction(new Build("Build", typeof(BombTrap), 10f));

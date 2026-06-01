@@ -12,6 +12,7 @@ public class HealingPassiveUpgrade : Upgrade
     public Action Action { get; }
     public bool Unlocked { get; set; }
     public Upgrade RequiredUpgrade { get; set; } = null;
+    public UpgradeType Type { get; } = UpgradeType.Passive;
     public bool UnlockedOnce { get; set; } = false;
 
     public void Unlock(List<Upgrade> unlockedUpgrades)

@@ -12,6 +12,7 @@ public class FreezeTrapUnlockUpgrade : Upgrade
     public Action Action { get; }
     public bool Unlocked { get; set; }
     public Upgrade RequiredUpgrade { get; set; } = null;
+    public UpgradeType Type { get; } = UpgradeType.Action;
     public bool UnlockedOnce { get; set; } = true;
 
     public void Unlock(List<Upgrade> unlockedUpgrades)

@@ -11,6 +11,7 @@ public class BoostUnlockUpgrade : Upgrade
     public string Description { get; } = "Unlock the Boost action for your friendlies";
     public Action Action { get; }
     public bool Unlocked { get; set; }
+    public UpgradeType Type { get; } = UpgradeType.Action;
     public Upgrade RequiredUpgrade { get; set; } = null;
     public bool UnlockedOnce { get; set; } = true;
 
