@@ -40,7 +40,8 @@ public class UpgradesUI
         _upgradePicked = false;
     }
 
-    public void Draw(SpriteBatch spriteBatch, GameManager gameManager, List<Upgrade> selectedUpgrades, Action<Upgrade> onUpgradePicked)
+    public void Draw(SpriteBatch spriteBatch, GameManager gameManager, List<Upgrade> selectedUpgrades,
+        Action<Upgrade> onUpgradePicked)
     {
         var screenWidth = gameManager.Game.GraphicsDevice.Viewport.Width;
         var screenHeight = gameManager.Game.GraphicsDevice.Viewport.Height;
@@ -74,6 +75,13 @@ public class UpgradesUI
                     (mainRect.Width / count) - 20,
                     mainRect.Height - 20);
             spriteBatch.Draw(dummyTexture, buttonPanel, new Color(20, 30, 20, 255));
+            
+            // Active/passive
+            var color = upgrade.Type == UpgradeType.Passive ? Color.Green : Color.Red;
+            var typeRect = new Rectangle(buttonPanel.X + buttonPanel.Width - 30, buttonPanel.Y + 10, 20, 20);
+            spriteBatch.Draw(dummyTexture, typeRect, color);
+            spriteBatch.DrawString(_font, upgrade.Type.ToString().Substring(0, 1), new Vector2(typeRect.X + 5, typeRect.Y + 2),
+                Color.White);
 
             spriteBatch.DrawString(_font, upgrade.Name, new Vector2(buttonPanel.X + 10, buttonPanel.Y + 10),
                 Color.White);
@@ -96,7 +104,8 @@ public class UpgradesUI
         }
     }
 
-    private void DrawWrappedText(SpriteBatch spriteBatch, SpriteFont font, string text, Vector2 position, Color color, float maxLineWidth, float lineHeight)
+    private void DrawWrappedText(SpriteBatch spriteBatch, SpriteFont font, string text, Vector2 position, Color color,
+        float maxLineWidth, float lineHeight)
     {
         var words = text.Split(' ');
         string currentLine = string.Empty;

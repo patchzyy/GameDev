@@ -18,9 +18,16 @@ public class UpgradeManager : Manager<UpgradeManager>
     private List<Upgrade> _selectedUpgrades;
 
     private int _lastScore = 0;
+    private int _scoreUpgradeCounter = 0;
 
+    private const int ScoreUpgradeInterval = 2;
+    private const int ScoreUpgradeStep = 200;
+    private const int InitialScoreUpgradeThreshold = 200;
+    
+    private int _scoreUpgradeThreshold = 200;
+    private int _scoreUpgradeStep = 200;
+    
     private UpgradesUI _upgradesUI;
-
 
     public void Load()
     {
@@ -55,6 +62,9 @@ public class UpgradeManager : Manager<UpgradeManager>
         _unlockedActions = new List<Upgrade>();
         _selectedUpgrades = new List<Upgrade>();
         _lastScore = 0;
+        _scoreUpgradeCounter = 0;
+        _scoreUpgradeThreshold = InitialScoreUpgradeThreshold;
+        _scoreUpgradeStep = ScoreUpgradeStep;
         _upgradesUI.Reset();
     }
 
@@ -136,14 +146,30 @@ public class UpgradeManager : Manager<UpgradeManager>
             PickRandomUpgrade();
         }
 
+        if (GameManager.Get().CurrentGameState == GameState.Upgrade)
+        {
+            return;
+        }
+
         var score = ScoreManager.Get().GetScore();
 
-        if (score > _lastScore & score % 100 == 0 && GameManager.Get().CurrentGameState != GameState.Upgrade)
+        if (_lastScore < _scoreUpgradeThreshold && score >= _scoreUpgradeThreshold)
         {
-            _lastScore = score;
+            _scoreUpgradeCounter++;
+
+            if (_scoreUpgradeCounter >= ScoreUpgradeInterval)
+            {
+                _scoreUpgradeCounter = 0;
+                _scoreUpgradeStep += ScoreUpgradeStep;
+            }
+
+            _scoreUpgradeThreshold += _scoreUpgradeStep;
+
             GameManager.Get().SetGameState(GameState.Upgrade);
             SoundManager.Get().PlayUpgradeUnlock();
         }
+
+        _lastScore = score;
     }
 
     public void UpdateButtons(GameTime gameTime)

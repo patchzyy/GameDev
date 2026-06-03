@@ -8,6 +8,7 @@ public interface Upgrade
     public string Name { get; }
     public string Description { get; }
     public Action Action { get; }
+    public UpgradeType Type { get; }
 
     public bool Unlocked { get; set; }
 
