@@ -16,6 +16,9 @@ namespace TheCure
 
         private BaseWeapon _weapon;
         private float _sizeMultiplier;
+        private float _healthLossPerSecond;
+        private bool _isEscaping;
+        private Vector2 _escapeTarget;
 
         private FriendlyState _currentState;
 
@@ -37,6 +40,7 @@ namespace TheCure
         private const float AttackRange = 300f;
         private const float CommandAttackRange = 460f;
         private const float CommandEnemyPriorityRadius = 420f;
+        private const float EscapeRemoveDistance = 24f;
 
         private enum FriendlyState
         {
@@ -64,6 +68,7 @@ namespace TheCure
             _sizeMultiplier = Settings.GetValue(SettingsConst.FRIENDLY.SIZE);
             _velocity = Vector2.Zero;
             _sizeMultiplier = Settings.GetValue(SettingsConst.FRIENDLY.SIZE);
+            _healthLossPerSecond = Settings.GetValue(SettingsConst.FRIENDLY.HEALTH_LOSS_PER_SECOND);
 
             switch (weaponType)
             {
@@ -91,7 +96,7 @@ namespace TheCure
 
             SetAnimation(_idleTexture, 5, 1f, true);
 
-            SetHealthBar(_idleTexture, _maxHealth, _startHealth, Destroy, null);
+            SetHealthBar(_idleTexture, _maxHealth, _startHealth, StartEscape, null);
             SyncHealthBarPosition();
 
             StatManager.Get().UpdateFriendlyStats(this);
@@ -111,6 +116,24 @@ namespace TheCure
             var commandManager = CommandManager.Get();
 
             _previousCenter = ((CircleCollider)collider).Center;
+
+            if (_isEscaping)
+            {
+                RunAway(dt);
+                _animatedSprite?.Update(gameTime);
+                base.Update(gameTime);
+                return;
+            }
+
+            LoseHealthOverTime(dt);
+
+            if (_isEscaping)
+            {
+                RunAway(dt);
+                _animatedSprite?.Update(gameTime);
+                base.Update(gameTime);
+                return;
+            }
 
             bool hasCommandPosition = commandManager.TryGetFriendlyCommandPosition(this, out Vector2 commandTarget);
             Vector2 target = hasCommandPosition
@@ -136,6 +159,9 @@ namespace TheCure
 
         public override void OnCollision(GameObject tmp)
         {
+            if (_isEscaping)
+                return;
+
             if (tmp is Bullet bullet && bullet.IsHealing)
             {
                 if (!_healthBar.IsMaxHealth)
@@ -245,6 +271,72 @@ namespace TheCure
                 _velocity = Vector2.Zero;
 
             ((CircleCollider)collider).Center += _velocity * dt;
+        }
+
+        private void LoseHealthOverTime(float dt)
+        {
+            if (_healthBar == null || _healthLossPerSecond <= 0f)
+                return;
+
+            _healthBar.DecreaseHealth(_healthLossPerSecond * dt);
+        }
+
+        private void StartEscape()
+        {
+            if (_isEscaping)
+                return;
+
+            _isEscaping = true;
+            _escapeTarget = GetFurthestEscapeCorner();
+            SetState(FriendlyState.Run);
+        }
+
+        private Vector2 GetFurthestEscapeCorner()
+        {
+            var viewBounds = GameManager.Get().Camera.GetViewBounds();
+            var viewCenter = new Vector2(viewBounds.Center.X, viewBounds.Center.Y);
+
+            Vector2[] corners =
+            {
+                new(-2800f, -2200f),
+                new(2800f, -2200f),
+                new(-2800f, 2200f),
+                new(2800f, 2200f)
+            };
+
+            Vector2 furthestCorner = corners[0];
+            float furthestDistance = Vector2.DistanceSquared(viewCenter, furthestCorner);
+
+            for (var i = 1; i < corners.Length; i++)
+            {
+                float distance = Vector2.DistanceSquared(viewCenter, corners[i]);
+                if (distance > furthestDistance)
+                {
+                    furthestDistance = distance;
+                    furthestCorner = corners[i];
+                }
+            }
+
+            return furthestCorner;
+        }
+
+        private void RunAway(float dt)
+        {
+            var _collider = (CircleCollider)collider;
+            Vector2 position = _collider.Center;
+            Vector2 toTarget = _escapeTarget - position;
+            float distance = toTarget.Length();
+
+            if (distance <= EscapeRemoveDistance)
+            {
+                Destroy();
+                return;
+            }
+
+            toTarget = toTarget / distance;
+            float speed = Settings.GetValue(SettingsConst.PLAYER.MOVE_SPEED) * 2f;
+            _velocity = toTarget * speed;
+            _collider.Center += _velocity * dt;
         }
 
         private void UpdateState(Vector2 movement)
