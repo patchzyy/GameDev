@@ -8,7 +8,7 @@ namespace TheCure.Upgrades;
 public class SpikeTrapUnlockUpgrade : Upgrade
 {
     public string Name { get; } = "Spike Trap Unlock";
-    public string Description { get; } = "Unlock the Spike Trap for building";
+    public string Description { get; } = "Place a spike trap that damages enemies.";
     public Action Action { get; }
     public bool Unlocked { get; set; }
     public Upgrade RequiredUpgrade { get; set; } = null;

@@ -32,7 +32,7 @@ public class ScreenManager : Manager<ScreenManager>
     private Texture2D _tutorialPlayerTexture;
     private Texture2D _tutorialZombieTexture;
     private Texture2D _tutorialFriendlyTexture;
-    private Texture2D _tutorialThrowTexture;
+    private Texture2D _tutorialHealTexture;
     private Texture2D _tutorialDashTexture;
 
     private Button _resolutionDropdownButton;
@@ -86,7 +86,7 @@ public class ScreenManager : Manager<ScreenManager>
         _tutorialPlayerTexture = content.Load<Texture2D>("Character-Joe-Idle");
         _tutorialZombieTexture = content.Load<Texture2D>("Zombie-Atk");
         _tutorialFriendlyTexture = content.Load<Texture2D>("Character-Unknown-Idle");
-        _tutorialThrowTexture = content.Load<Texture2D>("Throw");
+        _tutorialHealTexture = content.Load<Texture2D>("Shoot");
         _tutorialDashTexture = content.Load<Texture2D>("Dash");
     }
 
@@ -171,7 +171,7 @@ public class ScreenManager : Manager<ScreenManager>
         int buttonWidth = 200;
         int buttonHeight = 50;
 
-        _startButton = new Button(new Rectangle(0, 0, buttonWidth, buttonHeight), "Start",
+        _startButton = new Button(new Rectangle(0, 0, buttonWidth, buttonHeight), "Start Game",
             ContentsManager.Get().ButtonFont);
         _quitButton = new Button(new Rectangle(0, 0, buttonWidth, buttonHeight), "Quit",
             ContentsManager.Get().ButtonFont);
@@ -180,7 +180,7 @@ public class ScreenManager : Manager<ScreenManager>
     
         _pauseQuitButton = new Button(new Rectangle(0, 0, buttonWidth, buttonHeight), "Quit",
             ContentsManager.Get().ButtonFont);
-        _restartButton = new Button(new Rectangle(0, 0, buttonWidth, buttonHeight), "Opnieuw spelen",
+        _restartButton = new Button(new Rectangle(0, 0, buttonWidth, buttonHeight), "Play Again",
             ContentsManager.Get().ButtonFont);
 
         _settingsButton = new Button(
@@ -195,7 +195,7 @@ public class ScreenManager : Manager<ScreenManager>
             new Rectangle(0, 0, buttonWidth, buttonHeight), "Back",
             ContentsManager.Get().ButtonFont);
 
-        _healSelectButton1 = new Button(new Rectangle(0, 0, buttonWidth, buttonHeight), "Heal Bomb als base",
+        _healSelectButton1 = new Button(new Rectangle(0, 0, buttonWidth, buttonHeight), "Heal Bomb as base",
             ContentsManager.Get().ButtonFont);
         _healSelectButton2 = new Button(new Rectangle(0, 0, buttonWidth, buttonHeight), "Instant heal",
             ContentsManager.Get().ButtonFont);
@@ -380,7 +380,7 @@ public class ScreenManager : Manager<ScreenManager>
             new Rectangle(0, 0, game.GraphicsDevice.Viewport.Width, game.GraphicsDevice.Viewport.Height),
             Color.White);
 
-        string title = "Kies je heal type";
+        string title = "Choose your healing type";
         Vector2 titleSize = content.TitleFont.MeasureString(title);
         spriteBatch.DrawString(content.TitleFont, title,
             new Vector2(game.GraphicsDevice.Viewport.Width / 2 - titleSize.X / 2, 150),
@@ -416,7 +416,7 @@ public class ScreenManager : Manager<ScreenManager>
 
         spriteBatch.DrawString(content.TitleFont, gameOverText, gameOverTextPosition, Color.Red);
 
-        string scoreText = $"Eindscore: {ScoreManager.Get().GetScore()}";
+        string scoreText = $"Final Score: {ScoreManager.Get().GetScore()}";
         Vector2 scoreTextSize = content.TitleFont.MeasureString(scoreText);
         float scale = 0.5f;
         Vector2 scoreTextPosition =
@@ -447,7 +447,7 @@ public class ScreenManager : Manager<ScreenManager>
             new Rectangle(0, 0, game.GraphicsDevice.Viewport.Width, game.GraphicsDevice.Viewport.Height),
             new Color(0, 0, 0, 100));
 
-        string pauseText = "Game gepauzeerd";
+        string pauseText = "Game Paused";
         Vector2 pauseTextSize = content.TitleFont.MeasureString(pauseText);
         float scale = 0.6f;
         Vector2 pauseTextPosition =
@@ -474,18 +474,18 @@ public class ScreenManager : Manager<ScreenManager>
 
         int centerXPaused = game.GraphicsDevice.Viewport.Width / 4;
 
-        spriteBatch.Draw(_tutorialThrowTexture, new Rectangle(centerXPaused - 450, 825, 64, 64), Color.White);
-        spriteBatch.DrawString(content.ButtonFont, "Wapen 1",
+        spriteBatch.Draw(_tutorialHealTexture, new Rectangle(centerXPaused - 450, 825, 64, 64), Color.White);
+        spriteBatch.DrawString(content.ButtonFont, "Primary Weapon",
             new Vector2(centerXPaused - 450, 900), Color.White);
 
         spriteBatch.Draw(_tutorialDashTexture, new Rectangle(centerXPaused - 350, 825, 64, 64), Color.White);
-        spriteBatch.DrawString(content.ButtonFont, "Wapen 2",
+        spriteBatch.DrawString(content.ButtonFont, "Dash",
             new Vector2(centerXPaused - 350, 900), Color.White);
 
         string controlsPaused =
-            @"WASD  - Bewegen
-MUIS  - Schieten
-1-2   - Wissel wapens";
+            @"WASD  - Move
+    M1 - Shoot
+    1-5   - Use abilities";
 
         spriteBatch.DrawString(content.ButtonFont, controlsPaused,
             new Vector2(centerXPaused - 450, 950), Color.White);
@@ -550,7 +550,7 @@ MUIS  - Schieten
             new Rectangle(centerX - 290, 360, 100, 100),
             playerSourceRect,
             Color.White);
-        spriteBatch.DrawString(content.ButtonFont, "Jij (Player)",
+        spriteBatch.DrawString(content.ButtonFont, "You (Player)",
             new Vector2(centerX - 300, 450), Color.White);
 
         int zombieFrameCount = 7;
@@ -574,29 +574,31 @@ MUIS  - Schieten
             new Rectangle(centerX + 135, 360, 100, 100),
             friendlySourceRect,
             Color.White);
-        spriteBatch.DrawString(content.ButtonFont, "Friendly (Helper)",
+        spriteBatch.DrawString(content.ButtonFont, "Friendly (Ally)",
             new Vector2(centerX + 100, 450), Color.White);
 
-        spriteBatch.DrawString(content.ButtonFont, "Schiet zombies -> maak friendlies",
+        spriteBatch.DrawString(content.ButtonFont, "Shoot zombies to convert them into friendlies.",
             new Vector2(centerX - 200, 550), Color.White);
+        spriteBatch.DrawString(content.ButtonFont, "Try to stay alive and get the highest score possible",
+            new Vector2(centerX - 270, 580), Color.White);
 
-        spriteBatch.Draw(_tutorialThrowTexture, new Rectangle(centerX - 150, 625, 64, 64), Color.White);
-        spriteBatch.DrawString(content.ButtonFont, "Wapen 1",
+        spriteBatch.Draw(_tutorialHealTexture, new Rectangle(centerX - 150, 625, 64, 64), Color.White);
+        spriteBatch.DrawString(content.ButtonFont, "Primary Weapon",
             new Vector2(centerX - 158, 700), Color.White);
 
         spriteBatch.Draw(_tutorialDashTexture, new Rectangle(centerX + 30, 625, 64, 64), Color.White);
-        spriteBatch.DrawString(content.ButtonFont, "Wapen 2",
+        spriteBatch.DrawString(content.ButtonFont, "Dash",
             new Vector2(centerX + 18, 700), Color.White);
 
         string controls =
-            @"WASD  - Bewegen
-MUIS  - Schieten
-1-2   - Wissel wapens";
+            @"WASD  - Move
+    M1 - Shoot
+    1-5   - Use abilities";
 
         spriteBatch.DrawString(content.ButtonFont, controls,
             new Vector2(centerX - 120, 775), Color.White);
 
-        string startText = "Druk op SPATIE om te starten";
+        string startText = "Press SPACE to start";
         Vector2 startSize = content.ButtonFont.MeasureString(startText);
 
         spriteBatch.DrawString(content.ButtonFont, startText,
