@@ -54,5 +54,24 @@ namespace TheCure
             return CurrentMouseState.RightButton == ButtonState.Pressed &&
                    LastMouseState.RightButton == ButtonState.Released;
         }
+
+        public bool IsBindingDown(InputBinding binding)
+        {
+            if (binding.IsKeyboard)
+                return CurrentKeyboardState.IsKeyDown(binding.Key!.Value);
+
+            if (binding.IsMouse)
+            {
+                return binding.Mouse switch
+                {
+                    MouseButton.Left => CurrentMouseState.LeftButton == ButtonState.Pressed,
+                    MouseButton.Right => CurrentMouseState.RightButton == ButtonState.Pressed,
+                    MouseButton.Middle => CurrentMouseState.MiddleButton == ButtonState.Pressed,
+                    _ => false
+                };
+            }
+
+            return false;
+        }
     }
 }
