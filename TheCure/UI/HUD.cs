@@ -12,6 +12,8 @@ namespace TheCure
         private SpriteFont _font;
         private Texture2D _dummyTexture;
         private Button _menuButton;
+        private Rectangle _statsPanelRect;
+        private const int HudVerticalOffset = 20;
 
         public void Load()
         {
@@ -54,68 +56,91 @@ namespace TheCure
 
         private void DrawHealthBar(SpriteBatch spriteBatch, GameManager gameManager)
         {
-            Vector2 playerCenter = PlayerManager.Get().Player.GetPosition();
-
-            Rectangle cameraBounds = gameManager.Camera.GetViewBounds();
-
-            Vector2 barPosition = new Vector2(
-                playerCenter.X - cameraBounds.X - 100,
-                playerCenter.Y - cameraBounds.Y - 80
-            );
-
             int barWidth = 200;
             int barHeight = 25;
-            barPosition.X = Math.Max(10,
-                Math.Min(barPosition.X, gameManager.Game.GraphicsDevice.Viewport.Width - barWidth - 20));
-            barPosition.Y = Math.Max(10,
-                Math.Min(barPosition.Y, gameManager.Game.GraphicsDevice.Viewport.Height - 100));
 
-            int panelWidth = barWidth + 20;
-            int panelHeight = barHeight + 40;
+            int spacing = 25;
+
+            Vector2 basePosition = new Vector2(
+                _statsPanelRect.X + (_statsPanelRect.Width - barWidth) / 2,
+                _statsPanelRect.Y - barHeight - spacing
+            );
 
             if (gameManager.CurrentGameState == GameState.Paused)
             {
-                barPosition = new Vector2(15, 15);
+                basePosition = new Vector2(15, 15);
             }
 
-            spriteBatch.Draw(_dummyTexture,
-                new Rectangle((int)barPosition.X - 10, (int)barPosition.Y - 25, panelWidth, panelHeight),
-                new Color(20, 30, 20, 220));
+            Rectangle barRect = new Rectangle(
+                (int)basePosition.X,
+                (int)basePosition.Y,
+                barWidth,
+                barHeight
+            );
+            
+            Rectangle panelRect = new Rectangle(
+                barRect.X - 10,
+                barRect.Y - 25,
+                barRect.Width + 20,
+                barRect.Height + 40
+            );
 
-            int panelX = (int)barPosition.X - 10;
-            int panelY = (int)barPosition.Y - 25;
+            spriteBatch.Draw(_dummyTexture, panelRect, new Color(20, 30, 20, 170));
+
             Color borderColor = new Color(100, 255, 100, 200);
-            spriteBatch.Draw(_dummyTexture, new Rectangle(panelX, panelY, panelWidth, 2), borderColor);
-            spriteBatch.Draw(_dummyTexture, new Rectangle(panelX, panelY + panelHeight - 2, panelWidth, 2), borderColor);
-            spriteBatch.Draw(_dummyTexture, new Rectangle(panelX, panelY, 2, panelHeight), borderColor);
-            spriteBatch.Draw(_dummyTexture, new Rectangle(panelX + panelWidth - 2, panelY, 2, panelHeight), borderColor);
 
-            Vector2 labelSize = _font.MeasureString("HEALTH");
-            spriteBatch.DrawString(_font, "HEALTH", new Vector2(panelX + 10, panelY + 5),
-                new Color(100, 255, 100, 255));
+            spriteBatch.Draw(_dummyTexture, new Rectangle(panelRect.X, panelRect.Y, panelRect.Width, 2), borderColor);
+            spriteBatch.Draw(_dummyTexture, new Rectangle(panelRect.X, panelRect.Y + panelRect.Height - 2, panelRect.Width, 2), borderColor);
+            spriteBatch.Draw(_dummyTexture, new Rectangle(panelRect.X, panelRect.Y, 2, panelRect.Height), borderColor);
+            spriteBatch.Draw(_dummyTexture, new Rectangle(panelRect.X + panelRect.Width - 2, panelRect.Y, 2, panelRect.Height), borderColor);
 
-            spriteBatch.Draw(_dummyTexture,
-                new Rectangle((int)barPosition.X, (int)barPosition.Y, barWidth, barHeight),
-                new Color(50, 50, 60, 255));
+            spriteBatch.DrawString(
+                _font,
+                "HEALTH",
+                new Vector2(panelRect.X + 10, panelRect.Y + 5),
+                new Color(100, 255, 100, 255)
+            );
 
-            float healthRatio = PlayerManager.Get().Player.CurrentHealth() / PlayerManager.Get().Player._maxHealth;
-            Color healthColor = healthRatio > 0.5f ? new Color(34, 177, 76, 255) :
-                healthRatio > 0.2f ? new Color(255, 193, 7, 255) :
-                new Color(244, 67, 54, 255);
+            spriteBatch.Draw(
+                _dummyTexture,
+                barRect,
+                new Color(50, 50, 60, 185)
+            );
 
-            spriteBatch.Draw(_dummyTexture,
-                new Rectangle((int)barPosition.X, (int)barPosition.Y, (int)(barWidth * healthRatio), barHeight),
-                healthColor);
+            float healthRatio =
+                PlayerManager.Get().Player.CurrentHealth() /
+                PlayerManager.Get().Player._maxHealth;
+
+            Color healthColor =
+                healthRatio > 0.5f ? new Color(34, 177, 76, 175) :
+                healthRatio > 0.2f ? new Color(255, 193, 7, 185) :
+                                     new Color(244, 67, 54, 185);
+            spriteBatch.Draw(
+                _dummyTexture,
+                new Rectangle(
+                    barRect.X,
+                    barRect.Y,
+                    (int)(barRect.Width * healthRatio),
+                    barRect.Height
+                ),
+                healthColor
+            );
 
             string healthText =
                 $"{PlayerManager.Get().Player.CurrentHealth():F0} / {PlayerManager.Get().Player._maxHealth:F0}";
-            Vector2 healthTextSize = _font.MeasureString(healthText);
-            spriteBatch.DrawString(_font, healthText,
-                new Vector2(barPosition.X + barWidth / 2 - healthTextSize.X / 2,
-                    barPosition.Y + barHeight / 2 - healthTextSize.Y / 2),
-                Color.White);
-        }
 
+            Vector2 textSize = _font.MeasureString(healthText);
+
+            spriteBatch.DrawString(
+                _font,
+                healthText,
+                new Vector2(
+                    barRect.X + barRect.Width / 2 - textSize.X / 2,
+                    barRect.Y + barRect.Height / 2 - textSize.Y / 2
+                ),
+                Color.White
+            );
+        }
         private void DrawTimer(SpriteBatch spriteBatch, GameManager gameManager)
         {
             float time = gameManager.GetGameTime();
@@ -231,44 +256,57 @@ namespace TheCure
             int screenWidth = gameManager.Game.GraphicsDevice.Viewport.Width;
             int screenHeight = gameManager.Game.GraphicsDevice.Viewport.Height;
 
+            int hudOffsetY = 50;
+
             int panelX = screenWidth - panelWidth - 15;
-            int panelY = screenHeight - panelHeight - 15;
+            int panelY = screenHeight - panelHeight - 15 - hudOffsetY;
 
-            Rectangle panelRect = new Rectangle(panelX, panelY, panelWidth, panelHeight);
+            _statsPanelRect = new Rectangle(panelX, panelY, panelWidth, panelHeight);
+            Rectangle panelRect = _statsPanelRect;
 
-            spriteBatch.Draw(_dummyTexture, panelRect, new Color(20, 30, 40, 220));
+            spriteBatch.Draw(_dummyTexture, panelRect, new Color(20, 30, 40, 170));
 
             Color borderColor = new Color(100, 255, 100, 200);
-            spriteBatch.Draw(_dummyTexture, new Rectangle(panelX, panelY, panelWidth, 2), borderColor);
-            spriteBatch.Draw(_dummyTexture, new Rectangle(panelX, panelY + panelHeight - 2, panelWidth, 2),
-                borderColor);
-            spriteBatch.Draw(_dummyTexture, new Rectangle(panelX, panelY, 2, panelHeight), borderColor);
-            spriteBatch.Draw(_dummyTexture, new Rectangle(panelX + panelWidth - 2, panelY, 2, panelHeight),
-                borderColor);
 
-            spriteBatch.DrawString(_font, "STATS",
-                new Vector2(panelX + panelPadding, panelY + 5),
-                new Color(100, 255, 100, 255));
+            spriteBatch.Draw(_dummyTexture, new Rectangle(panelRect.X, panelRect.Y, panelRect.Width, 2), borderColor);
+            spriteBatch.Draw(_dummyTexture, new Rectangle(panelRect.X, panelRect.Y + panelRect.Height - 2, panelRect.Width, 2), borderColor);
+            spriteBatch.Draw(_dummyTexture, new Rectangle(panelRect.X, panelRect.Y, 2, panelRect.Height), borderColor);
+            spriteBatch.Draw(_dummyTexture, new Rectangle(panelRect.X + panelRect.Width - 2, panelRect.Y, 2, panelRect.Height), borderColor);
 
-            spriteBatch.Draw(_dummyTexture,
-                new Rectangle(panelX + panelPadding, panelY + titleHeight - 2, panelWidth - panelPadding * 2, 1),
-                new Color(100, 255, 100, 150));
+            spriteBatch.DrawString(
+                _font,
+                "STATS",
+                new Vector2(panelRect.X + panelPadding, panelRect.Y + 5),
+                new Color(100, 255, 100, 255)
+            );
+
+            spriteBatch.Draw(
+                _dummyTexture,
+                new Rectangle(panelRect.X + panelPadding, panelRect.Y + titleHeight - 2, panelWidth - panelPadding * 2, 1),
+                new Color(100, 255, 100, 150)
+            );
 
             int offsetY = titleHeight + 5;
+
             foreach (var stat in stats)
             {
                 spriteBatch.DrawString(
                     _font,
                     stat.Label,
-                    new Vector2(panelX + panelPadding, panelY + offsetY),
-                    new Color(180, 180, 180, 255));
+                    new Vector2(panelRect.X + panelPadding, panelRect.Y + offsetY),
+                    new Color(180, 180, 180, 255)
+                );
 
                 spriteBatch.DrawString(
                     _font,
                     stat.Value,
-                    new Vector2(panelX + panelWidth - panelPadding - _font.MeasureString(stat.Value).X,
-                        panelY + offsetY),
-                    new Color(100, 255, 200, 255));
+                    new Vector2(
+                        panelRect.X + panelWidth - panelPadding - _font.MeasureString(stat.Value).X,
+                        panelRect.Y + offsetY
+                    ),
+                    new Color(100, 255, 200, 255)
+                );
+
                 offsetY += lineHeight;
             }
         }
