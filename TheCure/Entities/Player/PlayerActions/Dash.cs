@@ -30,21 +30,9 @@ public class Dash : PlayerAction
         if (player == null)
             return;
 
-        var gameManager = GameManager.Get();
-        Point mousePosition = InputManager.Get().CurrentMouseState.Position;
-        Vector2 worldMousePosition = gameManager.ScreenToWorld(mousePosition.ToVector2());
-        Vector2 playerCenter = player.GetPosition();
-
-        Vector2 directionToMouse = worldMousePosition - playerCenter;
-        if (directionToMouse.LengthSquared() < 10000)
-        {
+        _dashDirection = player.FacingDirection;
+        if (_dashDirection == Vector2.Zero)
             _dashDirection = new Vector2((float)Math.Cos(player._rotation), (float)Math.Sin(player._rotation));
-        }
-        else
-        {
-            directionToMouse.Normalize();
-            _dashDirection = directionToMouse;
-        }
 
         _isDashing = true;
         _dashTimer = DashDuration;
