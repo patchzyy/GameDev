@@ -13,40 +13,41 @@ public class PlayerActionsManager :Manager<PlayerActionsManager>
     private int _scale;
     private SpriteFont _font;
 
-    private Keys _shootKey;
+    private InputBinding _shootBinding;
     private PlayerAction _shoot;
 
-    private Keys _dashKey;
+    private InputBinding _dashBinding;
     private Dash _dash;
 
-    private List<Keys> _actionKeys;
+    private List<InputBinding> _actionBindings;
     private List<PlayerAction> _actions;
 
-    private Dictionary<PlayerAction, Keys> _actionKeyMap;
+    private Dictionary<PlayerAction, InputBinding> _actionBindingMap;
 
 
     public PlayerActionsManager()
     {
         _scale = 5;
-        _shootKey = Settings.GetValue(SettingsConst.KEY_BINDS.ACTION_1);
         _shoot = new ShootMode("Shoot");
 
-        _dashKey = Settings.GetValue(SettingsConst.KEY_BINDS.ACTION_2);
+        _shootBinding = Settings.GetValue(SettingsConst.KEY_BINDS.SHOOT);
+
+        _dashBinding = Settings.GetValue(SettingsConst.KEY_BINDS.DASH);
         _dash = new Dash("Dash");
 
-        _actionKeys = new List<Keys>
+        _actionBindings = new List<InputBinding>
         {
+            Settings.GetValue(SettingsConst.KEY_BINDS.ACTION_1),
+            Settings.GetValue(SettingsConst.KEY_BINDS.ACTION_2),
             Settings.GetValue(SettingsConst.KEY_BINDS.ACTION_3),
             Settings.GetValue(SettingsConst.KEY_BINDS.ACTION_4),
             Settings.GetValue(SettingsConst.KEY_BINDS.ACTION_5),
-            Settings.GetValue(SettingsConst.KEY_BINDS.ACTION_6),
-            Settings.GetValue(SettingsConst.KEY_BINDS.ACTION_7),
         };
 
-        _actionKeyMap = new Dictionary<PlayerAction, Keys>()
+        _actionBindingMap = new Dictionary<PlayerAction, InputBinding>()
         {
-            { _shoot, _shootKey },
-            { _dash, _dashKey },
+            { _shoot, _shootBinding },
+            { _dash, _dashBinding },
         };
 
         _actions = new List<PlayerAction>();
@@ -65,9 +66,9 @@ public class PlayerActionsManager :Manager<PlayerActionsManager>
 
     public void AddAction(PlayerAction action)
     {
-        if (_actionKeys.Count == _actions.Count) return;
+        if (_actionBindings.Count == _actions.Count) return;
 
-        _actionKeyMap.Add(action, _actionKeys[_actions.Count]);
+        _actionBindingMap.Add(action, _actionBindings[_actions.Count]);
         _actions.Add(action);
         action.Load();
     }
@@ -80,13 +81,13 @@ public class PlayerActionsManager :Manager<PlayerActionsManager>
     public void Reset()
     {
         _actions.Clear();
-        _actionKeyMap = new Dictionary<PlayerAction, Keys>()
+        _actionBindingMap = new Dictionary<PlayerAction, InputBinding>()
         {
-            { _shoot, _shootKey },
-            { _dash, _dashKey },
+            { _shoot, _shootBinding },
+            { _dash, _dashBinding },
         };
 
-        foreach (var action in _actionKeyMap.Keys)
+        foreach (var action in _actionBindingMap.Keys)
         {
             action.ResetCoolDown();
         }
@@ -95,21 +96,18 @@ public class PlayerActionsManager :Manager<PlayerActionsManager>
 
     public void Update(GameTime gameTime)
     {
-        var kbState = InputManager.Get().LastKeyboardState;
+        var input = InputManager.Get();
 
-        foreach (var pair in _actionKeyMap)
+        foreach (var pair in _actionBindingMap)
         {
-            var action = pair.Key;
-            var key = pair.Value;
-
-            if (!kbState.IsKeyDown(key))
+            if (!input.IsBindingDown(pair.Value))
                 continue;
 
-            action.Execute(gameTime);
+            pair.Key.Execute(gameTime);
             break;
         }
 
-        foreach (var action in _actionKeyMap.Keys)
+        foreach (var action in _actionBindingMap.Keys)
         {
             action.Update(gameTime);
         }
@@ -190,13 +188,18 @@ public class PlayerActionsManager :Manager<PlayerActionsManager>
         DrawIcon(spriteBatch,  panelRect.X, panelRect.Y, panelWidth, panelHeight,
             action.GetIconTexture());
 
-        InputPanel(spriteBatch,  panelRect.X + panelWidth - 4 * _scale,
-            panelRect.Y + _scale, _actionKeyMap[action]);
+        if (!_actionBindingMap.TryGetValue(action, out var binding))
+            return;
+
+        InputPanel(spriteBatch,
+            panelRect.X + panelWidth - 4 * _scale,
+            panelRect.Y + _scale,
+            binding.ToDisplayString());
 
         CoolDownPanel(spriteBatch,  panelRect.X, panelRect.Y, panelWidth, panelHeight, action);
     }
 
-    private void InputPanel(SpriteBatch spriteBatch, int x, int y, Keys key)
+    private void InputPanel(SpriteBatch spriteBatch, int x, int y, string text)
     {
         int panelWidth = 3 * _scale;
         int panelHeight = 3 * _scale;
@@ -220,7 +223,6 @@ public class PlayerActionsManager :Manager<PlayerActionsManager>
 
         var position = new Vector2(panelRect.X + _scale, panelRect.Y + (_scale / 2));
 
-        string text = FormatKey(key);
         spriteBatch.DrawString(_font, text, position, new Color(0, 0, 0, 255));
     }
 
@@ -256,12 +258,5 @@ public class PlayerActionsManager :Manager<PlayerActionsManager>
             iconHeight
         );
         spriteBatch.Draw(icon, iconRect, Color.White);
-    }
-
-
-    private string FormatKey(Keys key)
-    {
-        string keyName = key.ToString();
-        return keyName.StartsWith("D") ? keyName[1..] : keyName;
     }
 }
