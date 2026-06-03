@@ -33,6 +33,7 @@ namespace TheCure
             { SettingsConst.FRIENDLY.START_HEALTH, 100f },
             { SettingsConst.FRIENDLY.MAX_HEALTH, 100f },
             { SettingsConst.FRIENDLY.ATTACK_DAMAGE, 10f },
+            { SettingsConst.FRIENDLY.HEALTH_LOSS_PER_SECOND, 2f },
             { SettingsConst.FRIENDLY.SIZE, 1f },
             { SettingsConst.FRIENDLY.RADIUS, 20f },
             { SettingsConst.FRIENDLY.START_WEAPON, FriendlyWeapons.HandGun },

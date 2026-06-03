@@ -44,6 +44,7 @@ namespace TheCure
             public static readonly SettingKey<float> START_HEALTH = new(_group, "START_HEALTH");
             public static readonly SettingKey<float> MAX_HEALTH = new(_group, "MAX_HEALTH");
             public static readonly SettingKey<float> ATTACK_DAMAGE = new(_group, "ATTACK_DAMAGE");
+            public static readonly SettingKey<float> HEALTH_LOSS_PER_SECOND = new(_group, "HEALTH_LOSS_PER_SECOND");
             public static readonly SettingKey<float> SIZE = new(_group, "SIZE");
             public static readonly SettingKey<float> FOLLOW_DISTANCE = new(_group, "FOLLOW_DISTANCE");
             public static readonly SettingKey<BaseWeapon> START_WEAPON = new(_group, "START_WEAPON");
