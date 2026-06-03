@@ -8,7 +8,7 @@ namespace TheCure.Passives;
 public class HealthPassiveUpgrade : Upgrade
 {
     public string Name { get; } = "Health Passive";
-    public string Description { get; } = "Increase max health by 5";
+    public string Description { get; } = "Permanently increase max health by 5";
     public Action Action { get; }
     public bool Unlocked { get; set; }
     public Upgrade RequiredUpgrade { get; set; } = null;

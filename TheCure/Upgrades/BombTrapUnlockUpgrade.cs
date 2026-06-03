@@ -8,7 +8,7 @@ namespace TheCure.Upgrades;
 public class BombTrapUnlockUpgrade : Upgrade
 {
     public string Name { get; } = "Bomb Trap Unlock";
-    public string Description { get; } = "Unlock the Bomb Trap for building";
+    public string Description { get; } = "Place a bomb trap that explodes, dealing area damage.";
     public Action Action { get; }
     public bool Unlocked { get; set; }
     public UpgradeType Type { get; } = UpgradeType.Action;

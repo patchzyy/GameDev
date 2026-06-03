@@ -8,7 +8,7 @@ namespace TheCure.Upgrades;
 public class ElectricTrapUnlockUpgrade : Upgrade
 {
     public string Name { get; } = "Electric Trap Unlock";
-    public string Description { get; } = "Unlock the Electric Trap for building";
+    public string Description { get; } = "Place an electric trap that shocks nearby enemies.";
     public Action Action { get; }
     public bool Unlocked { get; set; }
     public Upgrade RequiredUpgrade { get; set; } = null;

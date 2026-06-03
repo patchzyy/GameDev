@@ -8,7 +8,7 @@ namespace TheCure.Upgrades;
 public class BoostUnlockUpgrade : Upgrade
 {
     public string Name { get; } = "Boost Unlock";
-    public string Description { get; } = "Unlock the Boost action for your friendlies";
+    public string Description { get; } = "Unlock the Boost action for your friendlies, making them faster and more powerful for a short time.";
     public Action Action { get; }
     public bool Unlocked { get; set; }
     public UpgradeType Type { get; } = UpgradeType.Action;

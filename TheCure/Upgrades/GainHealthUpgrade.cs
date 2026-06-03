@@ -7,7 +7,7 @@ namespace TheCure.Upgrades;
 public class GainHealthUpgrade : Upgrade
 {
     public string Name { get; } = "Gain Health";
-    public string Description { get; } = "Gain 10 health";
+    public string Description { get; } = "Restore 10 health.";
     public Action Action { get; }
     public bool Unlocked { get; set; }
     public Upgrade RequiredUpgrade { get; set; } = null;
