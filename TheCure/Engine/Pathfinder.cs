@@ -14,9 +14,9 @@ namespace TheCure
         public bool IsWalkable;
         
         // Voor A*
-        public int GCost;
-        public int HCost;
-        public int FCost => GCost + HCost;
+        public float GCost;
+        public float HCost;
+        public float FCost => GCost + HCost;
         public PathNode Parent;
 
         public PathNode(int gridX, int gridY, bool isWalkable)
@@ -96,7 +96,7 @@ namespace TheCure
             {
                 for (int y = 0; y < _gridHeight; y++)
                 {
-                    _grid[x, y].GCost = int.MaxValue;
+                    _grid[x, y].GCost = float.MaxValue;
                     _grid[x, y].Parent = null;
                 }
             }
@@ -136,7 +136,7 @@ namespace TheCure
                         continue;
                     
 
-                    int newMovementCost = currentNode.GCost + GetDistance(currentNode, neighbor);
+                    float newMovementCost = currentNode.GCost + GetDistance(currentNode, neighbor);
                     if (newMovementCost < neighbor.GCost || !openList.Contains(neighbor))
                     {
 
@@ -157,11 +157,11 @@ namespace TheCure
         {
             List<PathNode> neighbors = new List<PathNode>();
 
-            // simpel 4
-            int[] dx = { 0, 1, 0, -1 };
-            int[] dy = { -1, 0, 1, 0 };
+            // simpel 8 richtingen
+            int[] dx = { -1, 0, 1, -1, 1, -1, 0, 1 };
+            int[] dy = { -1, -1, -1, 0, 0, 1, 1, 1 };
 
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 8; i++)
             {
                 int checkX = node.GridX + dx[i];
                 int checkY = node.GridY + dy[i];
@@ -175,12 +175,12 @@ namespace TheCure
             return neighbors;
         }
 
-        private static int GetDistance(PathNode nodeA, PathNode nodeB)
+        private static float GetDistance(PathNode nodeA, PathNode nodeB)
         {
             int dstX = Math.Abs(nodeA.GridX - nodeB.GridX);
             int dstY = Math.Abs(nodeA.GridY - nodeB.GridY);
-            // Manhattan distance zoals in de les
-            return dstX + dstY;
+            // Cartesian distance
+            return MathF.Sqrt(dstX * dstX + dstY * dstY);
         }
 
         private static List<Vector2> RetracePath(PathNode startNode, PathNode endNode)
