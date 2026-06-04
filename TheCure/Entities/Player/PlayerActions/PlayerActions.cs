@@ -29,6 +29,8 @@ namespace TheCure.PlayerActions
 
         public virtual void Update(GameTime gameTime)
         {
+            if (GameManager.Get().CurrentGameState != GameState.Playing)
+                return;
             _remainingCoolDown -= (float)gameTime.ElapsedGameTime.TotalSeconds;
             _remainingCoolDown = _remainingCoolDown < 0f ? 0f : _remainingCoolDown;
         }
@@ -40,6 +42,9 @@ namespace TheCure.PlayerActions
 
         public virtual void Execute(GameTime gameTime)
         {
+            if (GameManager.Get().CurrentGameState != GameState.Playing)
+                return;
+
             if (_remainingCoolDown > 0f)
                 return;
 
