@@ -8,7 +8,7 @@ namespace TheCure.Upgrades;
 public class HealBombTrapUnlockUpgrade : Upgrade
 {
     public string Name { get; } = "Heal Bomb Trap Unlock";
-    public string Description { get; } = "Unlock the Heal Bomb Trap for building";
+    public string Description { get; } = "Place a heal bomb trap that heals your friendly units.";
     public Action Action { get; }
     public bool Unlocked { get; set; }
     public Upgrade RequiredUpgrade { get; set; } = null;

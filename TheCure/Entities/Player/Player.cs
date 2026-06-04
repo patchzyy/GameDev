@@ -14,11 +14,10 @@ namespace TheCure
         public Vector2 FacingDirection = Vector2.Zero;
 
         public WeaponsSystem WeaponsSystem = new WeaponsSystem();
+        private InputBinding _shootBinding;
 
         private PlayerAnimationState _currentState;
         private float _hitTimer = 0f;
-
-        public Keys _fireKey;
 
         public Player(Vector2 position) : base(
             textureName: "Character-Joe-Idle",
@@ -33,7 +32,7 @@ namespace TheCure
         {
             collider = new CircleCollider(position, 10f);
             SetCollider(collider);
-            _fireKey = Settings.GetValue(SettingsConst.KEY_BINDS.ACTION_1);
+            _shootBinding = Settings.GetValue(SettingsConst.KEY_BINDS.SHOOT);
 
             _velocity = Vector2.Zero;
             _rotation = 0f;
@@ -69,10 +68,8 @@ namespace TheCure
             base.HandleInput();
 
             KeyboardState keyState = Keyboard.GetState();
-            if (keyState.IsKeyDown(_fireKey))
-            {
+            if (InputManager.Get().IsBindingDown(_shootBinding))
                 WeaponsSystem.Fire();
-            }
 
             Vector2 moveDirection = Vector2.Zero;
 

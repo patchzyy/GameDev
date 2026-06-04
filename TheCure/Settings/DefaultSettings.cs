@@ -33,6 +33,7 @@ namespace TheCure
             { SettingsConst.FRIENDLY.START_HEALTH, 100f },
             { SettingsConst.FRIENDLY.MAX_HEALTH, 100f },
             { SettingsConst.FRIENDLY.ATTACK_DAMAGE, 10f },
+            { SettingsConst.FRIENDLY.HEALTH_LOSS_PER_SECOND, 2f },
             { SettingsConst.FRIENDLY.SIZE, 1f },
             { SettingsConst.FRIENDLY.RADIUS, 20f },
             { SettingsConst.FRIENDLY.START_WEAPON, FriendlyWeapons.HandGun },
@@ -46,14 +47,15 @@ namespace TheCure
             { SettingsConst.VIDEO.DISPLAY_MODE, DisplayModeSetting.Windowed },
 
             // KEY BINDS
-            //PLAYER ACTIONS
-            { SettingsConst.KEY_BINDS.ACTION_1, Keys.D1 },
-            { SettingsConst.KEY_BINDS.ACTION_2, Keys.D2 },
-            { SettingsConst.KEY_BINDS.ACTION_3, Keys.D3 },
-            { SettingsConst.KEY_BINDS.ACTION_4, Keys.D4 },
-            { SettingsConst.KEY_BINDS.ACTION_5, Keys.D5 },
-            { SettingsConst.KEY_BINDS.ACTION_6, Keys.D6 },
-            { SettingsConst.KEY_BINDS.ACTION_7, Keys.D7 },
+            // PLAYER ACTIONS
+            { SettingsConst.KEY_BINDS.SHOOT, InputBinding.FromMouse(MouseButton.Left) },
+            { SettingsConst.KEY_BINDS.DASH, InputBinding.FromKey(Keys.LeftShift) },
+
+            { SettingsConst.KEY_BINDS.ACTION_1, InputBinding.FromKey(Keys.D1) },
+            { SettingsConst.KEY_BINDS.ACTION_2, InputBinding.FromKey(Keys.D2) },
+            { SettingsConst.KEY_BINDS.ACTION_3, InputBinding.FromKey(Keys.D3) },
+            { SettingsConst.KEY_BINDS.ACTION_4, InputBinding.FromKey(Keys.D4) },
+            { SettingsConst.KEY_BINDS.ACTION_5, InputBinding.FromKey(Keys.D5) },
         };
     }
 }

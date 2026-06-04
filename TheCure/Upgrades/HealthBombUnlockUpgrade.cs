@@ -8,7 +8,7 @@ namespace TheCure.Upgrades;
 public class HealthBombUnlockUpgrade : Upgrade
 {
     public string Name { get; } = "Health Bomb Unlock";
-    public string Description { get; } = "Unlock the Health Bomb action";
+    public string Description { get; } = "Throw a health bomb to heal everyone in an area.";
     public Action Action { get; }
     public bool Unlocked { get; set; }
     public Upgrade RequiredUpgrade { get; set; } = null;

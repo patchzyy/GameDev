@@ -44,6 +44,7 @@ namespace TheCure
             public static readonly SettingKey<float> START_HEALTH = new(_group, "START_HEALTH");
             public static readonly SettingKey<float> MAX_HEALTH = new(_group, "MAX_HEALTH");
             public static readonly SettingKey<float> ATTACK_DAMAGE = new(_group, "ATTACK_DAMAGE");
+            public static readonly SettingKey<float> HEALTH_LOSS_PER_SECOND = new(_group, "HEALTH_LOSS_PER_SECOND");
             public static readonly SettingKey<float> SIZE = new(_group, "SIZE");
             public static readonly SettingKey<float> FOLLOW_DISTANCE = new(_group, "FOLLOW_DISTANCE");
             public static readonly SettingKey<BaseWeapon> START_WEAPON = new(_group, "START_WEAPON");
@@ -70,13 +71,14 @@ namespace TheCure
             private static string _group = "KEY_BINDS";
 
             // PLAYER ACTIONS
-            public static readonly SettingKey<Keys> ACTION_1 = new(_group, "ACTION_1");
-            public static readonly SettingKey<Keys> ACTION_2 = new(_group, "ACTION_2");
-            public static readonly SettingKey<Keys> ACTION_3 = new(_group, "ACTION_3");
-            public static readonly SettingKey<Keys> ACTION_4 = new(_group, "ACTION_4");
-            public static readonly SettingKey<Keys> ACTION_5 = new(_group, "ACTION_5");
-            public static readonly SettingKey<Keys> ACTION_6 = new(_group, "ACTION_6");
-            public static readonly SettingKey<Keys> ACTION_7 = new(_group, "ACTION_7");
+            public static readonly SettingKey<InputBinding> SHOOT = new(_group, "SHOOT");
+            public static readonly SettingKey<InputBinding> DASH = new(_group, "DASH");
+
+            public static readonly SettingKey<InputBinding> ACTION_1 = new(_group, "ACTION_1");
+            public static readonly SettingKey<InputBinding> ACTION_2 = new(_group, "ACTION_2");
+            public static readonly SettingKey<InputBinding> ACTION_3 = new(_group, "ACTION_3");
+            public static readonly SettingKey<InputBinding> ACTION_4 = new(_group, "ACTION_4");
+            public static readonly SettingKey<InputBinding> ACTION_5 = new(_group, "ACTION_5");
         }
     }
 }
