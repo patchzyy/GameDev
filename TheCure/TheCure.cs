@@ -81,13 +81,15 @@ namespace TheCure
 
             if (currentKeyboardState.IsKeyDown(Keys.Escape) && !_isEscapeKeyPressed)
             {
-                if (_gameManager.CurrentGameState == GameState.Playing)
+                if (_gameManager.CurrentGameState == GameState.Playing ||
+                    _gameManager.CurrentGameState == GameState.Upgrade ||
+                    _gameManager.CurrentGameState == GameState.PassiveUpgrade)
                 {
-                    _gameManager.SetGameState(GameState.Paused);
+                    _gameManager.PauseGame();
                 }
                 else if (_gameManager.CurrentGameState == GameState.Paused)
                 {
-                    _gameManager.SetGameState(GameState.Playing);
+                    _gameManager.ResumeGame();
                 }
                 else if (_gameManager.CurrentGameState == GameState.StartScreen)
                 {
