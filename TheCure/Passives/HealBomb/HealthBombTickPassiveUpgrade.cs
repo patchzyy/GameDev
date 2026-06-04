@@ -9,7 +9,11 @@ public class HealthBombTickPassiveUpgrade : Upgrade
     public UpgradeType Type { get; } = UpgradeType.Passive;
     public Upgrade RequiredUpgrade { get; set; }
     public bool UnlockedOnce { get; set; }
-    
+        
+    public HealthBombTickPassiveUpgrade()
+    {
+        RequiredUpgrade = new HealBombTrapUnlockUpgrade();
+    }
     public void Unlock(List<Upgrade> unlockedUpgrades)
     {
         Settings.UpgradeValue(SettingsConst.HEAL_BOMB.TICKS, 1);

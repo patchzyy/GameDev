@@ -76,6 +76,11 @@ public class UpgradeManager : Manager<UpgradeManager>
         _scoreUpgradeStep = ScoreUpgradeStep;
         _upgradesUI.Reset();
     }
+    
+    public List<Upgrade> GetUnlockedActions()
+    {
+        return _unlockedActions;
+    }
 
     public void PickRandomUpgrade()
     {

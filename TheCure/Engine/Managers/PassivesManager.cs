@@ -48,13 +48,16 @@ public class PassivesManager : Manager<PassivesManager>
 
     public void PickRandomUpgrade()
     {
+        var actions = UpgradeManager.Get().GetUnlockedActions();
+        
         _selectedUpgrades.Clear();
         _upgradesUI.Reset();
         SoundManager.Get().PlayUpgradeUnlock();
 
         var random = new Random();
         var selectableUpgrades = _availableUpgrades.FindAll(upgrade =>
-            upgrade.RequiredUpgrade == null || _unlockedUpgrades.Contains(upgrade.RequiredUpgrade));
+            upgrade.RequiredUpgrade == null ||
+            actions.Exists(action => action.GetType() == upgrade.RequiredUpgrade.GetType()));
 
         while (selectableUpgrades.Count < 4)
         {

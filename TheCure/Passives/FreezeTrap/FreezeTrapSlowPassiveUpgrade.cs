@@ -10,6 +10,11 @@ public class FreezeTrapSlowPassiveUpgrade : Upgrade
     public UpgradeType Type { get; } = UpgradeType.Passive;
     public bool UnlockedOnce { get; set; } = true;
 
+    public FreezeTrapSlowPassiveUpgrade()
+    {
+        RequiredUpgrade = new FreezeTrapUnlockUpgrade();
+    }
+
     public void Unlock(List<Upgrade> unlockedUpgrades)
     {
         Settings.UpgradeValue(SettingsConst.FREEZE_TRAP.SLOW_FACTOR, 0.1f);

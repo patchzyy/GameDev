@@ -10,6 +10,11 @@ public class HealthBombHealingPassiveUpgrade : Upgrade
     public Upgrade RequiredUpgrade { get; set; }
     public bool UnlockedOnce { get; set; }
     
+    public HealthBombHealingPassiveUpgrade()
+    {
+        RequiredUpgrade = new HealBombTrapUnlockUpgrade();
+    }
+    
     public void Unlock(List<Upgrade> unlockedUpgrades)
     {
         Settings.UpgradeValue(SettingsConst.HEAL_BOMB.HEALING, 5f);

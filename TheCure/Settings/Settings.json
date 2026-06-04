@@ -5,12 +5,10 @@
   "SINGLE_BULLET_WEAPON": {
     "DAMAGE": 10
   },
-  "VIDEO": {
-    "WIDTH": 1920,
-    "HEIGHT": 1080,
-    "DISPLAY_MODE": 2
-  },
   "HEAL_BOMB": {
     "HEALING": 25
+  },
+  "FREEZE_TRAP": {
+    "DURATION": 2.7
   }
 }
