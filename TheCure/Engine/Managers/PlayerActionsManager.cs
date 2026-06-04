@@ -104,7 +104,6 @@ public class PlayerActionsManager :Manager<PlayerActionsManager>
                 continue;
 
             pair.Key.Execute(gameTime);
-            break;
         }
 
         foreach (var action in _actionBindingMap.Keys)
