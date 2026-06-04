@@ -18,6 +18,6 @@ public class HealthBombTickUpgrade : Upgrade
     
     public void Unlock(List<Upgrade> unlockedUpgrades)
     {
-        WeaponManager.Get().UpgradeHealBombTicks(1);
+        WeaponManager.Get().HealBomb.UpgradeTicks(1);
     }
 }

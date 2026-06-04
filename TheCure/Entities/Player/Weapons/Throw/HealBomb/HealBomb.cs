@@ -8,15 +8,15 @@ public class HealBomb : PlayerAction
 {
     private const float FireRate = 5f;
     
-    public float _healingAmount;
-    public int _radius;
-    public int _ticks;
+    public float HealingAmount;
+    public int Radius;
+    public int Ticks;
     
     public HealBomb(float healingAmount, int radius, int ticks) : base("Throw")
     {
-        _healingAmount = healingAmount;
-        _radius = radius;
-        _ticks = ticks;
+        HealingAmount = healingAmount;
+        Radius = radius;
+        Ticks = ticks;
         CoolDown = FireRate;
     }
 
@@ -28,23 +28,23 @@ public class HealBomb : PlayerAction
         Vector2 worldMousePosition = gameManager.ScreenToWorld(mousePosition.ToVector2());
 
         HealBombObject healBombObject =
-            new HealBombObject(_healingAmount, _radius, _ticks, position, worldMousePosition, "Bullet");
+            new HealBombObject(HealingAmount, Radius, Ticks, position, worldMousePosition, "Bullet");
         gameManager.AddGameObject(healBombObject);
     }
     
     public void UpgradeHealingAmount(float amount)
     {
-        _healingAmount += amount;
+        HealingAmount += amount;
     }
     
     public void UpgradeRadius(int amount)
     {
-        _radius += amount;
+        Radius += amount;
     }
     
     public void UpgradeTicks(int amount)
     {
-        _ticks += amount;
+        Ticks += amount;
     }
     
 }

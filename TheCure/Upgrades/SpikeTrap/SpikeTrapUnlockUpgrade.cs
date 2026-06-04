@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using TheCure.BaseObjects.Traps;
 using TheCure.PlayerActions;
@@ -15,6 +14,6 @@ public class SpikeTrapUnlockUpgrade : Upgrade
 
     public void Unlock(List<Upgrade> unlockedUpgrades)
     {
-        PlayerActionsManager.Get().AddAction(new Build("Build", typeof(SpikeTrap), 10f));
+        PlayerActionsManager.Get().AddAction(new Build("Build", TrapType.Spike, 10f));
     }
 }

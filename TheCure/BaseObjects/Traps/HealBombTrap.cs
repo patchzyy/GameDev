@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Generic;
 using Microsoft.Xna.Framework;
-using TheCure.Enemies;
 using TheCure.Entities;
 
 namespace TheCure.BaseObjects.Traps
@@ -11,10 +9,8 @@ namespace TheCure.BaseObjects.Traps
         private const int HealAmountPerTick = 5;
         private const float HealTickInterval = 0.4f;
         private const float HealRadius = 120f;
-        private const int ConversionDamage = 10;
 
         private float _healTickTimer = HealTickInterval;
-        private HashSet<Friendly> _healedFriendlies = new HashSet<Friendly>();
 
         public HealBombTrap(Vector2 position, float duration = 15f) : base(position, duration)
         {
@@ -39,7 +35,7 @@ namespace TheCure.BaseObjects.Traps
                     {
                         if (friendly != null && ((CircleCollider)friendly.collider != null))
                         {
-                            Vector2 toFriendly = ((CircleCollider)friendly.collider).Center - ((CircleCollider)_collider).Center;
+                            Vector2 toFriendly = ((CircleCollider)friendly.collider).Center - (_collider).Center;
                             float distance = toFriendly.Length();
 
                             if (distance < HealRadius)
@@ -56,12 +52,12 @@ namespace TheCure.BaseObjects.Traps
                     {
                         if (enemy != null && ((CircleCollider)enemy.collider != null))
                         {
-                            Vector2 toEnemy = ((CircleCollider)enemy.collider).Center - ((CircleCollider)_collider).Center;
+                            Vector2 toEnemy = ((CircleCollider)enemy.collider).Center - (_collider).Center;
                             float distance = toEnemy.Length();
 
                             if (distance < HealRadius)
                             {
-                                enemy.LoseHealth(ConversionDamage);
+                                enemy.LoseHealth(HealAmountPerTick);
                             }
                         }
                     }
@@ -74,14 +70,11 @@ namespace TheCure.BaseObjects.Traps
 
         protected override void OnTrapHit(LivingEntity target)
         {
-            if (target is Friendly friendly)
+            if (target is Friendly || target is Zombie)
             {
-                friendly.GainHealth(HealAmountPerTick * 2);
+                target.GainHealth(HealAmountPerTick * 2);
             }
-            else if (target is Enemy enemy)
-            {
-                enemy.LoseHealth(ConversionDamage * 2);
-            }
+
         }
     }
 }

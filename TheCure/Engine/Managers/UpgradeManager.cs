@@ -41,17 +41,18 @@ public class UpgradeManager : Manager<UpgradeManager>
     {
         var boostUnlock = new BoostUnlockUpgrade();
         var HealthBomb = new HealthBombUnlockUpgrade();
+        var FreezeTrap = new FreezeTrapUnlockUpgrade();
 
         _availableActions = new List<Upgrade>
         {
-            HealthBomb,
-            new CommandUnlockUpgrade(),
-            new SpikeTrapUnlockUpgrade(),
-            new FreezeTrapUnlockUpgrade(),
-            new BombTrapUnlockUpgrade(),
-            new ElectricTrapUnlockUpgrade(),
-            new HealBombTrapUnlockUpgrade(),
-            boostUnlock,
+            // HealthBomb,
+            // new CommandUnlockUpgrade(),
+            // new SpikeTrapUnlockUpgrade(),
+            FreezeTrap,
+            // new BombTrapUnlockUpgrade(),
+            // new ElectricTrapUnlockUpgrade(),
+            // new HealBombTrapUnlockUpgrade(),
+            // boostUnlock,
         };
 
         _availableUpgrades = new List<Upgrade>
@@ -61,6 +62,9 @@ public class UpgradeManager : Manager<UpgradeManager>
             new HealthBombHealingUpgrade(HealthBomb),
             new HealthBombRadiusUpgrade(HealthBomb),
             new HealthBombTickUpgrade(HealthBomb),
+            // Freeze trap upgrades
+            new FreezeTrapDurationUpgrade(FreezeTrap),
+            new FreezeTrapSlowUpgrade(FreezeTrap),
         };
 
         _unlockedUpgrades = new List<Upgrade>();

@@ -1,17 +1,21 @@
+using TheCure.BaseObjects.Traps;
 using TheCure.Managers;
+using TheCure.PlayerActions;
 using TheCure.Weapons.Throw;
 
 namespace TheCure.Engine.Managers;
 
 public class WeaponManager : Manager<WeaponManager>
 {
-    private HealBomb HealBomb { get; set; }
-    
+    public HealBomb HealBomb { get; private set; }
+    public Build FreezeTrap { get; private set; }
+
     public void Reset()
     {
         HealBomb = null;
+        FreezeTrap = null;
     }
-    
+
     public void UnlockHealBomb()
     {
         var healingAmount = Settings.GetValue(SettingsConst.HEAL_BOMB.HEALING);
@@ -20,39 +24,30 @@ public class WeaponManager : Manager<WeaponManager>
         HealBomb = new HealBomb(healingAmount, radius, ticks);
         PlayerActionsManager.Get().AddAction(HealBomb);
     }
-    
+
     public bool IsHealBombUnlocked()
     {
         return HealBomb != null;
     }
-
-    public string HealBombRadius()
-    {
-        return HealBomb != null ? $"{HealBomb._radius}" : "0";
-    }
-
-    public string HealBombHealing()
-    {
-        return HealBomb != null ? $"{HealBomb._healingAmount}" : "0";
-    }
     
-    public string HealBombTicks()
+    public void UnlockFreezeTrap()
     {
-        return HealBomb != null ? $"{HealBomb._ticks}" : "0";
+        FreezeTrap = new Build("Build", TrapType.Freeze, 5f);
+        PlayerActionsManager.Get().AddAction(FreezeTrap);
     }
 
-    public void UpgradeHealBombHealing(float amount)
+    public bool IsFreezeTrapUnlocked()
     {
-        HealBomb.UpgradeHealingAmount(amount);
+        return FreezeTrap != null;
     }
     
-    public void UpgradeHealBombRadius(int amount)
+    public FreezeTrapStats GetFreezeTrapStats()
     {
-        HealBomb.UpgradeRadius(amount);
-    }
-    
-    public void UpgradeHealBombTicks(int amount)
-    {
-        HealBomb.UpgradeTicks(amount);
+        if (FreezeTrap == null)
+        {
+            return null;
+        }
+        
+        return FreezeTrap.FreezeTrapStats;
     }
 }

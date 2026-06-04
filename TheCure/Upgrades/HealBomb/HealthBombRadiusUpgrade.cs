@@ -18,6 +18,6 @@ public class HealthBombRadiusUpgrade : Upgrade
     
     public void Unlock(List<Upgrade> unlockedUpgrades)
     {
-        WeaponManager.Get().UpgradeHealBombRadius(10);
+        WeaponManager.Get().HealBomb.UpgradeRadius(10);
     }
 }

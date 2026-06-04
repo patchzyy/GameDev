@@ -61,6 +61,10 @@ namespace TheCure
             { SettingsConst.HEAL_BOMB.HEALING, 10f },
             { SettingsConst.HEAL_BOMB.RADIUS, 50 },
             { SettingsConst.HEAL_BOMB.TICKS, 5 },
+            
+            // FREEZE TRAP
+            { SettingsConst.FREEZE_TRAP.SLOW_FACTOR, 0.4f },
+            { SettingsConst.FREEZE_TRAP.DURATION, 2.5f },
         };
     }
 }

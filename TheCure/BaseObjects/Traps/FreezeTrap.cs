@@ -6,15 +6,39 @@ using TheCure.Entities;
 
 namespace TheCure.BaseObjects.Traps
 {
+    public class FreezeTrapStats
+    {
+        public float SlowDuration;
+        public float SlowFactor;
+
+        public FreezeTrapStats()
+        {
+            SlowDuration = Settings.GetValue(SettingsConst.FREEZE_TRAP.DURATION);
+            SlowFactor = Settings.GetValue(SettingsConst.FREEZE_TRAP.SLOW_FACTOR);
+        }
+
+        public void IncreaseDuration(float durationIncrease)
+        {
+            SlowDuration += durationIncrease;
+        }
+
+        public void IncreaseSlowFactor(float factorIncrease)
+        {
+            SlowFactor += factorIncrease;
+        }
+    }
+
     public class FreezeTrap : Trap
     {
-        private const float SlowDuration = 2.5f;
-        private const float SlowFactor = 0.4f;
+        private float SlowDuration { get; set; }
+        private float SlowFactor { get; set; }
         private Dictionary<Enemy, float> _slowedEnemies = new Dictionary<Enemy, float>();
         private Dictionary<Enemy, float> _originalSpeeds = new Dictionary<Enemy, float>();
 
-        public FreezeTrap(Vector2 position, float duration = 10f) : base(position, duration)
+        public FreezeTrap(FreezeTrapStats stats, Vector2 position, float duration = 10f) : base(position, duration)
         {
+            SlowDuration = stats.SlowDuration;
+            SlowFactor = stats.SlowFactor;
             _baseColor = Color.Cyan;
             _currentColor = Color.Cyan;
         }
@@ -34,6 +58,7 @@ namespace TheCure.BaseObjects.Traps
                         kvp.Key._speed = _originalSpeeds[kvp.Key];
                         _originalSpeeds.Remove(kvp.Key);
                     }
+
                     toRemove.Add(kvp.Key);
                 }
             }

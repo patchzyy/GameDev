@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
-using TheCure.BaseObjects.Traps;
-using TheCure.PlayerActions;
+using TheCure.Engine.Managers;
 
 namespace TheCure.Upgrades;
 
@@ -15,6 +13,6 @@ public class FreezeTrapUnlockUpgrade : Upgrade
 
     public void Unlock(List<Upgrade> unlockedUpgrades)
     {
-        PlayerActionsManager.Get().AddAction(new Build("Build", typeof(FreezeTrap), 10f));
+        WeaponManager.Get().UnlockFreezeTrap();
     }
 }

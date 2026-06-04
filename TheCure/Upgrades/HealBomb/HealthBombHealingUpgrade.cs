@@ -18,6 +18,6 @@ public class HealthBombHealingUpgrade : Upgrade
     
     public void Unlock(List<Upgrade> unlockedUpgrades)
     {
-        WeaponManager.Get().UpgradeHealBombHealing(5f);
+        WeaponManager.Get().HealBomb.UpgradeHealingAmount(5f);
     }
 }

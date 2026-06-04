@@ -32,9 +32,13 @@ public class PassivesManager : Manager<PassivesManager>
         {
             new HealthPassiveUpgrade(),
             new HealingPassiveUpgrade(),
+            // Health Bomb Upgrades
             new HealthBombHealingPassiveUpgrade(),
             new HealthBombRadiusPassiveUpgrade(),
             new HealthBombTickPassiveUpgrade(),
+            // Freeze Trap Upgrades
+            new FreezeTrapDurationPassiveUpgrade(),
+            new FreezeTrapSlowPassiveUpgrade(),
         };
 
         _unlockedUpgrades = new List<Upgrade>();

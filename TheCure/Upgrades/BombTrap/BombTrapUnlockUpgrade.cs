@@ -13,6 +13,6 @@ public class BombTrapUnlockUpgrade : Upgrade
     public bool UnlockedOnce { get; set; } = true;
     public void Unlock(List<Upgrade> unlockedUpgrades)
     {
-        PlayerActionsManager.Get().AddAction(new Build("Build", typeof(BombTrap), 10f));
+        PlayerActionsManager.Get().AddAction(new Build("Build", TrapType.Bomb, 10f));
     }
 }

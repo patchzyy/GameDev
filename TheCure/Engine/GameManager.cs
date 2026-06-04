@@ -396,9 +396,17 @@ namespace TheCure
 
             if (WeaponManager.Get().IsHealBombUnlocked())
             {
-                stats.Add(new Stat("Health Bomb Radius", WeaponManager.Get().HealBombRadius()));
-                stats.Add(new Stat("Health Bomb Healing", WeaponManager.Get().HealBombHealing()));
-                stats.Add(new Stat("Health Bomb Ticks", WeaponManager.Get().HealBombTicks()));
+                var healBomb = WeaponManager.Get().HealBomb;
+                stats.Add(new Stat("Health Bomb Radius", healBomb.Radius.ToString()));
+                stats.Add(new Stat("Health Bomb Healing", healBomb.HealingAmount.ToString()));
+                stats.Add(new Stat("Health Bomb Ticks", healBomb.Ticks.ToString()));
+            }
+
+            if (WeaponManager.Get().IsFreezeTrapUnlocked())
+            {
+                var freezeTrapStats = WeaponManager.Get().GetFreezeTrapStats();
+                stats.Add(new Stat("Freeze Trap Duration", freezeTrapStats.SlowDuration.ToString()));
+                stats.Add(new Stat("Freeze Trap Slow Factor", freezeTrapStats.SlowFactor.ToString()));
             }
 
             return stats;
