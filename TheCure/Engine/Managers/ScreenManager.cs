@@ -130,9 +130,7 @@ public class ScreenManager : Manager<ScreenManager>
         if (state == GameState.Paused)
         {
             if (inputManager.IsKeyPress(Keys.Space))
-            {
-                gameManager.SetGameState(GameState.Playing);
-            }
+                gameManager.ResumeGame();
 
             _continueButton.Update(mouseState);
             _pauseSettingsButton.Update(mouseState);
@@ -248,7 +246,7 @@ public class ScreenManager : Manager<ScreenManager>
 
         _startButton.SetAction(() => gameManager.SetGameState(GameState.Tutorial));
         _quitButton.SetAction(gameManager.Game.Exit);
-        _continueButton.SetAction(() => gameManager.SetGameState(GameState.Playing));
+        _continueButton.SetAction(gameManager.ResumeGame);
 
         _pauseQuitButton.SetAction(gameManager.Game.Exit);
         _restartButton.SetAction(RestartButtonAction);

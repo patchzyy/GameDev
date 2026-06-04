@@ -39,6 +39,7 @@ namespace TheCure
         public Random RNG { get; private set; }
         public Game Game { get; private set; }
         public GameState CurrentGameState { get; private set; }
+        public GameState PreviousGameState { get; private set; }
         public HUD HUD { get; private set; }
         public List<Enemy> Enemies;
         public Camera Camera => _camera;
@@ -55,6 +56,7 @@ namespace TheCure
             RNG = new Random();
 
             CurrentGameState = GameState.HealSelection;
+            PreviousGameState = GameState.HealSelection;
             _currentSpawnInterval = _initialSpawnInterval;
         }
 
@@ -101,8 +103,23 @@ namespace TheCure
             }
         }
 
+        public void PauseGame()
+        {
+            if (CurrentGameState == GameState.Paused)
+                return;
+
+            PreviousGameState = CurrentGameState;
+            CurrentGameState = GameState.Paused;
+        }
+
+        public void ResumeGame()
+        {
+            CurrentGameState = PreviousGameState;
+        }
+
         public void SetGameState(GameState newState)
         {
+            PreviousGameState = CurrentGameState;
             CurrentGameState = newState;
         }
 
@@ -362,7 +379,11 @@ namespace TheCure
                     break;
 
                 case GameState.PassiveUpgrade:
+                    DrawGameObjects(spriteBatch, gameTime);
+
                     spriteBatch.Begin();
+                    HUD.Draw(spriteBatch, this);
+                    PlayerActionsManager.Get().Draw(spriteBatch);
                     PassivesManager.Get().Draw(spriteBatch, this);
                     spriteBatch.End();
                     break;
