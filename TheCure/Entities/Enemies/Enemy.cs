@@ -29,6 +29,8 @@ namespace TheCure.Enemies
         protected System.Collections.Generic.List<Vector2> _currentPath;
         protected float _pathUpdateTimer;
 
+        protected bool _damageAppliedThisAttack;
+
         public Enemy(string textureName, float speed, float startHealth, float maxHealth, int frameCount = 1,
             float frameRate = 1f, bool isLooping = true, float scale = 1f) : base(textureName, speed, startHealth,
             maxHealth, frameCount, frameRate, isLooping, scale)
@@ -125,13 +127,25 @@ namespace TheCure.Enemies
                 return;
             }
 
-            _currentTarget?.LoseHealth(_attackDamage);
-            SoundManager.Get().PlayFriendlyHit();
-            _attackNextCombat = false;
-            _attackTimer = _attackCooldown;
-            _currentTarget = null;
+            if (_animatedSprite.CurrentFrame >= 3 &&
+                !_damageAppliedThisAttack)
+            {
+                _currentTarget?.LoseHealth(_attackDamage);
+                SoundManager.Get().PlayFriendlyHit();
+
+                _damageAppliedThisAttack = true;
+            }
+
+            if (_animatedSprite.CurrentFrame == _animatedSprite.FrameCount - 1)
+            {
+                _attackNextCombat = false;
+                _attackTimer = _attackCooldown;
+                _currentTarget = null;
+                _damageAppliedThisAttack = false;
+            }
         }
 
+ 
         protected virtual bool HandleSpawning(GameTime gameTime)
         {
             if (!_isSpawning)
