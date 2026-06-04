@@ -4,14 +4,22 @@ namespace TheCure.Weapons.Throw;
 
 public class HealBombObject : Throwable
 {
-    public HealBombObject(Vector2 position, Vector2 target, string textureName) : base(position, target, textureName,
+    private float healingAmount;
+    private int radius;
+    private int ticks;
+
+    public HealBombObject(float healingAmount, int radius, int ticks, Vector2 position, Vector2 target,
+        string textureName) : base(position, target, textureName,
         Color.Green)
     {
+        this.healingAmount = healingAmount;
+        this.radius = radius;
+        this.ticks = ticks;
     }
 
     public override void OnImpact()
     {
-        HealBombExplosion hbe = new HealBombExplosion(_targetPosition);
+        HealBombExplosion hbe = new HealBombExplosion(healingAmount, radius, ticks, _targetPosition);
         GameManager.Get().AddGameObject(hbe);
         base.OnImpact();
     }
@@ -21,11 +29,14 @@ class HealBombExplosion : GameObject
 {
     private CircleCollider _collider;
 
-    private int healsToGive = 5;
+    private int healsToGive;
+    private float healingAmount;
 
-    public HealBombExplosion(Vector2 position)
+    public HealBombExplosion(float healingAmount, int radius, int ticks, Vector2 position)
     {
-        _collider = new CircleCollider(position, 50);
+        this.healingAmount = healingAmount;
+        healsToGive = ticks;
+        _collider = new CircleCollider(position, radius);
         SetCollider(_collider);
     }
 
@@ -35,7 +46,7 @@ class HealBombExplosion : GameObject
         {
             if (healsToGive > 0)
             {
-                other.GainHealth(10);
+                other.GainHealth(healingAmount);
                 healsToGive--;
             }
             else

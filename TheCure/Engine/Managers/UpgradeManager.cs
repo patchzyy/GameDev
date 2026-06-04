@@ -23,10 +23,10 @@ public class UpgradeManager : Manager<UpgradeManager>
     private const int ScoreUpgradeInterval = 2;
     private const int ScoreUpgradeStep = 200;
     private const int InitialScoreUpgradeThreshold = 200;
-    
+
     private int _scoreUpgradeThreshold = 200;
     private int _scoreUpgradeStep = 200;
-    
+
     private UpgradesUI _upgradesUI;
 
     public void Load()
@@ -40,10 +40,11 @@ public class UpgradeManager : Manager<UpgradeManager>
     public void Reset()
     {
         var boostUnlock = new BoostUnlockUpgrade();
+        var HealthBomb = new HealthBombUnlockUpgrade();
 
         _availableActions = new List<Upgrade>
         {
-            new HealthBombUnlockUpgrade(),
+            HealthBomb,
             new CommandUnlockUpgrade(),
             new SpikeTrapUnlockUpgrade(),
             new FreezeTrapUnlockUpgrade(),
@@ -56,6 +57,10 @@ public class UpgradeManager : Manager<UpgradeManager>
         _availableUpgrades = new List<Upgrade>
         {
             new BoostPowerUpgrade(boostUnlock),
+            // health bomb upgrades
+            new HealthBombHealingUpgrade(HealthBomb),
+            new HealthBombRadiusUpgrade(HealthBomb),
+            new HealthBombTickUpgrade(HealthBomb),
         };
 
         _unlockedUpgrades = new List<Upgrade>();

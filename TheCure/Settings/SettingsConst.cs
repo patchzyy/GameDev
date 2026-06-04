@@ -80,5 +80,14 @@ namespace TheCure
             public static readonly SettingKey<InputBinding> ACTION_4 = new(_group, "ACTION_4");
             public static readonly SettingKey<InputBinding> ACTION_5 = new(_group, "ACTION_5");
         }
+
+        public static class HEAL_BOMB
+        {
+            private static string _group = "HEAL_BOMB";
+
+            public static readonly SettingKey<int> RADIUS = new(_group, "RADIUS");
+            public static readonly SettingKey<float> HEALING = new(_group, "HEALING");
+            public static readonly SettingKey<int> TICKS = new(_group, "TICKS");
+        }
     }
 }

@@ -12,9 +12,7 @@ public class WeaponsSystem
     public BaseWeapon CurrentWeapon { get; set; }
 
     private SingleBulletWeapon _singleBulletWeapon = new SingleBulletWeapon();
-
-    private HealBomb _healBombWeapon = new HealBomb();
-
+    
     private MovementWeapon _movementWeapon = new MovementWeapon();
 
     private InstantWeapon _instantWeapon = new InstantWeapon();
@@ -32,7 +30,6 @@ public class WeaponsSystem
     public void Reload()
     {
         _singleBulletWeapon = new SingleBulletWeapon();
-        _healBombWeapon = new HealBomb();
         _instantWeapon = new InstantWeapon();
         _movementWeapon = new MovementWeapon();
     }
@@ -58,18 +55,6 @@ public class WeaponsSystem
             case ShootWeapons.Instant:
                 Console.WriteLine("Instant weapon selected");
                 CurrentWeapon = _instantWeapon;
-                break;
-        }
-    }
-
-    public void SetThrowWeapon(ThrowWeapons weapon)
-    {
-        CurrentWeaponMode = WeaponMode.Throw;
-        switch (weapon)
-        {
-            case ThrowWeapons.HealBomb:
-                Console.WriteLine("Heal bomb weapon selected");
-                CurrentWeapon = _healBombWeapon;
                 break;
         }
     }

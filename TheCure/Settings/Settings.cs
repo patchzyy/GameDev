@@ -49,5 +49,12 @@ namespace TheCure
 
             throw new Exception($"No value or default found for {settingKey.Group}.{settingKey.Name}");
         }
+        
+        public static void UpgradeValue<T>(SettingKey<T> settingKey, T upgradeAmount)
+        {
+            var currentValue = GetValue(settingKey);
+            dynamic newValue = (dynamic)currentValue + (dynamic)upgradeAmount;
+            Save(settingKey, newValue);
+        }
     }
 }

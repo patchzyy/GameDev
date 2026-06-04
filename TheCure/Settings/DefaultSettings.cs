@@ -56,6 +56,11 @@ namespace TheCure
             { SettingsConst.KEY_BINDS.ACTION_3, InputBinding.FromKey(Keys.D3) },
             { SettingsConst.KEY_BINDS.ACTION_4, InputBinding.FromKey(Keys.D4) },
             { SettingsConst.KEY_BINDS.ACTION_5, InputBinding.FromKey(Keys.D5) },
+            
+            // HEAL BOMB
+            { SettingsConst.HEAL_BOMB.HEALING, 10f },
+            { SettingsConst.HEAL_BOMB.RADIUS, 50 },
+            { SettingsConst.HEAL_BOMB.TICKS, 5 },
         };
     }
 }

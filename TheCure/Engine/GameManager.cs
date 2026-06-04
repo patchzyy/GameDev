@@ -89,6 +89,7 @@ namespace TheCure
             UpgradeManager.Get().Reset();
 
             PlayerActionsManager.Get().Reset();
+            WeaponManager.Get().Reset();
             HUD.Load();
 
             AddWorldWalls();
@@ -325,7 +326,7 @@ namespace TheCure
                 case GameState.HealSelection:
                     ScreenManager.Get().DrawHealSelectScreen(spriteBatch);
                     break;
-                
+
                 case GameState.StartScreen:
                     ScreenManager.Get().DrawStartScreen(spriteBatch);
                     break;
@@ -391,6 +392,13 @@ namespace TheCure
             foreach (var boost in BoostManager.Get().GetBoosts())
             {
                 stats.Add(new Stat("Boost", $"x{boost.GetUnlockedBoostMultiplier():0.00}"));
+            }
+
+            if (WeaponManager.Get().IsHealBombUnlocked())
+            {
+                stats.Add(new Stat("Health Bomb Radius", WeaponManager.Get().HealBombRadius()));
+                stats.Add(new Stat("Health Bomb Healing", WeaponManager.Get().HealBombHealing()));
+                stats.Add(new Stat("Health Bomb Ticks", WeaponManager.Get().HealBombTicks()));
             }
 
             return stats;

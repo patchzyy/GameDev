@@ -7,10 +7,8 @@ namespace TheCure.Upgrades;
 
 public class FreezeTrapUnlockUpgrade : Upgrade
 {
-    public string Name { get; } = "Freeze Trap Unlock";
+    public string Name { get; } = "Freeze Trap";
     public string Description { get; } = "Place a freeze trap that slows down nearby enemies.";
-    public Action Action { get; }
-    public bool Unlocked { get; set; }
     public Upgrade RequiredUpgrade { get; set; } = null;
     public UpgradeType Type { get; } = UpgradeType.Action;
     public bool UnlockedOnce { get; set; } = true;

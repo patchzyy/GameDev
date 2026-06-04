@@ -6,10 +6,8 @@ namespace TheCure.Upgrades;
 
 public class CommandUnlockUpgrade : Upgrade
 {
-    public string Name { get; } = "Command Unlock";
+    public string Name { get; } = "Command";
     public string Description { get; } = "Command friendlies to attack around your cursor";
-    public Action Action { get; }
-    public bool Unlocked { get; set; }
     public Upgrade RequiredUpgrade { get; set; } = null;
     public UpgradeType Type { get; } = UpgradeType.Action;
     public bool UnlockedOnce { get; set; } = true;
