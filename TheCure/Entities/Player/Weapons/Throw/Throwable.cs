@@ -8,7 +8,7 @@ namespace TheCure.Weapons.Throw;
 
 public abstract class Throwable : GameObject
 {
-    private Texture2D _texture;
+    //private Texture2D _texture;
     private Vector2 _startPosition;
     public Vector2 _targetPosition;
     private Vector2 _position;
@@ -37,9 +37,10 @@ public abstract class Throwable : GameObject
 
     public override void Load()
     {
-        var content = ContentsManager.Get().GetContent();
-        _texture = content.Load<Texture2D>(_textureName);
+        SwitchAnimation(_textureName, 6, 12f, true);
+
         _shadow.Load();
+
         base.Load();
     }
 
@@ -70,11 +71,22 @@ public abstract class Throwable : GameObject
 
     public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
     {
-        spriteBatch.Draw(_texture, _position, null, _color, _rotation, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+        if (_animatedSprite != null)
+        {
+            _animatedSprite.Draw(
+                spriteBatch,
+                _position,
+                _color,
+                _rotation,
+                0.5f
+            );
+        }
+
         _shadow.Draw(gameTime, spriteBatch);
+
         base.Draw(gameTime, spriteBatch);
     }
-
+    
     public virtual void OnImpact()
     {
         Destroy();
@@ -95,25 +107,30 @@ public abstract class Throwable : GameObject
 
 class Shadow : GameObject
 {
-    private Texture2D Texture;
     private CircleCollider _collider;
+    private Texture2D _texture;
 
     public Shadow(Vector2 position)
     {
         _collider = new CircleCollider(position, 5);
+        SetCollider(_collider);
     }
 
     public override void Load()
     {
-        var content = ContentsManager.Get().GetContent();
-        Texture = content.Load<Texture2D>("Bullet");
+        _texture = ContentsManager.Get().GetContent().Load<Texture2D>("Bullet");
         base.Load();
     }
 
     public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
     {
-        var offset = _collider.Center - new Vector2(Texture.Width / 2, Texture.Height / 2);
-        var color = new Color(255, 255, 255, 50);
-        spriteBatch.Draw(Texture, offset, color);
+        var rect = _collider.GetBoundingBox();
+
+        rect.Width = 12;
+        rect.Height = 6;
+
+        var color = Color.Black * 0.25f;
+
+        spriteBatch.Draw(_texture, rect, color);
     }
 }

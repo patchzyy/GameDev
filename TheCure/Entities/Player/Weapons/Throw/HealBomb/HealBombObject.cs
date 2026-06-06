@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace TheCure.Weapons.Throw;
 
@@ -27,6 +28,30 @@ class HealBombExplosion : GameObject
     {
         _collider = new CircleCollider(position, 50);
         SetCollider(_collider);
+    }
+
+    public override void Load()
+    {
+        SwitchAnimation("Bomb-explosion", 6, 12f, false);
+
+        base.Load();
+    }
+
+    public override void Update(GameTime gameTime)
+    {
+        if (_animatedSprite != null && _animatedSprite.IsFinished)
+        {
+            Destroy();
+        }
+
+        base.Update(gameTime);
+    }
+
+    public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
+    {
+        DrawAnimatedSprite(spriteBatch, Color.White, Vector2.UnitX, 0.6f);
+
+        base.Draw(gameTime, spriteBatch);
     }
 
     public override void OnCollision(GameObject other)

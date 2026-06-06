@@ -74,19 +74,25 @@ namespace TheCure.BaseObjects.Traps
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            if (_texture == null || !_isActive)
+            if (!_isActive)
                 return;
-
-            var boundingBox = _collider.GetBoundingBox();
 
             float alpha = Math.Max(0.2f, 1f - (_elapsedTime / _maxDuration));
             Color drawColor = _currentColor * alpha;
 
-            spriteBatch.Draw(_texture, boundingBox, drawColor);
+            if (_animatedSprite != null)
+            {
+                DrawAnimatedSprite(spriteBatch, drawColor, Vector2.UnitX);
+            }
+            else if (_texture != null)
+            {
+                var boundingBox = _collider.GetBoundingBox();
+                spriteBatch.Draw(_texture, boundingBox, drawColor);
+            }
 
             base.Draw(gameTime, spriteBatch);
         }
-
+        
         public Vector2 GetPosition() => _collider.Center;
 
         public float GetRemainingLifetime() => Math.Max(0f, 1f - (_elapsedTime / _maxDuration));
