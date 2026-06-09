@@ -92,7 +92,7 @@ namespace TheCure.BaseObjects.Traps
 
                             if (distance < _healRadius)
                             {
-                                enemy.LoseHealth((int)_healAmountPerTick);
+                                enemy.GainHealth((int)_healAmountPerTick);
                             }
                         }
                     }
