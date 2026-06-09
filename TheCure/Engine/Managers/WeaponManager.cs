@@ -66,6 +66,11 @@ public class WeaponManager : Manager<WeaponManager>
         PlayerActionsManager.Get().AddAction(ElectricTrap);
     }
 
+    public bool IsElectricTrapUnlocked()
+    {
+        return ElectricTrap != null;
+    }
+
     public ElectricTrapStats GetElectricTrapStats()
     {
         if (ElectricTrap == null)
@@ -80,6 +85,11 @@ public class WeaponManager : Manager<WeaponManager>
     {
         HealTrap = new Build("Build", TrapType.HealBomb, 10f);
         PlayerActionsManager.Get().AddAction(HealTrap);
+    }
+
+    public bool IsHealTrapUnlocked()
+    {
+        return HealTrap != null;
     }
 
     public HealBombStats GetHealBombTrapStats()
@@ -98,10 +108,9 @@ public class WeaponManager : Manager<WeaponManager>
         PlayerActionsManager.Get().AddAction(BombTrapBuild);
     }
 
-    public void UnlockSpikeTrap()
+    public bool IsBombTrapUnlocked()
     {
-        SpikeTrapBuild = new Build("Build", TrapType.Spike, 8f);
-        PlayerActionsManager.Get().AddAction(SpikeTrapBuild);
+        return BombTrapBuild != null;
     }
 
     public BombTrapStats GetBombTrapStats()
@@ -112,6 +121,17 @@ public class WeaponManager : Manager<WeaponManager>
         }
 
         return BombTrapBuild.BombTrapStats;
+    }
+
+    public void UnlockSpikeTrap()
+    {
+        SpikeTrapBuild = new Build("Build", TrapType.Spike, 8f);
+        PlayerActionsManager.Get().AddAction(SpikeTrapBuild);
+    }
+
+    public bool IsSpikeTrapUnlocked()
+    {
+        return SpikeTrapBuild != null;
     }
 
     public SpikeTrapStats GetSpikeTrapStats()
