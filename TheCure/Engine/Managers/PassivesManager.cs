@@ -35,6 +35,10 @@ public class PassivesManager : Manager<PassivesManager>
             new HealthBombHealingPassiveUpgrade(),
             new HealthBombRadiusPassiveUpgrade(),
             new HealthBombTickPassiveUpgrade(),
+            // Health Bomb Trap Upgrades
+            new HealthBombTrapHealingPassiveUpgrade(),
+            new HealthBombTrapRadiusPassiveUpgrade(),
+            new HealthBombTrapTickPassiveUpgrade(),
             // Freeze Trap Upgrades
             new FreezeTrapDurationPassiveUpgrade(),
             new FreezeTrapSlowPassiveUpgrade(),

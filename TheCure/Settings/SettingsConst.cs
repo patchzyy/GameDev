@@ -89,6 +89,15 @@ namespace TheCure
             public static readonly SettingKey<float> HEALING = new(_group, "HEALING");
             public static readonly SettingKey<int> TICKS = new(_group, "TICKS");
         }
+
+        public static class HEAL_BOMB_TRAP
+        {
+            private static string _group = "HEAL_BOMB_TRAP";
+
+            public static readonly SettingKey<float> HEALING = new(_group, "HEALING");
+            public static readonly SettingKey<float> TICK_INTERVAL = new(_group, "TICK_INTERVAL");
+            public static readonly SettingKey<int> RADIUS = new(_group, "RADIUS");
+        }
         
         public static class FREEZE_TRAP
         {

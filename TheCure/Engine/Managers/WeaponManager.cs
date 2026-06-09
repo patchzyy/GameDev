@@ -11,12 +11,14 @@ public class WeaponManager : Manager<WeaponManager>
     public Build FreezeTrap { get; private set; }
     
     public Build ElectricTrap { get; private set; }
+    public Build HealTrap { get; private set; }
 
     public void Reset()
     {
         HealBomb = null;
         FreezeTrap = null;
         ElectricTrap = null;
+        HealTrap = null;
     }
 
     public void UnlockHealBomb()
@@ -68,5 +70,21 @@ public class WeaponManager : Manager<WeaponManager>
         }
         
         return ElectricTrap.ElectricTrapStats;
+    }
+
+    public void UnlockHealTrap()
+    {
+        HealTrap = new Build("Build", TrapType.HealBomb, 10f);
+        PlayerActionsManager.Get().AddAction(HealTrap);
+    }
+
+    public HealBombStats GetHealBombTrapStats()
+    {
+        if (HealTrap == null)
+        {
+            return null;
+        }
+
+        return HealTrap.HealBombStats;
     }
 }

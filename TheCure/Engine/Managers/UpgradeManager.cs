@@ -46,15 +46,13 @@ public class UpgradeManager : Manager<UpgradeManager>
 
         _availableActions = new List<Upgrade>
         {
-            // HealthBomb,
-            // new CommandUnlockUpgrade(),
-            // new SpikeTrapUnlockUpgrade(),
+            HealthBomb,
+            new CommandUnlockUpgrade(),
+            new SpikeTrapUnlockUpgrade(),
             FreezeTrap,
             ElectricTrap,
-            // new BombTrapUnlockUpgrade(),
-            // new ElectricTrapUnlockUpgrade(),
-            // new HealBombTrapUnlockUpgrade(),
-            // boostUnlock,
+            new BombTrapUnlockUpgrade(),
+            boostUnlock,
         };
 
         _availableUpgrades = new List<Upgrade>
@@ -64,14 +62,18 @@ public class UpgradeManager : Manager<UpgradeManager>
             new HealthBombHealingUpgrade(HealthBomb),
             new HealthBombRadiusUpgrade(HealthBomb),
             new HealthBombTickUpgrade(HealthBomb),
+            // Heal Bomb Trap runtime upgrades
+            new HealthBombTrapHealingUpgrade(HealthBomb),
+            new HealthBombTrapTickUpgrade(HealthBomb),
+            new HealthBombTrapRadiusUpgrade(HealthBomb),
             // Freeze trap upgrades
             new FreezeTrapDurationUpgrade(FreezeTrap),
             new FreezeTrapSlowUpgrade(FreezeTrap),
-            	// Electric trap upgrades
-            	new ElectricTrapDamageUpgrade(ElectricTrap),
-            	new ElectricTrapTickUpgrade(ElectricTrap),
-            	new ElectricTrapStunDurationUpgrade(ElectricTrap),
-            	new ElectricTrapStunForceUpgrade(ElectricTrap),
+            // Electric trap upgrades
+            new ElectricTrapDamageUpgrade(ElectricTrap),
+            new ElectricTrapTickUpgrade(ElectricTrap),
+            new ElectricTrapStunDurationUpgrade(ElectricTrap),
+            new ElectricTrapStunForceUpgrade(ElectricTrap),
         };
 
         _unlockedUpgrades = new List<Upgrade>();
@@ -83,7 +85,7 @@ public class UpgradeManager : Manager<UpgradeManager>
         _scoreUpgradeStep = ScoreUpgradeStep;
         _upgradesUI.Reset();
     }
-    
+
     public List<Upgrade> GetUnlockedActions()
     {
         return _unlockedActions;
