@@ -14,6 +14,7 @@ public class Build : PlayerAction
     public FreezeTrapStats FreezeTrapStats { get; set; } = new FreezeTrapStats();
     public ElectricTrapStats ElectricTrapStats { get; set; } = new ElectricTrapStats();
     public HealBombStats HealBombStats { get; set; } = new HealBombStats();
+    public BombTrapStats BombTrapStats { get; set; } = new BombTrapStats();
 
     public Build(string iconName, TrapType trapType, float trapDuration) : base(iconName)
     {
@@ -49,7 +50,7 @@ public class Build : PlayerAction
         switch (_trapType)
         {
             case TrapType.Bomb:
-                trap = new BombTrap(trapPosition, _trapDuration);
+                trap = new BombTrap(BombTrapStats, trapPosition, _trapDuration);
                 break;
             case TrapType.Freeze:
                 trap = new FreezeTrap(FreezeTrapStats, trapPosition, _trapDuration);

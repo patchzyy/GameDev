@@ -1,6 +1,5 @@
 using System.Collections.Generic;
-using TheCure.BaseObjects.Traps;
-using TheCure.PlayerActions;
+using TheCure.Engine.Managers;
 
 namespace TheCure.Upgrades;
 
@@ -13,6 +12,6 @@ public class BombTrapUnlockUpgrade : Upgrade
     public bool UnlockedOnce { get; set; } = true;
     public void Unlock(List<Upgrade> unlockedUpgrades)
     {
-        PlayerActionsManager.Get().AddAction(new Build("Build", TrapType.Bomb, 10f));
+        WeaponManager.Get().UnlockBombTrap();
     }
 }

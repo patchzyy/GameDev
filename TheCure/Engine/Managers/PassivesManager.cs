@@ -47,6 +47,11 @@ public class PassivesManager : Manager<PassivesManager>
             new ElectricTrapTickPassiveUpgrade(),
             new ElectricTrapStunDurationPassiveUpgrade(),
             new ElectricTrapStunForcePassiveUpgrade(),
+            // Bomb Trap Upgrades
+            new BombTrapDamagePassiveUpgrade(),
+            new BombTrapRadiusPassiveUpgrade(),
+            new BombTrapActivationPassiveUpgrade(),
+            new BombTrapFadePassiveUpgrade(),
         };
 
         _unlockedUpgrades = new List<Upgrade>();

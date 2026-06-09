@@ -75,6 +75,11 @@ namespace TheCure
             { SettingsConst.ELECTRIC_TRAP.DAMAGE_TICK_INTERVAL, 0.3f },
             { SettingsConst.ELECTRIC_TRAP.STUN_DURATION, 0.8f },
             { SettingsConst.ELECTRIC_TRAP.STUN_FORCE, 300f },
+            // BOMB TRAP
+            { SettingsConst.BOMB_TRAP.ACTIVATION_DELAY, 0.7f },
+            { SettingsConst.BOMB_TRAP.EXPLOSION_DAMAGE, 25 },
+            { SettingsConst.BOMB_TRAP.EXPLOSION_RADIUS, 100f },
+            { SettingsConst.BOMB_TRAP.EXPLOSION_FADE_DURATION, 0.3f },
         };
     }
 }

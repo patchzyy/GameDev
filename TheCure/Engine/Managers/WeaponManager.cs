@@ -12,6 +12,7 @@ public class WeaponManager : Manager<WeaponManager>
     
     public Build ElectricTrap { get; private set; }
     public Build HealTrap { get; private set; }
+    public Build BombTrapBuild { get; private set; }
 
     public void Reset()
     {
@@ -19,6 +20,7 @@ public class WeaponManager : Manager<WeaponManager>
         FreezeTrap = null;
         ElectricTrap = null;
         HealTrap = null;
+        BombTrapBuild = null;
     }
 
     public void UnlockHealBomb()
@@ -86,5 +88,21 @@ public class WeaponManager : Manager<WeaponManager>
         }
 
         return HealTrap.HealBombStats;
+    }
+
+    public void UnlockBombTrap()
+    {
+        BombTrapBuild = new Build("Build", TrapType.Bomb, 12f);
+        PlayerActionsManager.Get().AddAction(BombTrapBuild);
+    }
+
+    public BombTrapStats GetBombTrapStats()
+    {
+        if (BombTrapBuild == null)
+        {
+            return null;
+        }
+
+        return BombTrapBuild.BombTrapStats;
     }
 }
