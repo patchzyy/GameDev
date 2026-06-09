@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using TheCure.Engine.Managers;
 
@@ -12,7 +13,7 @@ public abstract class Boost : PlayerAction
     public float BoostDuration { get; set; }
     public float BoostBaseMultiplier { get; set; }
     public float BoostUpgradeStep { get; set; }
-    public SettingKey<float> BoostSetting { get; set; }
+    public List<SettingKey<float>> BoostSettings { get; } = new();
 
     public Boost(string iconName) : base(iconName)
     {

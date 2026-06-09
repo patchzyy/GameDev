@@ -41,6 +41,7 @@ namespace TheCure
         private const float CommandAttackRange = 460f;
         private const float CommandEnemyPriorityRadius = 420f;
         private const float EscapeRemoveDistance = 24f;
+        private const float BaseColliderRadius = 16f;
 
         private enum FriendlyState
         {
@@ -60,7 +61,7 @@ namespace TheCure
                 scale: 1.7f
             )
         {
-            collider = new CircleCollider(position, 16f);
+            collider = new CircleCollider(position, BaseColliderRadius);
             SetCollider(collider);
 
             _spawnPosition = position;
@@ -236,12 +237,14 @@ namespace TheCure
                 Vector2 diff = ((CircleCollider)collider).Center - ((CircleCollider)other.collider).Center;
                 float dist = diff.Length();
 
-                if (dist <= 0.01f || dist > SeparationDistance)
+                float desiredDistance = SeparationDistance * _sizeMultiplier;
+
+                if (dist <= 0.01f || dist > desiredDistance)
                     continue;
 
                 diff /= dist;
 
-                float strength = 1f - dist / SeparationDistance;
+                float strength = 1f - dist / desiredDistance;
                 force += diff * strength * SeparationStrength;
             }
 
@@ -446,6 +449,8 @@ namespace TheCure
         public void SetSizeMultiplier(float sizeMultiplier)
         {
             _sizeMultiplier = sizeMultiplier;
+            ((CircleCollider)collider).Radius = BaseColliderRadius * _sizeMultiplier;
+            
         }
 
         public void SetWeaponDamage(float damage)
