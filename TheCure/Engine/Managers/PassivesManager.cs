@@ -17,7 +17,6 @@ public class PassivesManager : Manager<PassivesManager>
 
     private UpgradesUI _upgradesUI;
 
-
     public void Load()
     {
         _upgradesUI = new UpgradesUI("Upgrades");
@@ -39,6 +38,11 @@ public class PassivesManager : Manager<PassivesManager>
             // Freeze Trap Upgrades
             new FreezeTrapDurationPassiveUpgrade(),
             new FreezeTrapSlowPassiveUpgrade(),
+            // Electric Trap Upgrades
+            new ElectricTrapDamagePassiveUpgrade(),
+            new ElectricTrapTickPassiveUpgrade(),
+            new ElectricTrapStunDurationPassiveUpgrade(),
+            new ElectricTrapStunForcePassiveUpgrade(),
         };
 
         _unlockedUpgrades = new List<Upgrade>();
@@ -48,16 +52,15 @@ public class PassivesManager : Manager<PassivesManager>
 
     public void PickRandomUpgrade()
     {
-        var actions = UpgradeManager.Get().GetUnlockedActions();
-        
         _selectedUpgrades.Clear();
         _upgradesUI.Reset();
         SoundManager.Get().PlayUpgradeUnlock();
 
+        var unlockedActions = UpgradeManager.Get().GetUnlockedActions();
         var random = new Random();
         var selectableUpgrades = _availableUpgrades.FindAll(upgrade =>
             upgrade.RequiredUpgrade == null ||
-            actions.Exists(action => action.GetType() == upgrade.RequiredUpgrade.GetType()));
+            unlockedActions.Exists(action => action.GetType() == upgrade.RequiredUpgrade.GetType()));
 
         while (selectableUpgrades.Count < 4)
         {

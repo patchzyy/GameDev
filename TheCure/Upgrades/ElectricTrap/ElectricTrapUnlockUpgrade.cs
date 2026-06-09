@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
-using TheCure.BaseObjects.Traps;
-using TheCure.PlayerActions;
+using TheCure.Engine.Managers;
 
 namespace TheCure.Upgrades;
 
@@ -15,6 +13,6 @@ public class ElectricTrapUnlockUpgrade : Upgrade
 
     public void Unlock(List<Upgrade> unlockedUpgrades)
     {
-        PlayerActionsManager.Get().AddAction(new Build("Build", TrapType.Electric, 10f));
+        WeaponManager.Get().UnlockElectricTrap();
     }
 }

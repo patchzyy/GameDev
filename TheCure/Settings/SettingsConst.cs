@@ -97,6 +97,16 @@ namespace TheCure
             public static readonly SettingKey<float> DURATION = new(_group, "DURATION");
             public static readonly SettingKey<float> SLOW_FACTOR = new(_group, "SLOW_FACTOR");
         }
+        
+        public static class ELECTRIC_TRAP
+        {
+            private static string _group = "ELECTRIC_TRAP";
 
+            public static readonly SettingKey<int> DAMAGE_PER_TICK = new(_group, "DAMAGE_PER_TICK");
+            public static readonly SettingKey<float> STUN_FORCE = new(_group, "STUN_FORCE");
+            public static readonly SettingKey<float> STUN_DURATION = new(_group, "STUN_DURATION");
+            public static readonly SettingKey<float> DAMAGE_TICK_INTERVAL = new(_group, "DAMAGE_TICK_INTERVAL");
+        }
+        
     }
 }

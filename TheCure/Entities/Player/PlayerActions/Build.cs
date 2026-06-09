@@ -12,6 +12,7 @@ public class Build : PlayerAction
     private readonly float _trapDuration;
 
     public FreezeTrapStats FreezeTrapStats { get; set; } = new FreezeTrapStats();
+    public ElectricTrapStats ElectricTrapStats { get; set; } = new ElectricTrapStats();
 
     public Build(string iconName, TrapType trapType, float trapDuration) : base(iconName)
     {
@@ -59,7 +60,7 @@ public class Build : PlayerAction
                 trap = new SpikeTrap(trapPosition, _trapDuration);
                 break;
             case TrapType.Electric:
-                trap = new ElectricTrap(trapPosition, _trapDuration);
+                trap = new ElectricTrap(ElectricTrapStats, trapPosition, _trapDuration);
                 break;
             default:
                 return;

@@ -65,6 +65,12 @@ namespace TheCure
             // FREEZE TRAP
             { SettingsConst.FREEZE_TRAP.SLOW_FACTOR, 0.4f },
             { SettingsConst.FREEZE_TRAP.DURATION, 2.5f },
+            
+            // ELECTRIC TRAP
+            { SettingsConst.ELECTRIC_TRAP.DAMAGE_PER_TICK, 8 },
+            { SettingsConst.ELECTRIC_TRAP.DAMAGE_TICK_INTERVAL, 0.3f },
+            { SettingsConst.ELECTRIC_TRAP.STUN_DURATION, 0.8f },
+            { SettingsConst.ELECTRIC_TRAP.STUN_FORCE, 300f },
         };
     }
 }
