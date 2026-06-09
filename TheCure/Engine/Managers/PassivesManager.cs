@@ -52,6 +52,9 @@ public class PassivesManager : Manager<PassivesManager>
             new BombTrapRadiusPassiveUpgrade(),
             new BombTrapActivationPassiveUpgrade(),
             new BombTrapFadePassiveUpgrade(),
+            // Spike Trap Upgrades
+            new SpikeTrapDamagePassiveUpgrade(),
+            new SpikeTrapTickPassiveUpgrade(),
         };
 
         _unlockedUpgrades = new List<Upgrade>();

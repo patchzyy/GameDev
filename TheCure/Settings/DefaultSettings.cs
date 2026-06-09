@@ -80,6 +80,9 @@ namespace TheCure
             { SettingsConst.BOMB_TRAP.EXPLOSION_DAMAGE, 25 },
             { SettingsConst.BOMB_TRAP.EXPLOSION_RADIUS, 100f },
             { SettingsConst.BOMB_TRAP.EXPLOSION_FADE_DURATION, 0.3f },
+            // SPIKE TRAP
+            { SettingsConst.SPIKE_TRAP.DAMAGE_PER_HIT, 15 },
+            { SettingsConst.SPIKE_TRAP.DAMAGE_INTERVAL, 0.5f },
         };
     }
 }

@@ -9,10 +9,11 @@ public class WeaponManager : Manager<WeaponManager>
 {
     public HealBomb HealBomb { get; private set; }
     public Build FreezeTrap { get; private set; }
-    
+
     public Build ElectricTrap { get; private set; }
     public Build HealTrap { get; private set; }
     public Build BombTrapBuild { get; private set; }
+    public Build SpikeTrapBuild { get; private set; }
 
     public void Reset()
     {
@@ -21,6 +22,7 @@ public class WeaponManager : Manager<WeaponManager>
         ElectricTrap = null;
         HealTrap = null;
         BombTrapBuild = null;
+        SpikeTrapBuild = null;
     }
 
     public void UnlockHealBomb()
@@ -36,7 +38,7 @@ public class WeaponManager : Manager<WeaponManager>
     {
         return HealBomb != null;
     }
-    
+
     public void UnlockFreezeTrap()
     {
         FreezeTrap = new Build("Build", TrapType.Freeze, 5f);
@@ -47,30 +49,30 @@ public class WeaponManager : Manager<WeaponManager>
     {
         return FreezeTrap != null;
     }
-    
+
     public FreezeTrapStats GetFreezeTrapStats()
     {
         if (FreezeTrap == null)
         {
             return null;
         }
-        
+
         return FreezeTrap.FreezeTrapStats;
     }
-    
+
     public void UnlockElectricTrap()
     {
         ElectricTrap = new Build("Build", TrapType.Electric, 5f);
         PlayerActionsManager.Get().AddAction(ElectricTrap);
     }
-    
+
     public ElectricTrapStats GetElectricTrapStats()
     {
         if (ElectricTrap == null)
         {
             return null;
         }
-        
+
         return ElectricTrap.ElectricTrapStats;
     }
 
@@ -96,6 +98,12 @@ public class WeaponManager : Manager<WeaponManager>
         PlayerActionsManager.Get().AddAction(BombTrapBuild);
     }
 
+    public void UnlockSpikeTrap()
+    {
+        SpikeTrapBuild = new Build("Build", TrapType.Spike, 8f);
+        PlayerActionsManager.Get().AddAction(SpikeTrapBuild);
+    }
+
     public BombTrapStats GetBombTrapStats()
     {
         if (BombTrapBuild == null)
@@ -104,5 +112,15 @@ public class WeaponManager : Manager<WeaponManager>
         }
 
         return BombTrapBuild.BombTrapStats;
+    }
+
+    public SpikeTrapStats GetSpikeTrapStats()
+    {
+        if (SpikeTrapBuild == null)
+        {
+            return null;
+        }
+
+        return SpikeTrapBuild.SpikeTrapStats;
     }
 }

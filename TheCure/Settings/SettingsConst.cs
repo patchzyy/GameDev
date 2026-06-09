@@ -125,6 +125,13 @@ namespace TheCure
             public static readonly SettingKey<float> EXPLOSION_RADIUS = new(_group, "EXPLOSION_RADIUS");
             public static readonly SettingKey<float> EXPLOSION_FADE_DURATION = new(_group, "EXPLOSION_FADE_DURATION");
         }
+        public static class SPIKE_TRAP
+        {
+            private static string _group = "SPIKE_TRAP";
+
+            public static readonly SettingKey<int> DAMAGE_PER_HIT = new(_group, "DAMAGE_PER_HIT");
+            public static readonly SettingKey<float> DAMAGE_INTERVAL = new(_group, "DAMAGE_INTERVAL");
+        }
         
     }
 }

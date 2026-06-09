@@ -43,6 +43,7 @@ public class UpgradeManager : Manager<UpgradeManager>
         var HealthBomb = new HealthBombUnlockUpgrade();
         var FreezeTrap = new FreezeTrapUnlockUpgrade();
         var ElectricTrap = new ElectricTrapUnlockUpgrade();
+        var SpikeTrap = new SpikeTrapUnlockUpgrade();
         var BombTrap = new BombTrapUnlockUpgrade();
 
         _availableActions = new List<Upgrade>
@@ -75,6 +76,9 @@ public class UpgradeManager : Manager<UpgradeManager>
             new ElectricTrapTickUpgrade(ElectricTrap),
             new ElectricTrapStunDurationUpgrade(ElectricTrap),
             new ElectricTrapStunForceUpgrade(ElectricTrap),
+            // Spike trap upgrades
+            new SpikeTrapDamageUpgrade(SpikeTrap),
+            new SpikeTrapTickUpgrade(SpikeTrap),
             // Bomb trap upgrades
             new BombTrapDamageUpgrade(BombTrap),
             new BombTrapRadiusUpgrade(BombTrap),
