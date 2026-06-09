@@ -262,7 +262,8 @@ public class ScreenManager : Manager<ScreenManager>
             _previousState = GameState.Paused;
             gameManager.SetGameState(GameState.Settings);
         });
-        _settingsBackButton.SetAction(() => gameManager.SetGameState(_previousState));
+        _settingsBackButton.SetAction(() => gameManager.SetGameState(_previousState, false));
+
 
         _healSelectButton1.SetAction(() => HealSelectButtonAction(HealType.HealBomb));
         _healSelectButton2.SetAction(() => HealSelectButtonAction(HealType.Instant));

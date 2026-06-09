@@ -46,6 +46,8 @@ namespace TheCure
 
         public List<Friendly> Friendlies { get; private set; } = new List<Friendly>();
 
+        public GameState ResumeState { get; private set; }
+
         public GameManager()
         {
             _gameObjects = new List<GameObject>();
@@ -108,21 +110,21 @@ namespace TheCure
             if (CurrentGameState == GameState.Paused)
                 return;
 
-            PreviousGameState = CurrentGameState;
+            ResumeState = CurrentGameState;
             CurrentGameState = GameState.Paused;
         }
 
         public void ResumeGame()
         {
-            CurrentGameState = PreviousGameState;
+            CurrentGameState = GameState.Playing;
         }
-
-        public void SetGameState(GameState newState)
+        public void SetGameState(GameState newState, bool savePrevious = true)
         {
-            PreviousGameState = CurrentGameState;
+            if (savePrevious)
+                PreviousGameState = CurrentGameState;
+
             CurrentGameState = newState;
         }
-
         public void Load()
         {
             HUD = new HUD();
