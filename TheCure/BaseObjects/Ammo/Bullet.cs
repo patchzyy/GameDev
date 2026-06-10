@@ -60,7 +60,14 @@ namespace TheCure
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(_texture, _collider.GetBoundingBox(), Color.Red);
+            if (IsHealing)
+            {
+                spriteBatch.Draw(_texture, _collider.GetBoundingBox(), Color.LimeGreen);
+            }
+            else
+            {
+                spriteBatch.Draw(_texture, _collider.GetBoundingBox(), Color.Red);
+            }
             base.Draw(gameTime, spriteBatch);
         }
     }
