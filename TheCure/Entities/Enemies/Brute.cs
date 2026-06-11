@@ -11,17 +11,17 @@ namespace TheCure
 
         public Brute() : base(
             textureName: "Zombie-Walk",
-            speed: 30f,
-            startHealth: 15f,
-            maxHealth: 15f,
+            speed: Settings.GetValue(SettingsConst.BRUTE.SPEED),
+            startHealth: Settings.GetValue(SettingsConst.BRUTE.START_HEALTH),
+            maxHealth: Settings.GetValue(SettingsConst.BRUTE.MAX_HEALTH),
             frameCount: 7,
             frameRate: 3.5f,
             scale: 3.1f
         )
         {
-            _stagger = 1.2f;
-            _attackDamage = 3;
-            _attackCooldown = 2f;
+            _stagger = Settings.GetValue(SettingsConst.BRUTE.STAGGER);
+            _attackDamage = Settings.GetValue(SettingsConst.BRUTE.ATTACK_DAMAGE);
+            _attackCooldown = Settings.GetValue(SettingsConst.BRUTE.ATTACK_COOLDOWN);
         }
 
         public override void Load()

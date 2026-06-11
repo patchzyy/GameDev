@@ -25,6 +25,18 @@ namespace TheCure
             public static readonly SettingKey<float> MAX_HEALTH = new(_group, "MAX_HEALTH");
         }
 
+        public static class BRUTE
+        {
+            private static string _group = "BRUTE";
+
+            public static readonly SettingKey<float> SPEED = new(_group, "MOVE_SPEED");
+            public static readonly SettingKey<float> STAGGER = new(_group, "STAGGER");
+            public static readonly SettingKey<float> ATTACK_DAMAGE = new(_group, "ATTACK_DAMAGE");
+            public static readonly SettingKey<float> ATTACK_COOLDOWN = new(_group, "ATTACK_COOLDOWN");
+            public static readonly SettingKey<float> START_HEALTH = new(_group, "START_HEALTH");
+            public static readonly SettingKey<float> MAX_HEALTH = new(_group, "MAX_HEALTH");
+        }
+
         public static class BABY_ZOMBIE
         {
             private static string _group = "BABY_ZOMBIE";
