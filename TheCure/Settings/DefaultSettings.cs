@@ -20,6 +20,14 @@ namespace TheCure
             { SettingsConst.ZOMBIE.START_HEALTH, 30f },
             { SettingsConst.ZOMBIE.MAX_HEALTH, 100f },
 
+            // BRUTE
+            { SettingsConst.BRUTE.SPEED, 30f },
+            { SettingsConst.BRUTE.STAGGER, 1.2f },
+            { SettingsConst.BRUTE.ATTACK_DAMAGE, 30f },
+            { SettingsConst.BRUTE.ATTACK_COOLDOWN, 2f },
+            { SettingsConst.BRUTE.START_HEALTH, 200f },
+            { SettingsConst.BRUTE.MAX_HEALTH, 200f },
+
             // BABY ZOMBIE
             { SettingsConst.BABY_ZOMBIE.MOVE_SPEED_MULTIPLIER, 2.0f },
             { SettingsConst.BABY_ZOMBIE.HEALTH_MULTIPLIER, 0.2f },
