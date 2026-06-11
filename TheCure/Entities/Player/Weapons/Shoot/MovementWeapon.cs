@@ -14,7 +14,7 @@ namespace TheCure.Weapons
 
         public override void Fire(Vector2 position, Vector2 direction)
         {
-            Vector2 facingDirection = PlayerManager.Get().Player.FacingDirection;
+            Vector2 facingDirection = PlayerManager.Get().Player._facingDirection;
             Bullet bullet = new Bullet(position, facingDirection, 400f, true, damage: damage);
             SoundManager.Get().PlayPlayerShoot();
             GameManager.Get().AddGameObject(bullet);
