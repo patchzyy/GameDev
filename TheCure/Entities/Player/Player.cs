@@ -11,7 +11,6 @@ namespace TheCure
     {
         internal float _rotation;
         private Vector2 _previousCenter;
-        public Vector2 FacingDirection = Vector2.Zero;
 
         public WeaponsSystem WeaponsSystem = new WeaponsSystem();
         private InputBinding _shootBinding;
@@ -82,7 +81,7 @@ namespace TheCure
             {
                 moveDirection.Normalize();
                 _rotation = LinePieceCollider.GetAngle(moveDirection);
-                FacingDirection = moveDirection;
+                _facingDirection = moveDirection;
             }
 
             var dash = PlayerActionsManager.Get().GetDash();
