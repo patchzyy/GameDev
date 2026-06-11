@@ -17,7 +17,6 @@ public class PassivesManager : Manager<PassivesManager>
 
     private UpgradesUI _upgradesUI;
 
-
     public void Load()
     {
         _upgradesUI = new UpgradesUI("Upgrades");
@@ -32,6 +31,30 @@ public class PassivesManager : Manager<PassivesManager>
         {
             new HealthPassiveUpgrade(),
             new HealingPassiveUpgrade(),
+            // Health Bomb Upgrades
+            new HealthBombHealingPassiveUpgrade(),
+            new HealthBombRadiusPassiveUpgrade(),
+            new HealthBombTickPassiveUpgrade(),
+            // Health Bomb Trap Upgrades
+            new HealthBombTrapHealingPassiveUpgrade(),
+            new HealthBombTrapRadiusPassiveUpgrade(),
+            new HealthBombTrapTickPassiveUpgrade(),
+            // Freeze Trap Upgrades
+            new FreezeTrapDurationPassiveUpgrade(),
+            new FreezeTrapSlowPassiveUpgrade(),
+            // Electric Trap Upgrades
+            new ElectricTrapDamagePassiveUpgrade(),
+            new ElectricTrapTickPassiveUpgrade(),
+            new ElectricTrapStunDurationPassiveUpgrade(),
+            new ElectricTrapStunForcePassiveUpgrade(),
+            // Bomb Trap Upgrades
+            new BombTrapDamagePassiveUpgrade(),
+            new BombTrapRadiusPassiveUpgrade(),
+            new BombTrapActivationPassiveUpgrade(),
+            new BombTrapFadePassiveUpgrade(),
+            // Spike Trap Upgrades
+            new SpikeTrapDamagePassiveUpgrade(),
+            new SpikeTrapTickPassiveUpgrade(),
         };
 
         _unlockedUpgrades = new List<Upgrade>();
@@ -45,9 +68,11 @@ public class PassivesManager : Manager<PassivesManager>
         _upgradesUI.Reset();
         SoundManager.Get().PlayUpgradeUnlock();
 
+        var unlockedActions = UpgradeManager.Get().GetUnlockedActions();
         var random = new Random();
         var selectableUpgrades = _availableUpgrades.FindAll(upgrade =>
-            upgrade.RequiredUpgrade == null || _unlockedUpgrades.Contains(upgrade.RequiredUpgrade));
+            upgrade.RequiredUpgrade == null ||
+            unlockedActions.Exists(action => action.GetType() == upgrade.RequiredUpgrade.GetType()));
 
         while (selectableUpgrades.Count < 4)
         {

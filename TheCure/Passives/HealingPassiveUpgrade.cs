@@ -9,8 +9,6 @@ public class HealingPassiveUpgrade : Upgrade
 {
     public string Name { get; } = "Healing Boost";
     public string Description { get; } = "Permanently increase healing power by 5";
-    public Action Action { get; }
-    public bool Unlocked { get; set; }
     public Upgrade RequiredUpgrade { get; set; } = null;
     public UpgradeType Type { get; } = UpgradeType.Passive;
     public bool UnlockedOnce { get; set; } = false;

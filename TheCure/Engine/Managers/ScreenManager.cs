@@ -24,7 +24,6 @@ public class ScreenManager : Manager<ScreenManager>
     private Button _pauseSettingsButton;
     private Button _settingsBackButton;
 
-    private Button _healSelectButton1;
     private Button _healSelectButton2;
     private Button _healSelectButton3;
     private Button _healSelectButton4;
@@ -108,7 +107,6 @@ public class ScreenManager : Manager<ScreenManager>
 
         if (state == GameState.HealSelection)
         {
-            _healSelectButton1.Update(mouseState);
             _healSelectButton2.Update(mouseState);
             _healSelectButton3.Update(mouseState);
             _healSelectButton4.Update(mouseState);
@@ -192,9 +190,7 @@ public class ScreenManager : Manager<ScreenManager>
         _settingsBackButton = new Button(
             new Rectangle(0, 0, buttonWidth, buttonHeight), "Back",
             ContentsManager.Get().ButtonFont);
-
-        _healSelectButton1 = new Button(new Rectangle(0, 0, buttonWidth, buttonHeight), "Heal Bomb as base",
-            ContentsManager.Get().ButtonFont);
+        
         _healSelectButton2 = new Button(new Rectangle(0, 0, buttonWidth, buttonHeight), "Instant heal",
             ContentsManager.Get().ButtonFont);
         _healSelectButton3 = new Button(new Rectangle(0, 0, buttonWidth, buttonHeight), "Heal in movement",
@@ -265,7 +261,6 @@ public class ScreenManager : Manager<ScreenManager>
         _settingsBackButton.SetAction(() => gameManager.SetGameState(_previousState, false));
 
 
-        _healSelectButton1.SetAction(() => HealSelectButtonAction(HealType.HealBomb));
         _healSelectButton2.SetAction(() => HealSelectButtonAction(HealType.Instant));
         _healSelectButton3.SetAction(() => HealSelectButtonAction(HealType.Movement));
         _healSelectButton4.SetAction(() => HealSelectButtonAction(HealType.Shoot));
@@ -293,9 +288,6 @@ public class ScreenManager : Manager<ScreenManager>
     {
         switch (type)
         {
-            case HealType.HealBomb:
-                PlayerManager.Get().Player.WeaponsSystem.SetThrowWeapon(ThrowWeapons.HealBomb);
-                break;
             case HealType.Movement:
                 PlayerManager.Get().Player.WeaponsSystem.SetShootWeapon(ShootWeapons.Movement);
                 break;
@@ -334,9 +326,7 @@ public class ScreenManager : Manager<ScreenManager>
         _settingsButton.SetPosition(centerX - buttonWidth / 2, (int)(game.GraphicsDevice.Viewport.Height * 0.61f));
         _pauseSettingsButton.SetPosition( centerX - buttonWidth / 2, (int)(game.GraphicsDevice.Viewport.Height * 0.59f));
         _settingsBackButton.SetPosition( centerX - buttonWidth / 2, (int)(game.GraphicsDevice.Viewport.Height * 0.75f));
-
-        _healSelectButton1.SetPosition(centerX - buttonWidth / 2,
-            (int)(game.GraphicsDevice.Viewport.Height * 0.75f) + 60);
+        
         _healSelectButton2.SetPosition(centerX - buttonWidth / 2,
             (int)(game.GraphicsDevice.Viewport.Height * 0.75f) + 120);
         _healSelectButton3.SetPosition(centerX - buttonWidth / 2,
@@ -385,7 +375,6 @@ public class ScreenManager : Manager<ScreenManager>
             new Vector2(game.GraphicsDevice.Viewport.Width / 2 - titleSize.X / 2, 150),
             Color.White);
 
-        _healSelectButton1.Draw(spriteBatch);
         _healSelectButton2.Draw(spriteBatch);
         _healSelectButton3.Draw(spriteBatch);
         _healSelectButton4.Draw(spriteBatch);

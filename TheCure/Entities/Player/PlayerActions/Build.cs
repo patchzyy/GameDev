@@ -1,5 +1,6 @@
 using System;
 using Microsoft.Xna.Framework;
+using TheCure.BaseObjects.Traps;
 using TheCure.Managers;
 
 namespace TheCure.PlayerActions;
@@ -7,10 +8,16 @@ namespace TheCure.PlayerActions;
 public class Build : PlayerAction
 {
     private const float TrapPlacementDistance = 80f;
-    private readonly Type _trapType;
+    private readonly TrapType _trapType;
     private readonly float _trapDuration;
 
-    public Build(string iconName, Type trapType, float trapDuration) : base(iconName)
+    public FreezeTrapStats FreezeTrapStats { get; set; } = new FreezeTrapStats();
+    public ElectricTrapStats ElectricTrapStats { get; set; } = new ElectricTrapStats();
+    public HealBombStats HealBombStats { get; set; } = new HealBombStats();
+    public BombTrapStats BombTrapStats { get; set; } = new BombTrapStats();
+    public SpikeTrapStats SpikeTrapStats { get; set; } = new SpikeTrapStats();
+
+    public Build(string iconName, TrapType trapType, float trapDuration) : base(iconName)
     {
         _trapType = trapType;
         _trapDuration = trapDuration;
@@ -40,7 +47,27 @@ public class Build : PlayerAction
 
         Vector2 trapPosition = playerPos + direction * TrapPlacementDistance;
 
-        BaseObjects.Traps.Trap trap = (BaseObjects.Traps.Trap)Activator.CreateInstance(_trapType, new object[] { trapPosition, _trapDuration });
+        Trap trap;
+        switch (_trapType)
+        {
+            case TrapType.Bomb:
+                trap = new BombTrap(BombTrapStats, trapPosition, _trapDuration);
+                break;
+            case TrapType.Freeze:
+                trap = new FreezeTrap(FreezeTrapStats, trapPosition, _trapDuration);
+                break;
+            case TrapType.HealBomb:
+                trap = new HealBombTrap(HealBombStats, trapPosition, _trapDuration);
+                break;
+            case TrapType.Spike:
+                trap = new SpikeTrap(SpikeTrapStats, trapPosition, _trapDuration);
+                break;
+            case TrapType.Electric:
+                trap = new ElectricTrap(ElectricTrapStats, trapPosition, _trapDuration);
+                break;
+            default:
+                return;
+        }
 
         GameManager.Get().AddGameObject(trap);
 

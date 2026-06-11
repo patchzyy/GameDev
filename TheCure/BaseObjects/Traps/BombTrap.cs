@@ -5,19 +5,60 @@ using TheCure.Entities;
 
 namespace TheCure.BaseObjects.Traps
 {
+    public class BombTrapStats
+    {
+        public float ActivationDelay;
+        public int ExplosionDamage;
+        public float ExplosionRadius;
+        public float ExplosionFadeDuration;
+
+        public BombTrapStats()
+        {
+            ActivationDelay = Settings.GetValue(SettingsConst.BOMB_TRAP.ACTIVATION_DELAY);
+            ExplosionDamage = Settings.GetValue(SettingsConst.BOMB_TRAP.EXPLOSION_DAMAGE);
+            ExplosionRadius = Settings.GetValue(SettingsConst.BOMB_TRAP.EXPLOSION_RADIUS);
+            ExplosionFadeDuration = Settings.GetValue(SettingsConst.BOMB_TRAP.EXPLOSION_FADE_DURATION);
+        }
+
+        public void DecreaseActivationDelay(float amount)
+        {
+            ActivationDelay = Math.Max(0.05f, ActivationDelay - amount);
+        }
+
+        public void IncreaseDamage(int amount)
+        {
+            ExplosionDamage += amount;
+        }
+
+        public void IncreaseRadius(float amount)
+        {
+            ExplosionRadius += amount;
+        }
+
+        public void DecreaseFadeDuration(float amount)
+        {
+            ExplosionFadeDuration = Math.Max(0.01f, ExplosionFadeDuration - amount);
+        }
+    }
+
     public class BombTrap : Trap
     {
-        private const float ActivationDelay = 0.7f;
-        private const int ExplosionDamage = 25;
-        private const float ExplosionRadius = 100f;
-        private const float ExplosionFadeDuration = 0.3f;
+        private float _activationDelay;
+        private int _explosionDamage;
+        private float _explosionRadius;
+        private float _explosionFadeDuration;
 
         private bool _activated = false;
         private bool _exploded = false;
         private float _explosionTimer = 0f;
 
-        public BombTrap(Vector2 position, float duration = 12f) : base(position, duration)
+        public BombTrap(BombTrapStats stats, Vector2 position, float duration = 12f) : base(position, duration)
         {
+            _activationDelay = stats.ActivationDelay;
+            _explosionDamage = stats.ExplosionDamage;
+            _explosionRadius = stats.ExplosionRadius;
+            _explosionFadeDuration = stats.ExplosionFadeDuration;
+
             _baseColor = Color.Orange;
             _currentColor = Color.Orange;
         }
@@ -26,7 +67,7 @@ namespace TheCure.BaseObjects.Traps
         {
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            if (!_activated && _elapsedTime >= ActivationDelay)
+            if (!_activated && _elapsedTime >= _activationDelay)
             {
                 _activated = true;
             }
@@ -40,10 +81,10 @@ namespace TheCure.BaseObjects.Traps
             if (_exploded)
             {
                 _explosionTimer += deltaTime;
-                float fadeAlpha = 1f - (_explosionTimer / ExplosionFadeDuration);
+                float fadeAlpha = 1f - (_explosionTimer / _explosionFadeDuration);
                 _currentColor = Color.Red * fadeAlpha;
 
-                if (_explosionTimer >= ExplosionFadeDuration)
+                if (_explosionTimer >= _explosionFadeDuration)
                 {
                     Destroy();
                     _isActive = false;
@@ -73,13 +114,13 @@ namespace TheCure.BaseObjects.Traps
                     {
                         Vector2 toEnemy = ((CircleCollider)enemy.collider).Center - ((CircleCollider)collider).Center;
                         float distanceSquared = toEnemy.LengthSquared();
-                        float radiusSquared = ExplosionRadius * ExplosionRadius;
+                        float radiusSquared = _explosionRadius * _explosionRadius;
 
                         if (distanceSquared < radiusSquared)
                         {
                             float distance = (float)Math.Sqrt(distanceSquared);
-                            float damageMultiplier = 1f - (distance / ExplosionRadius);
-                            int damageDealt = (int)(ExplosionDamage * damageMultiplier);
+                            float damageMultiplier = 1f - (distance / _explosionRadius);
+                            int damageDealt = (int)(_explosionDamage * damageMultiplier);
 
                             if (damageDealt > 0)
                             {

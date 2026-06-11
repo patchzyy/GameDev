@@ -23,10 +23,10 @@ public class UpgradeManager : Manager<UpgradeManager>
     private const int ScoreUpgradeInterval = 2;
     private const int ScoreUpgradeStep = 200;
     private const int InitialScoreUpgradeThreshold = 200;
-    
+
     private int _scoreUpgradeThreshold = 200;
     private int _scoreUpgradeStep = 200;
-    
+
     private UpgradesUI _upgradesUI;
 
     public void Load()
@@ -40,22 +40,50 @@ public class UpgradeManager : Manager<UpgradeManager>
     public void Reset()
     {
         var boostUnlock = new BoostUnlockUpgrade();
+        var HealthBomb = new HealthBombUnlockUpgrade();
+        var FreezeTrap = new FreezeTrapUnlockUpgrade();
+        var ElectricTrap = new ElectricTrapUnlockUpgrade();
+        var SpikeTrap = new SpikeTrapUnlockUpgrade();
+        var BombTrap = new BombTrapUnlockUpgrade();
 
         _availableActions = new List<Upgrade>
         {
-            new HealthBombUnlockUpgrade(),
+            HealthBomb,
             new CommandUnlockUpgrade(),
             new SpikeTrapUnlockUpgrade(),
-            new FreezeTrapUnlockUpgrade(),
-            new BombTrapUnlockUpgrade(),
-            new ElectricTrapUnlockUpgrade(),
-            new HealBombTrapUnlockUpgrade(),
+            FreezeTrap,
+            ElectricTrap,
+            BombTrap,
             boostUnlock,
         };
 
         _availableUpgrades = new List<Upgrade>
         {
             new BoostPowerUpgrade(boostUnlock),
+            // health bomb upgrades
+            new HealthBombHealingUpgrade(HealthBomb),
+            new HealthBombRadiusUpgrade(HealthBomb),
+            new HealthBombTickUpgrade(HealthBomb),
+            // Heal Bomb Trap runtime upgrades
+            new HealthBombTrapHealingUpgrade(HealthBomb),
+            new HealthBombTrapTickUpgrade(HealthBomb),
+            new HealthBombTrapRadiusUpgrade(HealthBomb),
+            // Freeze trap upgrades
+            new FreezeTrapDurationUpgrade(FreezeTrap),
+            new FreezeTrapSlowUpgrade(FreezeTrap),
+            // Electric trap upgrades
+            new ElectricTrapDamageUpgrade(ElectricTrap),
+            new ElectricTrapTickUpgrade(ElectricTrap),
+            new ElectricTrapStunDurationUpgrade(ElectricTrap),
+            new ElectricTrapStunForceUpgrade(ElectricTrap),
+            // Spike trap upgrades
+            new SpikeTrapDamageUpgrade(SpikeTrap),
+            new SpikeTrapTickUpgrade(SpikeTrap),
+            // Bomb trap upgrades
+            new BombTrapDamageUpgrade(BombTrap),
+            new BombTrapRadiusUpgrade(BombTrap),
+            new BombTrapActivationUpgrade(BombTrap),
+            new BombTrapFadeUpgrade(BombTrap),
         };
 
         _unlockedUpgrades = new List<Upgrade>();
@@ -66,6 +94,11 @@ public class UpgradeManager : Manager<UpgradeManager>
         _scoreUpgradeThreshold = InitialScoreUpgradeThreshold;
         _scoreUpgradeStep = ScoreUpgradeStep;
         _upgradesUI.Reset();
+    }
+
+    public List<Upgrade> GetUnlockedActions()
+    {
+        return _unlockedActions;
     }
 
     public void PickRandomUpgrade()

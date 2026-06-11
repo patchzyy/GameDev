@@ -101,5 +101,58 @@ namespace TheCure
             public static readonly SettingKey<InputBinding> ACTION_4 = new(_group, "ACTION_4");
             public static readonly SettingKey<InputBinding> ACTION_5 = new(_group, "ACTION_5");
         }
+
+        public static class HEAL_BOMB
+        {
+            private static string _group = "HEAL_BOMB";
+
+            public static readonly SettingKey<int> RADIUS = new(_group, "RADIUS");
+            public static readonly SettingKey<float> HEALING = new(_group, "HEALING");
+            public static readonly SettingKey<int> TICKS = new(_group, "TICKS");
+        }
+
+        public static class HEAL_BOMB_TRAP
+        {
+            private static string _group = "HEAL_BOMB_TRAP";
+
+            public static readonly SettingKey<float> HEALING = new(_group, "HEALING");
+            public static readonly SettingKey<float> TICK_INTERVAL = new(_group, "TICK_INTERVAL");
+            public static readonly SettingKey<int> RADIUS = new(_group, "RADIUS");
+        }
+        
+        public static class FREEZE_TRAP
+        {
+            private static string _group = "FREEZE_TRAP";
+
+            public static readonly SettingKey<float> DURATION = new(_group, "DURATION");
+            public static readonly SettingKey<float> SLOW_FACTOR = new(_group, "SLOW_FACTOR");
+        }
+        
+        public static class ELECTRIC_TRAP
+        {
+            private static string _group = "ELECTRIC_TRAP";
+
+            public static readonly SettingKey<int> DAMAGE_PER_TICK = new(_group, "DAMAGE_PER_TICK");
+            public static readonly SettingKey<float> STUN_FORCE = new(_group, "STUN_FORCE");
+            public static readonly SettingKey<float> STUN_DURATION = new(_group, "STUN_DURATION");
+            public static readonly SettingKey<float> DAMAGE_TICK_INTERVAL = new(_group, "DAMAGE_TICK_INTERVAL");
+        }
+        public static class BOMB_TRAP
+        {
+            private static string _group = "BOMB_TRAP";
+
+            public static readonly SettingKey<float> ACTIVATION_DELAY = new(_group, "ACTIVATION_DELAY");
+            public static readonly SettingKey<int> EXPLOSION_DAMAGE = new(_group, "EXPLOSION_DAMAGE");
+            public static readonly SettingKey<float> EXPLOSION_RADIUS = new(_group, "EXPLOSION_RADIUS");
+            public static readonly SettingKey<float> EXPLOSION_FADE_DURATION = new(_group, "EXPLOSION_FADE_DURATION");
+        }
+        public static class SPIKE_TRAP
+        {
+            private static string _group = "SPIKE_TRAP";
+
+            public static readonly SettingKey<int> DAMAGE_PER_HIT = new(_group, "DAMAGE_PER_HIT");
+            public static readonly SettingKey<float> DAMAGE_INTERVAL = new(_group, "DAMAGE_INTERVAL");
+        }
+        
     }
 }

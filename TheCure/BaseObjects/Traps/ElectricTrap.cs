@@ -6,18 +6,61 @@ using TheCure.Entities;
 
 namespace TheCure.BaseObjects.Traps
 {
+    public class ElectricTrapStats
+    {
+        public int DamagePerTick;
+        public float DamageTickInterval;
+        public float StunDuration;
+        public float StunForce;
+
+        public ElectricTrapStats()
+        {
+            DamagePerTick = Settings.GetValue(SettingsConst.ELECTRIC_TRAP.DAMAGE_PER_TICK);
+            DamageTickInterval = Settings.GetValue(SettingsConst.ELECTRIC_TRAP.DAMAGE_TICK_INTERVAL);
+            StunDuration = Settings.GetValue(SettingsConst.ELECTRIC_TRAP.STUN_DURATION);
+            StunForce = Settings.GetValue(SettingsConst.ELECTRIC_TRAP.STUN_FORCE);
+        }
+
+        public void IncreaseDamage(int damageIncrease)
+        {
+            DamagePerTick += damageIncrease;
+        }
+
+        public void DecreaseDamageTickInterval(float intervalDecrease)
+        {
+            DamageTickInterval = Math.Max(0.1f, DamageTickInterval - intervalDecrease);
+        }
+
+        public void IncreaseStunDuration(float durationIncrease)
+        {
+            StunDuration += durationIncrease;
+        }
+
+        public void IncreaseStunForce(float forceIncrease)
+        {
+            StunForce += forceIncrease;
+        }
+    }
+    
     public class ElectricTrap : Trap
     {
-        private const int DamagePerTick = 8;
-        private const float DamageTickInterval = 0.3f;
-        private const float StunDuration = 0.8f;
-        private const float StunForce = 300f;
+        private int _damagePerTick;
+        private float _damageTickInterval;
+        private float _stunDuration;
+        private float _stunForce;
 
-        private float _tickTimer = DamageTickInterval;
+        private float _tickTimer;
         private HashSet<Enemy> _affectedEnemies = new HashSet<Enemy>();
 
-        public ElectricTrap(Vector2 position, float duration = 10f) : base(position, duration)
+        public ElectricTrap(ElectricTrapStats stats, Vector2 position, float duration = 10f) : base(position, duration)
         {
+            _damagePerTick = stats.DamagePerTick;
+            _damageTickInterval = stats.DamageTickInterval;
+            _stunDuration = stats.StunDuration;
+            _stunForce = stats.StunForce;
+
+            _tickTimer = _damageTickInterval;
+
             _baseColor = Color.Yellow;
             _currentColor = Color.Yellow;
         }
@@ -29,19 +72,19 @@ namespace TheCure.BaseObjects.Traps
             _tickTimer -= deltaTime;
             if (_tickTimer <= 0f)
             {
-                _tickTimer = DamageTickInterval;
+                _tickTimer = _damageTickInterval;
 
                 foreach (var enemy in _affectedEnemies)
                 {
                     if (enemy != null && _isActive)
                     {
-                        enemy.LoseHealth(DamagePerTick);
+                        enemy.LoseHealth(_damagePerTick);
 
                         Vector2 pushDirection = ((CircleCollider)enemy.collider).Center - ((CircleCollider)collider).Center;
                         if (pushDirection.LengthSquared() > 0)
                         {
                             pushDirection.Normalize();
-                            enemy.ApplyKnockBack(pushDirection, StunForce, StunDuration);
+                            enemy.ApplyKnockBack(pushDirection, _stunForce, _stunDuration);
                         }
                     }
                 }
@@ -67,13 +110,13 @@ namespace TheCure.BaseObjects.Traps
             if (target is Enemy enemy && !_affectedEnemies.Contains(enemy))
             {
                 _affectedEnemies.Add(enemy);
-                enemy.LoseHealth(DamagePerTick);
+                enemy.LoseHealth(_damagePerTick);    
 
                 Vector2 pushDirection = ((CircleCollider)enemy.collider).Center - ((CircleCollider)collider).Center;
                 if (pushDirection.LengthSquared() > 0)
                 {
                     pushDirection.Normalize();
-                    enemy.ApplyKnockBack(pushDirection, StunForce, StunDuration);
+                    enemy.ApplyKnockBack(pushDirection, _stunForce, _stunDuration);
                 }
             }
         }
