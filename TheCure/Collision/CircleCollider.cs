@@ -116,9 +116,7 @@ namespace TheCure
             float sum = b * b - 4 * a * c;
 
             if (sum < 0)
-            {
                 return false;
-            }
             else if (sum == 0)
             {
                 float t = -b / (2 * a);

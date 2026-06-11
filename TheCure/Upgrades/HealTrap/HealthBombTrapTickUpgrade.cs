@@ -19,9 +19,8 @@ public class HealthBombTrapTickUpgrade : Upgrade
     public void Unlock(List<Upgrade> unlockedUpgrades)
     {
         var stats = WeaponManager.Get().GetHealBombTrapStats();
+
         if (stats != null)
-        {
             stats.DecreaseTickInterval(0.05f);
-        }
     }
 }

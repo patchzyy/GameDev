@@ -9,6 +9,7 @@ public class FreezeTrapDurationPassiveUpgrade : Upgrade
     public Upgrade RequiredUpgrade { get; set; } = null;
     public UpgradeType Type { get; } = UpgradeType.Passive;
     public bool UnlockedOnce { get; set; } = true;
+
     public FreezeTrapDurationPassiveUpgrade()
     {
         RequiredUpgrade = new FreezeTrapUnlockUpgrade();

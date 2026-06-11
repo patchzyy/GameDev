@@ -102,9 +102,7 @@ namespace TheCure
             _gameObjects.Add(PlayerManager.Get().Player);
 
             for (var i = 0; i < 1; i++)
-            {
                 SpawnZombie();
-            }
         }
 
         public void PauseGame()
@@ -132,9 +130,7 @@ namespace TheCure
             HUD = new HUD();
 
             foreach (var gameObject in _gameObjects)
-            {
                 gameObject.Load();
-            }
 
             PlayerActionsManager.Get().Load();
             HUD.Load();
@@ -207,9 +203,7 @@ namespace TheCure
                 HandleInput();
 
                 foreach (var gameObject in _gameObjects)
-                {
                     gameObject.Update(gameTime);
-                }
 
                 _camera.Update(PlayerManager.Get().Player.GetPosition(), GetWorldBounds());
                 HUD.Update(gameTime);
@@ -221,14 +215,10 @@ namespace TheCure
                     gameObject.Load();
 
                     if (gameObject is Enemy enemy)
-                    {
                         Enemies.Add(enemy);
-                    }
 
                     if (gameObject is Friendly friendly && !Friendlies.Contains(friendly))
-                    {
                         Friendlies.Add(friendly);
-                    }
 
                     _gameObjects.Add(gameObject);
                 }
@@ -238,14 +228,10 @@ namespace TheCure
                 foreach (var gameObject in _toBeRemoved)
                 {
                     if (gameObject is Enemy enemy)
-                    {
                         Enemies.Remove(enemy);
-                    }
 
                     if (gameObject is Friendly friendly)
-                    {
                         Friendlies.Remove(friendly);
-                    }
 
                     _gameObjects.Remove(gameObject);
                 }
@@ -425,15 +411,12 @@ namespace TheCure
             var stats = new List<Stat>
             {
                 new Stat("Max Health", PlayerManager.Get().Player._maxHealth.ToString()),
-                new Stat("Move Speed",
-                    (PlayerManager.Get().Player._speed / 10).ToString("0.0", CultureInfo.InvariantCulture)),
+                new Stat("Move Speed", (PlayerManager.Get().Player._speed / 10).ToString("0.0", CultureInfo.InvariantCulture)),
                 new Stat("Friendlies", _gameObjects.OfType<Friendly>().Count().ToString()),
             };
 
             foreach (var boost in BoostManager.Get().GetBoosts())
-            {
                 stats.Add(new Stat("Boost", $"x{boost.GetUnlockedBoostMultiplier():0.00}"));
-            }
 
             if (WeaponManager.Get().IsHealBombUnlocked())
             {
@@ -453,44 +436,38 @@ namespace TheCure
             if (WeaponManager.Get().IsElectricTrapUnlocked())
             {
                 var electricTrapStats = WeaponManager.Get().GetElectricTrapStats();
+
                 stats.Add(new Stat("Electric Trap Damage", electricTrapStats.DamagePerTick.ToString()));
-                stats.Add(new Stat("Electric Trap Tick Interval",
-                    electricTrapStats.DamageTickInterval.ToString("0.0", CultureInfo.InvariantCulture)));
-                stats.Add(new Stat("Electric Trap Stun Duration",
-                    electricTrapStats.StunDuration.ToString("0.0", CultureInfo.InvariantCulture)));
-                stats.Add(new Stat("Electric Trap Stun Force",
-                    electricTrapStats.StunForce.ToString("0.0", CultureInfo.InvariantCulture)));
+                stats.Add(new Stat("Electric Trap Tick Interval", electricTrapStats.DamageTickInterval.ToString("0.0", CultureInfo.InvariantCulture)));
+                stats.Add(new Stat("Electric Trap Stun Duration", electricTrapStats.StunDuration.ToString("0.0", CultureInfo.InvariantCulture)));
+                stats.Add(new Stat("Electric Trap Stun Force", electricTrapStats.StunForce.ToString("0.0", CultureInfo.InvariantCulture)));
             }
 
             if (WeaponManager.Get().IsHealTrapUnlocked())
             {
                 var healBombTrapStats = WeaponManager.Get().GetHealBombTrapStats();
-                stats.Add(new Stat("Heal Bomb Trap Healing",
-                    healBombTrapStats.HealAmountPerTick.ToString("0.0", CultureInfo.InvariantCulture)));
-                stats.Add(new Stat("Heal Bomb Trap Tick Interval",
-                    healBombTrapStats.HealTickInterval.ToString("0.0", CultureInfo.InvariantCulture)));
-                stats.Add(new Stat("Heal Bomb Trap Radius",
-                    healBombTrapStats.HealRadius.ToString("0.0", CultureInfo.InvariantCulture)));
+
+                stats.Add(new Stat("Heal Bomb Trap Healing", healBombTrapStats.HealAmountPerTick.ToString("0.0", CultureInfo.InvariantCulture)));
+                stats.Add(new Stat("Heal Bomb Trap Tick Interval", healBombTrapStats.HealTickInterval.ToString("0.0", CultureInfo.InvariantCulture)));
+                stats.Add(new Stat("Heal Bomb Trap Radius", healBombTrapStats.HealRadius.ToString("0.0", CultureInfo.InvariantCulture)));
             }
 
             if (WeaponManager.Get().IsBombTrapUnlocked())
             {
                 var bombTrapStats = WeaponManager.Get().GetBombTrapStats();
-                stats.Add(new Stat("Bomb Trap Activation Delay",
-                    bombTrapStats.ActivationDelay.ToString("0.0", CultureInfo.InvariantCulture)));
+
+                stats.Add(new Stat("Bomb Trap Activation Delay", bombTrapStats.ActivationDelay.ToString("0.0", CultureInfo.InvariantCulture)));
                 stats.Add(new Stat("Bomb Trap Damage", bombTrapStats.ExplosionDamage.ToString()));
-                stats.Add(new Stat("Bomb Trap Radius",
-                    bombTrapStats.ExplosionRadius.ToString("0.0", CultureInfo.InvariantCulture)));
-                stats.Add(new Stat("Bomb Trap Fade Duration",
-                    bombTrapStats.ExplosionFadeDuration.ToString("0.0", CultureInfo.InvariantCulture)));
+                stats.Add(new Stat("Bomb Trap Radius", bombTrapStats.ExplosionRadius.ToString("0.0", CultureInfo.InvariantCulture)));
+                stats.Add(new Stat("Bomb Trap Fade Duration", bombTrapStats.ExplosionFadeDuration.ToString("0.0", CultureInfo.InvariantCulture)));
             }
 
             if (WeaponManager.Get().IsSpikeTrapUnlocked())
             {
                 var spikeTrapStats = WeaponManager.Get().GetSpikeTrapStats();
+
                 stats.Add(new Stat("Spike Trap Damage", spikeTrapStats.DamagePerHit.ToString()));
-                stats.Add(new Stat("Spike Trap Damage Interval",
-                    spikeTrapStats.DamageInterval.ToString("0.0", CultureInfo.InvariantCulture)));
+                stats.Add(new Stat("Spike Trap Damage Interval", spikeTrapStats.DamageInterval.ToString("0.0", CultureInfo.InvariantCulture)));
             }
 
             return stats;
@@ -671,14 +648,10 @@ namespace TheCure
         private void AddStaticWorldObject(GameObject gameObject)
         {
             if (gameObject.collider != null)
-            {
                 WorldObstacleBounds.Add(gameObject.collider.GetBoundingBox());
-            }
 
             if (Game != null && ContentsManager.Get().GetContent() != null)
-            {
                 gameObject.Load();
-            }
 
             _gameObjects.Add(gameObject);
         }
@@ -690,9 +663,7 @@ namespace TheCure
             DrawTiledGameplayBackground(spriteBatch);
 
             foreach (var gameObject in _gameObjects)
-            {
                 gameObject.Draw(gameTime, spriteBatch);
-            }
 
             spriteBatch.End();
         }

@@ -22,7 +22,7 @@ namespace TheCure
         {
             _stagger = Settings.GetValue(SettingsConst.ZOMBIE.STAGGER);
             _attackDamage = Settings.GetValue(SettingsConst.ZOMBIE.ATTACK_DAMAGE);
-            _attackCooldown = Settings.GetValue(SettingsConst.ZOMBIE.ATTACK_COOL_DOWN);
+            _attackCoolDown = Settings.GetValue(SettingsConst.ZOMBIE.ATTACK_COOL_DOWN);
         }
         public override void Load()
         {
@@ -44,8 +44,6 @@ namespace TheCure
             LastHealed += deltaTime;
             base.Update(gameTime);
         }
-
-
 
         private void BecomeFriendly()
         {
@@ -108,9 +106,7 @@ namespace TheCure
             }
 
             if (tmp is Wall wall)
-            {
                 wall.ResolveCircleCollision((CircleCollider)collider, _previousCenter);
-            }
 
             base.OnCollision(tmp);
         }
@@ -144,7 +140,6 @@ namespace TheCure
             Rectangle destRect = GetAnimatedSpriteDestinationRectangle();
 
             DrawShadow(spriteBatch, destRect);
-
             DrawAnimatedSprite(spriteBatch, tint, _facingDirection);
 
             base.Draw(gameTime, spriteBatch);

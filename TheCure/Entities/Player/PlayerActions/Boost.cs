@@ -63,13 +63,12 @@ public abstract class Boost : PlayerAction
 
     public void Update(float deltaTime)
     {
-        if (!BoostEnabled) return;
+        if (!BoostEnabled)
+            return;
 
         BoostTimer = Math.Max(0f, BoostTimer - deltaTime);
 
         if (BoostTimer <= 0f)
-        {
             BoostEnabled = false;
-        }
     }
 }

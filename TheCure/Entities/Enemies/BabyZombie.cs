@@ -21,7 +21,7 @@ namespace TheCure
         {
             _stagger = 0.35f;
             _attackDamage = 1f;
-            _attackCooldown = 1.1f;
+            _attackCoolDown = 1.1f;
         }
 
         public override void Load()
@@ -130,6 +130,7 @@ namespace TheCure
         protected override void OnDeathFinish()
         {
             _onDeathComplete?.Invoke();
+
             if (_onDeathComplete == null)
             {
                 ScoreManager.Get().AddScore(25, "Baby Zombie Killed");

@@ -45,9 +45,7 @@ namespace TheCure
                 _currentHealth = _maxHealth;
 
                 if (_onMaxHealth != null)
-                {
                     _onMaxHealth.Invoke();
-                }
             }
         }
 
@@ -56,9 +54,7 @@ namespace TheCure
             _currentHealth -= health;
 
             if (_currentHealth <= 0)
-            {
                 _onDeath.Invoke();
-            }
         }
 
         public void ReloadHealth(float health)

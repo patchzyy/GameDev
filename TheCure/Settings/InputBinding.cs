@@ -28,7 +28,6 @@ namespace TheCure
         public string ToDisplayString()
         {
             if (IsMouse)
-            {
                 return Mouse switch
                 {
                     MouseButton.Left => "M1",
@@ -36,10 +35,9 @@ namespace TheCure
                     MouseButton.Middle => "M3",
                     _ => "M?"
                 };
-            }
 
-            var s = Key.Value.ToString();
-            return s.StartsWith("D") ? s[1..] : s;
+            var tmp = Key.Value.ToString();
+            return tmp.StartsWith("D") ? tmp[1..] : tmp;
         }
     }
 }

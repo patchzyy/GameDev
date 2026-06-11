@@ -41,33 +41,24 @@ namespace TheCure
             _life -= (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             if (_life <= 0)
-            {
                 GameManager.Get().RemoveGameObject(this);
-            }
         }
 
         public override void OnCollision(GameObject gameObject)
         {
             if (gameObject is Zombie)
-            {
                 GameManager.Get().RemoveGameObject(this);
-            }
             else if (gameObject is Supply)
-            {
                 GameManager.Get().RemoveGameObject(this);
-            }
         }
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             if (IsHealing)
-            {
                 spriteBatch.Draw(_texture, _collider.GetBoundingBox(), Color.LimeGreen);
-            }
             else
-            {
                 spriteBatch.Draw(_texture, _collider.GetBoundingBox(), Color.Red);
-            }
+
             base.Draw(gameTime, spriteBatch);
         }
     }

@@ -27,8 +27,7 @@ namespace TheCure.Entities
         protected Vector2 _knockBackVelocity = Vector2.Zero;
         protected float _knockBackDuration = 0f;
 
-        public LivingEntity(string textureName, float speed, float startHealth, float maxHealth, int frameCount = 1,
-            float frameRate = 1f, bool isLooping = true, float scale = 1f)
+        public LivingEntity(string textureName, float speed, float startHealth, float maxHealth, int frameCount = 1, float frameRate = 1f, bool isLooping = true, float scale = 1f)
         {
             _textureName = textureName;
             _speed = speed;
@@ -85,6 +84,7 @@ namespace TheCure.Entities
         {
             if (_animatedSprite == null)
                 return new Rectangle(0, 0, 0, 0);
+
             float scaledFactor = _scale * scaleMultiplier;
             int scaledWidth = (int)(_animatedSprite.FrameWidth * scaledFactor);
             int scaledHeight = (int)(_animatedSprite.FrameHeight * scaledFactor);
@@ -102,8 +102,7 @@ namespace TheCure.Entities
             _animatedSprite?.Draw(spriteBatch, GetAnimatedSpriteDestinationRectangle(scaleMultiplier), color);
         }
 
-        protected void DrawAnimatedSprite(SpriteBatch spriteBatch, Color color, Vector2 facingDirection,
-            float scaleMultiplier = 1f)
+        protected void DrawAnimatedSprite(SpriteBatch spriteBatch, Color color, Vector2 facingDirection, float scaleMultiplier = 1f)
         {
             if (_animatedSprite == null)
                 return;
@@ -116,8 +115,7 @@ namespace TheCure.Entities
             _animatedSprite.Draw(spriteBatch, position, color, 0f, scale, effects, 0f);
         }
 
-        protected void DrawShadow(SpriteBatch spriteBatch, Rectangle destRect, float coreAlpha = 0.14f,
-            float softAlpha = 0.08f)
+        protected void DrawShadow(SpriteBatch spriteBatch, Rectangle destRect, float coreAlpha = 0.14f, float softAlpha = 0.08f)
         {
             Rectangle shadowCore = new Rectangle(
                 destRect.X + destRect.Width / 8,

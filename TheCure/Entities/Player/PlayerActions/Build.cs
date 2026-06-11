@@ -37,13 +37,9 @@ public class Build : PlayerAction
 
         Vector2 direction = worldMousePosition - playerPos;
         if (direction.LengthSquared() > 100)
-        {
             direction.Normalize();
-        }
         else
-        {
             direction = new Vector2((float)Math.Cos(player._rotation), (float)Math.Sin(player._rotation));
-        }
 
         Vector2 trapPosition = playerPos + direction * TrapPlacementDistance;
 

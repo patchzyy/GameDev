@@ -12,7 +12,7 @@ public class WeaponsSystem
     public BaseWeapon CurrentWeapon { get; set; }
 
     private SingleBulletWeapon _singleBulletWeapon = new SingleBulletWeapon();
-    
+
     private MovementWeapon _movementWeapon = new MovementWeapon();
 
     private InstantWeapon _instantWeapon = new InstantWeapon();
@@ -76,15 +76,11 @@ public class WeaponsSystem
             Vector2 position = PlayerManager.Get().Player.GetPosition();
 
             if (CurrentWeaponMode == WeaponMode.Throw)
-            {
                 CurrentWeapon.Fire(position, worldMousePosition);
-            }
 
-            if (CurrentWeaponMode ==
-                WeaponMode.Shoot)
+            if (CurrentWeaponMode == WeaponMode.Shoot)
             {
-                Vector2 aimDirection =
-                    LinePieceCollider.GetDirection(position, worldMousePosition);
+                Vector2 aimDirection = LinePieceCollider.GetDirection(position, worldMousePosition);
                 CurrentWeapon.Fire(position, aimDirection);
             }
         }

@@ -75,9 +75,7 @@ public class PassivesManager : Manager<PassivesManager>
             unlockedActions.Exists(action => action.GetType() == upgrade.RequiredUpgrade.GetType()));
 
         while (selectableUpgrades.Count < 4)
-        {
             selectableUpgrades.Add(new HealthPassiveUpgrade());
-        }
 
         for (int i = 0; i < 4; i++)
         {
@@ -97,9 +95,7 @@ public class PassivesManager : Manager<PassivesManager>
         _selectedUpgrades.Clear();
 
         if (!_unlockedUpgrades.Contains(upgrade))
-        {
             _unlockedUpgrades.Add(upgrade);
-        }
 
         GameManager.Get().SetGameState(GameState.GameOver);
     }

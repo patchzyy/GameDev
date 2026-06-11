@@ -15,6 +15,7 @@ public class ShootMode : PlayerAction
     {
         CoolDown = PlayerManager.Get().Player.WeaponsSystem.GetFireRate();
         var weaponMode = PlayerManager.Get().Player.WeaponsSystem.CurrentWeaponMode;
+
         switch (weaponMode)
         {
             case WeaponMode.Throw:
