@@ -30,7 +30,7 @@ public class Dash : PlayerAction
         if (player == null)
             return;
 
-        _dashDirection = player.FacingDirection;
+        _dashDirection = player._facingDirection;
         if (_dashDirection == Vector2.Zero)
             _dashDirection = new Vector2((float)Math.Cos(player._rotation), (float)Math.Sin(player._rotation));
 

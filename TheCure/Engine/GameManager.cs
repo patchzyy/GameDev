@@ -30,6 +30,7 @@ namespace TheCure
         private int _maxEnemiesOnScreen;
         private int _maxBrutesOnScreen;
         private float _bruteSpawnChance;
+        private float _babyZombieSpawnChance;
 
         private const int WorldWidth = 3600;
         private const int WorldHeight = 2400;
@@ -39,11 +40,14 @@ namespace TheCure
         public Random RNG { get; private set; }
         public Game Game { get; private set; }
         public GameState CurrentGameState { get; private set; }
+        public GameState PreviousGameState { get; private set; }
         public HUD HUD { get; private set; }
         public List<Enemy> Enemies;
         public Camera Camera => _camera;
 
         public List<Friendly> Friendlies { get; private set; } = new List<Friendly>();
+
+        public GameState ResumeState { get; private set; }
 
         public GameManager()
         {
@@ -55,6 +59,7 @@ namespace TheCure
             RNG = new Random();
 
             CurrentGameState = GameState.HealSelection;
+            PreviousGameState = GameState.HealSelection;
             _currentSpawnInterval = _initialSpawnInterval;
         }
 
@@ -102,11 +107,26 @@ namespace TheCure
             }
         }
 
-        public void SetGameState(GameState newState)
+        public void PauseGame()
         {
-            CurrentGameState = newState;
+            if (CurrentGameState == GameState.Paused)
+                return;
+
+            ResumeState = CurrentGameState;
+            CurrentGameState = GameState.Paused;
         }
 
+        public void ResumeGame()
+        {
+            CurrentGameState = GameState.Playing;
+        }
+        public void SetGameState(GameState newState, bool savePrevious = true)
+        {
+            if (savePrevious)
+                PreviousGameState = CurrentGameState;
+
+            CurrentGameState = newState;
+        }
         public void Load()
         {
             HUD = new HUD();
@@ -253,6 +273,7 @@ namespace TheCure
                 _maxEnemiesOnScreen = Settings.GetValue(SettingsConst.SPAWNING.MAX_ENEMIES_ON_SCREEN);
                 _maxBrutesOnScreen = Settings.GetValue(SettingsConst.SPAWNING.MAX_BRUTES);
                 _bruteSpawnChance = Settings.GetValue(SettingsConst.SPAWNING.BRUTE_SPAWN_CHANCE);
+                _babyZombieSpawnChance = 0f;
             }
             else if (_gameTimeElapsed < 180f)
             {
@@ -261,6 +282,7 @@ namespace TheCure
                 _maxEnemiesOnScreen = 35;
                 _maxBrutesOnScreen = 2;
                 _bruteSpawnChance = 0.15f;
+                _babyZombieSpawnChance = 0.20f;
             }
             else
             {
@@ -269,6 +291,7 @@ namespace TheCure
                 _maxEnemiesOnScreen = 50;
                 _maxBrutesOnScreen = 5;
                 _bruteSpawnChance = 0.20f;
+                _babyZombieSpawnChance = 0.30f;
             }
         }
 
@@ -281,7 +304,8 @@ namespace TheCure
 
             int zombieCount = _gameObjects.OfType<Zombie>().Count();
             int bruteCount = _gameObjects.OfType<Brute>().Count();
-            int totalEnemies = zombieCount + bruteCount;
+            int babyZombieCount = _gameObjects.OfType<BabyZombie>().Count();
+            int totalEnemies = zombieCount + bruteCount + babyZombieCount;
 
             if (totalEnemies >= _maxEnemiesOnScreen)
                 return;
@@ -294,6 +318,11 @@ namespace TheCure
                 {
                     SpawnBrute();
                     bruteCount++;
+                }
+                else if (RNG.NextDouble() < _babyZombieSpawnChance)
+                {
+                    SpawnBabyZombie();
+                    babyZombieCount++;
                 }
                 else
                 {
@@ -317,6 +346,14 @@ namespace TheCure
             Vector2 spawnPos = RandomLocationOutsideView();
             brute.Spawn(spawnPos);
             AddGameObject(brute);
+        }
+
+        private void SpawnBabyZombie()
+        {
+            BabyZombie babyZombie = new BabyZombie();
+            Vector2 spawnPos = RandomLocationOutsideView();
+            babyZombie.Spawn(spawnPos);
+            AddGameObject(babyZombie);
         }
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
@@ -363,7 +400,11 @@ namespace TheCure
                     break;
 
                 case GameState.PassiveUpgrade:
+                    DrawGameObjects(spriteBatch, gameTime);
+
                     spriteBatch.Begin();
+                    HUD.Draw(spriteBatch, this);
+                    PlayerActionsManager.Get().Draw(spriteBatch);
                     PassivesManager.Get().Draw(spriteBatch, this);
                     spriteBatch.End();
                     break;

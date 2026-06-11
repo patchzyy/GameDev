@@ -5,23 +5,23 @@ using TheCure.Managers;
 
 namespace TheCure
 {
-    public class Brute : Enemy
+    public class BabyZombie : Enemy
     {
-        private BruteAnimationState _currentState;
+        private BabyZombieAnimationState _currentState;
 
-        public Brute() : base(
+        public BabyZombie() : base(
             textureName: "Zombie-Walk",
-            speed: Settings.GetValue(SettingsConst.BRUTE.SPEED),
-            startHealth: Settings.GetValue(SettingsConst.BRUTE.START_HEALTH),
-            maxHealth: Settings.GetValue(SettingsConst.BRUTE.MAX_HEALTH),
+            speed: Settings.GetValue(SettingsConst.ZOMBIE.SPEED) * Settings.GetValue(SettingsConst.BABY_ZOMBIE.MOVE_SPEED_MULTIPLIER),
+            startHealth: Settings.GetValue(SettingsConst.ZOMBIE.START_HEALTH) * Settings.GetValue(SettingsConst.BABY_ZOMBIE.HEALTH_MULTIPLIER),
+            maxHealth: Settings.GetValue(SettingsConst.ZOMBIE.START_HEALTH) * Settings.GetValue(SettingsConst.BABY_ZOMBIE.HEALTH_MULTIPLIER),
             frameCount: 7,
-            frameRate: 3.5f,
-            scale: 3.1f
+            frameRate: 8f,
+            scale: Settings.GetValue(SettingsConst.BABY_ZOMBIE.SCALE)
         )
         {
-            _stagger = Settings.GetValue(SettingsConst.BRUTE.STAGGER);
-            _attackDamage = Settings.GetValue(SettingsConst.BRUTE.ATTACK_DAMAGE);
-            _attackCooldown = Settings.GetValue(SettingsConst.BRUTE.ATTACK_COOLDOWN);
+            _stagger = 0.35f;
+            _attackDamage = 1f;
+            _attackCooldown = 1.1f;
         }
 
         public override void Load()
@@ -33,8 +33,8 @@ namespace TheCure
             SetHealthBar(_texture, _maxHealth, _startHealth, Destroy, null);
             SyncHealthBarPosition();
 
-            SwitchAnimation("Zombie-Dead", 11, 3.5f, false, true);
-            _currentState = BruteAnimationState.Spawn;
+            SwitchAnimation("Zombie-Dead", 11, 8f, false, true);
+            _currentState = BabyZombieAnimationState.Spawn;
             _isSpawning = true;
         }
 
@@ -49,6 +49,7 @@ namespace TheCure
             {
                 if (!bullet.IsHealing)
                 {
+                    SoundManager.Get().PlayZombieHit();
                     LoseHealth(bullet.Damage);
                 }
 
@@ -76,8 +77,9 @@ namespace TheCure
 
             _isDying = true;
 
-            SwitchAnimation("Zombie-Dead", 11, 3.5f, false);
-            _currentState = BruteAnimationState.Dead;
+            SwitchAnimation("Zombie-Dead", 11, 8f, false);
+            SoundManager.Get().PlayZombieDeath();
+            _currentState = BabyZombieAnimationState.Dead;
         }
 
         protected override void UpdateAnimation()
@@ -87,18 +89,18 @@ namespace TheCure
 
             if (_attackNextCombat)
             {
-                if (_currentState != BruteAnimationState.Attack)
+                if (_currentState != BabyZombieAnimationState.Attack)
                 {
-                    SwitchAnimation("Zombie-Atk", 7, 5f, true);
-                    _currentState = BruteAnimationState.Attack;
+                    SwitchAnimation("Zombie-Atk", 7, 10f, true);
+                    _currentState = BabyZombieAnimationState.Attack;
                 }
             }
             else
             {
-                if (_currentState != BruteAnimationState.Walk)
+                if (_currentState != BabyZombieAnimationState.Walk)
                 {
-                    SwitchAnimation("Zombie-Walk", 7, 3.5f, true);
-                    _currentState = BruteAnimationState.Walk;
+                    SwitchAnimation("Zombie-Walk", 7, 8f, true);
+                    _currentState = BabyZombieAnimationState.Walk;
                 }
             }
         }
@@ -111,7 +113,7 @@ namespace TheCure
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             Rectangle destRect = GetAnimatedSpriteDestinationRectangle();
-            DrawShadow(spriteBatch, destRect, 0.18f, 0.10f);
+            DrawShadow(spriteBatch, destRect, 0.10f, 0.06f);
 
             Color tint = _isFlashing ? _flashColor : Color.White;
             DrawAnimatedSprite(spriteBatch, tint, _facingDirection);
@@ -121,8 +123,8 @@ namespace TheCure
 
         protected override void OnSpawnFinish()
         {
-            SwitchAnimation("Zombie-Walk", 7, 3.5f, true);
-            _currentState = BruteAnimationState.Walk;
+            SwitchAnimation("Zombie-Walk", 7, 8f, true);
+            _currentState = BabyZombieAnimationState.Walk;
         }
 
         protected override void OnDeathFinish()
@@ -130,13 +132,13 @@ namespace TheCure
             _onDeathComplete?.Invoke();
             if (_onDeathComplete == null)
             {
-                ScoreManager.Get().AddScore(100, "Brute Killed");
+                ScoreManager.Get().AddScore(25, "Baby Zombie Killed");
                 base.Destroy();
             }
         }
     }
 
-    enum BruteAnimationState
+    enum BabyZombieAnimationState
     {
         Spawn,
         Walk,

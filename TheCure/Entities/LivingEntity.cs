@@ -21,7 +21,7 @@ namespace TheCure.Entities
         protected string _currentAnimation;
 
         protected internal Vector2 _velocity;
-        protected Vector2 _facingDirection = Vector2.UnitX;
+        public Vector2 _facingDirection = Vector2.UnitX;
         protected Vector2 _previousPosition;
 
         protected Vector2 _knockBackVelocity = Vector2.Zero;

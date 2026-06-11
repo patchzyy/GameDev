@@ -85,7 +85,7 @@ public class BoostManager : Manager<BoostManager>
 
         foreach (var boost in _boosts)
         {
-            if (boost.BoostSetting == statKey)
+            if (boost.BoostSettings.Contains(statKey))
             {
                 multiplier *= boost.GetBoostMultiplier();
             }
@@ -96,7 +96,8 @@ public class BoostManager : Manager<BoostManager>
 
     public void ApplyStatsForBoost(Boost boost)
     {
-        if (boost.BoostSetting == SettingsConst.FRIENDLY.ATTACK_DAMAGE)
+        if (boost.BoostSettings.Contains(SettingsConst.FRIENDLY.ATTACK_DAMAGE) ||
+            boost.BoostSettings.Contains(SettingsConst.FRIENDLY.SIZE))
         {
             StatManager.Get().UpdateFriendliesStats();
         }
