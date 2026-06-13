@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Input;
 using TheCure.Upgrades;
 using TheCure.Weapons;
 using TheCure.Weapons.Throw;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -16,6 +17,8 @@ public class ScreenManager : Manager<ScreenManager>
     private Button _startButton;
     private Button _quitButton;
     private Button _continueButton;
+    private Button _infoButton;
+    private Button _infoBackButton;
 
     private Button _pauseQuitButton;
     private Button _restartButton;
@@ -37,7 +40,7 @@ public class ScreenManager : Manager<ScreenManager>
     private Button _resolutionDropdownButton;
     private List<Button> _resolutionButtons;
     private bool _resolutionDropdownOpen = false;
-    private readonly (int width, int height)[] _resolutions = 
+    private readonly (int width, int height)[] _resolutions =
     {
         (1920, 1080),
         (2560, 1440)
@@ -56,6 +59,7 @@ public class ScreenManager : Manager<ScreenManager>
     };
 
     private Button _applySettingsButton;
+    private float _infoScrollOffset = 0f;
 
     public void Load()
     {
@@ -99,6 +103,7 @@ public class ScreenManager : Manager<ScreenManager>
         if (state == GameState.StartScreen)
         {
             _startButton.Update(mouseState);
+            _infoButton.Update(mouseState);
             _settingsButton.Update(mouseState);
             _quitButton.Update(mouseState);
 
@@ -125,6 +130,29 @@ public class ScreenManager : Manager<ScreenManager>
             return;
         }
 
+        if (state == GameState.Information)
+        {
+            if (inputManager.IsKeyPress(Keys.Escape))
+                gameManager.SetGameState(GameState.StartScreen);
+
+            int wheelDelta = inputManager.CurrentMouseState.ScrollWheelValue - inputManager.LastMouseState.ScrollWheelValue;
+
+            if (wheelDelta != 0)
+                _infoScrollOffset -= wheelDelta * 0.25f;
+
+            if (inputManager.IsKeyDown(Keys.Down))
+                _infoScrollOffset += 8f;
+            if (inputManager.IsKeyDown(Keys.Up))
+                _infoScrollOffset -= 8f;
+            if (inputManager.IsKeyPress(Keys.PageDown))
+                _infoScrollOffset += 300f;
+            if (inputManager.IsKeyPress(Keys.PageUp))
+                _infoScrollOffset -= 300f;
+
+            _infoBackButton.Update(mouseState);
+            return;
+        }
+
         if (state == GameState.Paused)
         {
             if (inputManager.IsKeyPress(Keys.Space))
@@ -146,7 +174,7 @@ public class ScreenManager : Manager<ScreenManager>
             if (_resolutionDropdownOpen)
                 foreach (var button in _resolutionButtons)
                     button.Update(mouseState);
-            
+
             if (_displayModeDropdownOpen)
                 foreach (var button in _displayModeButtons)
                     button.Update(mouseState);
@@ -169,11 +197,13 @@ public class ScreenManager : Manager<ScreenManager>
 
         _startButton = new Button(new Rectangle(0, 0, buttonWidth, buttonHeight), "Start Game",
             ContentsManager.Get().ButtonFont);
+        _infoButton = new Button(new Rectangle(0, 0, buttonWidth, buttonHeight), "Info",
+            ContentsManager.Get().ButtonFont);
         _quitButton = new Button(new Rectangle(0, 0, buttonWidth, buttonHeight), "Quit",
             ContentsManager.Get().ButtonFont);
         _continueButton = new Button(new Rectangle(0, 0, buttonWidth, buttonHeight), "Continue",
             ContentsManager.Get().ButtonFont);
-    
+
         _pauseQuitButton = new Button(new Rectangle(0, 0, buttonWidth, buttonHeight), "Quit",
             ContentsManager.Get().ButtonFont);
         _restartButton = new Button(new Rectangle(0, 0, buttonWidth, buttonHeight), "Play Again",
@@ -190,7 +220,7 @@ public class ScreenManager : Manager<ScreenManager>
         _settingsBackButton = new Button(
             new Rectangle(0, 0, buttonWidth, buttonHeight), "Back",
             ContentsManager.Get().ButtonFont);
-        
+
         _healSelectButton2 = new Button(new Rectangle(0, 0, buttonWidth, buttonHeight), "Instant heal",
             ContentsManager.Get().ButtonFont);
         _healSelectButton3 = new Button(new Rectangle(0, 0, buttonWidth, buttonHeight), "Heal in movement",
@@ -253,12 +283,25 @@ public class ScreenManager : Manager<ScreenManager>
             gameManager.SetGameState(GameState.Settings);
         });
 
+        _infoButton.SetAction(() =>
+        {
+            _previousState = GameState.StartScreen;
+            _infoScrollOffset = 0f;
+            gameManager.SetGameState(GameState.Information);
+        });
+
         _pauseSettingsButton.SetAction(() =>
         {
             _previousState = GameState.Paused;
             gameManager.SetGameState(GameState.Settings);
         });
         _settingsBackButton.SetAction(() => gameManager.SetGameState(_previousState, false));
+
+        _infoBackButton = new Button(
+            new Rectangle(0, 0, buttonWidth, buttonHeight), "Back",
+            ContentsManager.Get().ButtonFont);
+
+        _infoBackButton.SetAction(() => gameManager.SetGameState(GameState.StartScreen));
 
 
         _healSelectButton2.SetAction(() => HealSelectButtonAction(HealType.Instant));
@@ -317,6 +360,7 @@ public class ScreenManager : Manager<ScreenManager>
         int centerX = game.GraphicsDevice.Viewport.Width / 2;
 
         _startButton.SetPosition(centerX - buttonWidth / 2, (int)(game.GraphicsDevice.Viewport.Height * 0.54f));
+        _infoButton.SetPosition(centerX - buttonWidth / 2, (int)(game.GraphicsDevice.Viewport.Height * 0.58f));
         _quitButton.SetPosition(centerX - buttonWidth / 2, (int)(game.GraphicsDevice.Viewport.Height * 0.68f));
         _continueButton.SetPosition(centerX - buttonWidth / 2, (int)(game.GraphicsDevice.Viewport.Height * 0.5f));
 
@@ -326,7 +370,7 @@ public class ScreenManager : Manager<ScreenManager>
         _settingsButton.SetPosition(centerX - buttonWidth / 2, (int)(game.GraphicsDevice.Viewport.Height * 0.61f));
         _pauseSettingsButton.SetPosition( centerX - buttonWidth / 2, (int)(game.GraphicsDevice.Viewport.Height * 0.59f));
         _settingsBackButton.SetPosition( centerX - buttonWidth / 2, (int)(game.GraphicsDevice.Viewport.Height * 0.75f));
-        
+
         _healSelectButton2.SetPosition(centerX - buttonWidth / 2,
             (int)(game.GraphicsDevice.Viewport.Height * 0.75f) + 120);
         _healSelectButton3.SetPosition(centerX - buttonWidth / 2,
@@ -500,6 +544,7 @@ public class ScreenManager : Manager<ScreenManager>
         spriteBatch.DrawString(content.TitleFont, titleText, titlePosition, Color.Red);
 
         _startButton.Draw(spriteBatch);
+        _infoButton.Draw(spriteBatch);
         _settingsButton.Draw(spriteBatch);
         _quitButton.Draw(spriteBatch);
 
@@ -596,6 +641,139 @@ public class ScreenManager : Manager<ScreenManager>
         spriteBatch.End();
     }
 
+    public void DrawInformation(SpriteBatch spriteBatch)
+    {
+        var game = GameManager.Get().Game;
+        spriteBatch.Begin();
+        var content = ContentsManager.Get();
+
+        spriteBatch.Draw(content.BackgroundTexture,
+            new Rectangle(0, 0, game.GraphicsDevice.Viewport.Width, game.GraphicsDevice.Viewport.Height),
+            Color.White);
+
+        spriteBatch.Draw(content.DummyTexture,
+            new Rectangle(0, 0, game.GraphicsDevice.Viewport.Width, game.GraphicsDevice.Viewport.Height),
+            new Color(0, 0, 0, 180));
+
+        string title = "INFORMATIE";
+        Vector2 titleSize = content.TitleFont.MeasureString(title);
+        spriteBatch.DrawString(content.TitleFont, title,
+            new Vector2(game.GraphicsDevice.Viewport.Width / 2 - titleSize.X / 2, 120), Color.White);
+
+        string goal = "Doel: Overleef zo lang mogelijk en behaal de hoogste score door zombies te verslaan en te converteren tot vriendelijken.";
+        static string ToAscii(string s)
+        {
+            var chars = s.Select(c => c <= 127 ? c : '?').ToArray();
+            return new string(chars);
+        }
+
+        var safeGoal = ToAscii(goal);
+        Vector2 goalSize = content.ButtonFont.MeasureString(safeGoal);
+        spriteBatch.DrawString(content.ButtonFont, safeGoal,
+            new Vector2(game.GraphicsDevice.Viewport.Width / 2 - goalSize.X / 2, 220), Color.White);
+
+        string details =
+            @"Doel:
+Versla zombies en genezen ze door ze te converteren tot vriendelijken. Hoe meer vriendelijken je hebt, hoe hoger je score. Overleef zo lang mogelijk en probeer de hoogste score te halen.
+
+Upgrades:
+Tussen golven krijg je keuze uit upgrades. Kies één upgrade om je wapens, heal-type of passives te verbeteren. Voorbeelden: extra schade, snellere vuurfrequentie, grotere heal-radius, extra vriendelijken bij convert.
+
+Passive upgrades:
+Passives zijn permanente bonussen die de rest van de run actief blijven (bijv. meer max health, automatische gezondheidsregen, hogere movement speed). Ze stapelen zich op en veranderen je speelstijl.
+
+Hoe te gebruiken:
+Wanneer een upgrade verschijnt, klik erop om te selecteren. Sommige upgrades ontgrendelen nieuwe abilities of traps. Kies upgrades die je huidige wapens en speelstijl versterken.
+
+Healing types:
+Instant - directe genezing bij gebruik.
+Movement - geneest terwijl je beweegt.
+Shoot - geneest wanneer je schiet of bij treffers.
+
+Abilities:
+Gebruik 1-5 om abilities te activeren. Abilities hebben cooldowns; combineer ze met dash en vriendelijken voor maximale effectiviteit.
+
+Tips:
+- Concentreer je op het converteren van zombies naar vriendelijken om ruimte te creëren.
+- Gebruik dash om uit te wijken voor schade en positioneer vriendelijken tussen jou en vijanden.
+- Kies upgrades die synergeren met je gekozen heal-type.";
+
+        var safeDetails = ToAscii(details);
+
+        static List<string> WrapText(SpriteFont font, string text, float maxLineWidth)
+        {
+            var paragraphs = text.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
+            var lines = new List<string>();
+
+            foreach (var para in paragraphs)
+            {
+                if (string.IsNullOrWhiteSpace(para))
+                {
+                    lines.Add("");
+                    continue;
+                }
+
+                var words = para.Split(' ');
+                var currentLine = "";
+
+                foreach (var word in words)
+                {
+                    var test = string.IsNullOrEmpty(currentLine) ? word : currentLine + " " + word;
+
+                    if (font.MeasureString(test).X > maxLineWidth)
+                    {
+                        if (!string.IsNullOrEmpty(currentLine))
+                        {
+                            lines.Add(currentLine);
+                            currentLine = word;
+                        }
+                        else
+                        {
+                            lines.Add(word);
+                            currentLine = "";
+                        }
+                    }
+                    else
+                        currentLine = test;
+                }
+
+                if (!string.IsNullOrEmpty(currentLine))
+                    lines.Add(currentLine);
+
+                lines.Add("");
+            }
+
+            if (lines.Count > 0 && lines.Last() == "")
+                lines.RemoveAt(lines.Count - 1);
+
+            return lines;
+        }
+
+        float maxWidth = game.GraphicsDevice.Viewport.Width - 240;
+        var lines = WrapText(content.ButtonFont, safeDetails, maxWidth);
+
+        float contentTop = 300f;
+        float contentHeight = lines.Count * content.ButtonFont.LineSpacing;
+        float visibleHeight = game.GraphicsDevice.Viewport.Height - contentTop - 140f;
+
+        _infoScrollOffset = MathHelper.Clamp(_infoScrollOffset, 0f, Math.Max(0f, contentHeight - visibleHeight));
+
+        float lineY = contentTop - _infoScrollOffset;
+        foreach (var line in lines)
+        {
+            spriteBatch.DrawString(content.ButtonFont, line, new Vector2(120, lineY), Color.White);
+            lineY += content.ButtonFont.LineSpacing;
+        }
+
+        int buttonWidth = _infoBackButton.Rectangle.Width;
+        _infoBackButton.SetPosition(game.GraphicsDevice.Viewport.Width / 2 - buttonWidth / 2,
+            game.GraphicsDevice.Viewport.Height - 110);
+
+        _infoBackButton.Draw(spriteBatch);
+
+        spriteBatch.End();
+    }
+
     public void DrawSettings(SpriteBatch spriteBatch)
     {
         var game = GameManager.Get().Game;
@@ -618,11 +796,11 @@ public class ScreenManager : Manager<ScreenManager>
 
         _settingsBackButton.Draw(spriteBatch);
 
-        _resolutionDropdownButton.Draw(spriteBatch);       
+        _resolutionDropdownButton.Draw(spriteBatch);
         _displayModeDropdownButton.Draw(spriteBatch);
-        
+
         _applySettingsButton.Draw(spriteBatch);
-        
+
         if (_resolutionDropdownOpen)
             foreach (var button in _resolutionButtons)
                 button.Draw(spriteBatch);

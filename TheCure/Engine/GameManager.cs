@@ -372,6 +372,10 @@ namespace TheCure
                     ScreenManager.Get().DrawTutorial(spriteBatch);
                     break;
 
+                case GameState.Information:
+                    ScreenManager.Get().DrawInformation(spriteBatch);
+                    break;
+
                 case GameState.Playing:
                     DrawGameObjects(spriteBatch, gameTime);
 
