@@ -13,7 +13,7 @@ namespace TheCure
             { SettingsConst.PLAYER.MOVE_SPEED, 300f },
 
             // ZOMBIE
-            { SettingsConst.ZOMBIE.SPEED, 270f },
+            { SettingsConst.ZOMBIE.SPEED, 250f },
             { SettingsConst.ZOMBIE.STAGGER, 1f },
             { SettingsConst.ZOMBIE.ATTACK_DAMAGE, 10f },
             { SettingsConst.ZOMBIE.ATTACK_COOL_DOWN, 1f },
@@ -36,24 +36,24 @@ namespace TheCure
             // SPAWNING
             { SettingsConst.SPAWNING.ZOMBIE_SPAWN_INTERVAL, 1f },
             { SettingsConst.SPAWNING.ENEMIES_PER_WAVE, 10 },
-            { SettingsConst.SPAWNING.MAX_ENEMIES_ON_SCREEN, 20 },
+            { SettingsConst.SPAWNING.MAX_ENEMIES_ON_SCREEN, 30 },
             { SettingsConst.SPAWNING.BRUTE_SPAWN_CHANCE, 0.05f },
             { SettingsConst.SPAWNING.BABY_ZOMBIE_SPAWN_CHANCE, 0.05f },
             { SettingsConst.SPAWNING.MAX_BRUTES, 0 },
 
             // FRIENDLY
             { SettingsConst.FRIENDLY.FOLLOW_DISTANCE, 60f },
-            { SettingsConst.FRIENDLY.MOVE_SPEED, 350f },
-            { SettingsConst.FRIENDLY.START_HEALTH, 100f },
-            { SettingsConst.FRIENDLY.MAX_HEALTH, 100f },
-            { SettingsConst.FRIENDLY.ATTACK_DAMAGE, 10f },
+            { SettingsConst.FRIENDLY.MOVE_SPEED, 2500f },
+            { SettingsConst.FRIENDLY.START_HEALTH, 50f },
+            { SettingsConst.FRIENDLY.MAX_HEALTH, 50f },
+            { SettingsConst.FRIENDLY.ATTACK_DAMAGE, 20f },
             { SettingsConst.FRIENDLY.HEALTH_LOSS_PER_SECOND, 2f },
             { SettingsConst.FRIENDLY.SIZE, 1f },
             { SettingsConst.FRIENDLY.RADIUS, 20f },
             { SettingsConst.FRIENDLY.START_WEAPON, FriendlyWeapons.HandGun },
 
             // SingleBulletWeapon
-            { SettingsConst.SINGLE_BULLET_WEAPON.DAMAGE, 20f },
+            { SettingsConst.SINGLE_BULLET_WEAPON.DAMAGE, 10f },
 
             // VIDEO
             { SettingsConst.VIDEO.WIDTH, 1920 },

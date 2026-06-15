@@ -257,11 +257,18 @@ namespace TheCure
             var phaseMultiplier = MathF.Pow(1.2f, MathF.Floor(_gameTimeElapsed / 40f));
 
             _currentSpawnInterval = Settings.GetValue(SettingsConst.SPAWNING.ZOMBIE_SPAWN_INTERVAL) / phaseMultiplier;
-            _enemiesToSpawn = Math.Max(1, (int)MathF.Round(Settings.GetValue(SettingsConst.SPAWNING.ENEMIES_PER_WAVE) * phaseMultiplier));
-            _maxEnemiesOnScreen = Math.Max(1, (int)MathF.Round(Settings.GetValue(SettingsConst.SPAWNING.MAX_ENEMIES_ON_SCREEN) * phaseMultiplier));
-            _maxBrutesOnScreen = Math.Max(0, (int)MathF.Round(Settings.GetValue(SettingsConst.SPAWNING.MAX_BRUTES) * phaseMultiplier));
-            _bruteSpawnChance = MathHelper.Clamp(Settings.GetValue(SettingsConst.SPAWNING.BRUTE_SPAWN_CHANCE) * phaseMultiplier, 0f, 0.6f);
-            _babyZombieSpawnChance = MathHelper.Clamp(Settings.GetValue(SettingsConst.SPAWNING.BABY_ZOMBIE_SPAWN_CHANCE) * phaseMultiplier, 0f, 0.3f);
+            _enemiesToSpawn = Math.Max(1,
+                (int)MathF.Round(Settings.GetValue(SettingsConst.SPAWNING.ENEMIES_PER_WAVE) * phaseMultiplier));
+            _maxEnemiesOnScreen = Math.Max(1,
+                (int)MathF.Round(Settings.GetValue(SettingsConst.SPAWNING.MAX_ENEMIES_ON_SCREEN) * phaseMultiplier));
+            _maxBrutesOnScreen = Math.Max(0,
+                (int)MathF.Round(Settings.GetValue(SettingsConst.SPAWNING.MAX_BRUTES) * phaseMultiplier));
+            _bruteSpawnChance =
+                MathHelper.Clamp(Settings.GetValue(SettingsConst.SPAWNING.BRUTE_SPAWN_CHANCE) * phaseMultiplier, 0f,
+                    0.6f);
+            _babyZombieSpawnChance =
+                MathHelper.Clamp(Settings.GetValue(SettingsConst.SPAWNING.BABY_ZOMBIE_SPAWN_CHANCE) * phaseMultiplier,
+                    0f, 0.3f);
         }
 
         private void SpawnEnemies()
@@ -279,9 +286,9 @@ namespace TheCure
             if (totalEnemies >= _maxEnemiesOnScreen)
                 return;
 
-            _enemiesToSpawn = Math.Min(_enemiesToSpawn, _maxEnemiesOnScreen - totalEnemies);
+            var loop = Math.Min(_enemiesToSpawn, _maxEnemiesOnScreen - totalEnemies);
 
-            for (var i = 0; i < _enemiesToSpawn; i++)
+            for (var i = 0; i < loop; i++)
             {
                 if (bruteCount < _maxBrutesOnScreen && RNG.NextDouble() < _bruteSpawnChance)
                 {
@@ -398,7 +405,8 @@ namespace TheCure
             var stats = new List<Stat>
             {
                 new Stat("Max Health", PlayerManager.Get().Player._maxHealth.ToString()),
-                new Stat("Move Speed", (PlayerManager.Get().Player._speed / 10).ToString("0.0", CultureInfo.InvariantCulture)),
+                new Stat("Move Speed",
+                    (PlayerManager.Get().Player._speed / 10).ToString("0.0", CultureInfo.InvariantCulture)),
                 new Stat("Friendlies", _gameObjects.OfType<Friendly>().Count().ToString()),
             };
 
@@ -443,7 +451,8 @@ namespace TheCure
                 var healBombTrapStats = WeaponManager.Get().GetHealBombTrapStats();
                 stats.Add(new Stat("-", "-"));
                 stats.Add(new Stat("Heal Bomb Trap", "-"));
-                stats.Add(new Stat("Healing", healBombTrapStats.HealAmountPerTick.ToString("0.0", CultureInfo.InvariantCulture)));
+                stats.Add(new Stat("Healing",
+                    healBombTrapStats.HealAmountPerTick.ToString("0.0", CultureInfo.InvariantCulture)));
                 stats.Add(new Stat("Tick Interval",
                     healBombTrapStats.HealTickInterval.ToString("0.0", CultureInfo.InvariantCulture)));
                 stats.Add(
@@ -455,7 +464,8 @@ namespace TheCure
                 var bombTrapStats = WeaponManager.Get().GetBombTrapStats();
                 stats.Add(new Stat("-", "-"));
                 stats.Add(new Stat("Bomb Trap", "-"));
-                stats.Add(new Stat("Activation Delay", bombTrapStats.ActivationDelay.ToString("0.0", CultureInfo.InvariantCulture)));
+                stats.Add(new Stat("Activation Delay",
+                    bombTrapStats.ActivationDelay.ToString("0.0", CultureInfo.InvariantCulture)));
                 stats.Add(new Stat("Damage", bombTrapStats.ExplosionDamage.ToString()));
                 stats.Add(new Stat("Radius",
                     bombTrapStats.ExplosionRadius.ToString("0.0", CultureInfo.InvariantCulture)));
