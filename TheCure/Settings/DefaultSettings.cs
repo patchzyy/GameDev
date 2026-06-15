@@ -44,8 +44,8 @@ namespace TheCure
             // FRIENDLY
             { SettingsConst.FRIENDLY.FOLLOW_DISTANCE, 60f },
             { SettingsConst.FRIENDLY.MOVE_SPEED, 2500f },
-            { SettingsConst.FRIENDLY.START_HEALTH, 50f },
-            { SettingsConst.FRIENDLY.MAX_HEALTH, 50f },
+            { SettingsConst.FRIENDLY.START_HEALTH, 70f },
+            { SettingsConst.FRIENDLY.MAX_HEALTH, 70f },
             { SettingsConst.FRIENDLY.ATTACK_DAMAGE, 20f },
             { SettingsConst.FRIENDLY.HEALTH_LOSS_PER_SECOND, 2f },
             { SettingsConst.FRIENDLY.SIZE, 1f },
