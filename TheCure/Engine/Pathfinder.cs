@@ -12,7 +12,7 @@ namespace TheCure
     {
         public int GridX, GridY;
         public bool IsWalkable;
-        
+
         // Voor A*
         public float GCost;
         public float HCost;
@@ -32,9 +32,9 @@ namespace TheCure
         private static PathNode[,] _grid;
         private static int _gridWidth;
         private static int _gridHeight;
-        
+
         // groot = simpeler maar sneller aangezien game niet heel erg precies hoeft te zijn is dit goed
-        public const int TileSize = 64; 
+        public const int TileSize = 64;
         private const int StartX = -1800;
         private const int StartY = -1200;
 
@@ -68,7 +68,8 @@ namespace TheCure
 
         public static List<Vector2> FindPath(Vector2 startPos, Vector2 targetPos)
         {
-            if (_grid == null) return null;
+            if (_grid == null)
+                return null;
 
             int startX = (int)((startPos.X - StartX) / TileSize);
             int startY = (int)((startPos.Y - StartY) / TileSize);
@@ -76,11 +77,8 @@ namespace TheCure
             int targetY = (int)((targetPos.Y - StartY) / TileSize);
 
             // Simpele bounds check
-            if (startX < 0 || startX >= _gridWidth || startY < 0 || startY >= _gridHeight ||
-                targetX < 0 || targetX >= _gridWidth || targetY < 0 || targetY >= _gridHeight)
-            {
+            if (startX < 0 || startX >= _gridWidth || startY < 0 || startY >= _gridHeight || targetX < 0 || targetX >= _gridWidth || targetY < 0 || targetY >= _gridHeight)
                 return null;
-            }
 
             PathNode startNode = _grid[startX, startY];
             PathNode targetNode = _grid[targetX, targetY];
@@ -91,7 +89,7 @@ namespace TheCure
             List<PathNode> openList = new List<PathNode>();
             List<PathNode> closedList = new List<PathNode>();
 
-            //  simpel reset voor we beginnen 
+            //  simpel reset voor we beginnen
             for (int x = 0; x < _gridWidth; x++)
             {
                 for (int y = 0; y < _gridHeight; y++)
@@ -106,7 +104,7 @@ namespace TheCure
             openList.Add(startNode);
 
             // Max stappen om niet vast te lopen
-            int loopCounter = 0; 
+            int loopCounter = 0;
             while (openList.Count > 0 && loopCounter < 300)
             {
                 loopCounter++;
@@ -116,7 +114,7 @@ namespace TheCure
                 // Vind node met laagste kosten
                 for (int i = 1; i < openList.Count; i++)
                 {
-                    if (openList[i].FCost < currentNode.FCost || 
+                    if (openList[i].FCost < currentNode.FCost ||
                        (openList[i].FCost == currentNode.FCost && openList[i].HCost < currentNode.HCost))
                     {
                         currentNode = openList[i];
@@ -128,13 +126,13 @@ namespace TheCure
 
                 if (currentNode == targetNode)
                     return RetracePath(startNode, targetNode);
-                
+
 
                 foreach (PathNode neighbor in GetNeighbors(currentNode))
                 {
                     if (!neighbor.IsWalkable || closedList.Contains(neighbor))
                         continue;
-                    
+
 
                     float newMovementCost = currentNode.GCost + GetDistance(currentNode, neighbor);
                     if (newMovementCost < neighbor.GCost || !openList.Contains(neighbor))
@@ -167,9 +165,7 @@ namespace TheCure
                 int checkY = node.GridY + dy[i];
 
                 if (checkX >= 0 && checkX < _gridWidth && checkY >= 0 && checkY < _gridHeight)
-                {
                     neighbors.Add(_grid[checkX, checkY]);
-                }
             }
 
             return neighbors;
@@ -179,6 +175,7 @@ namespace TheCure
         {
             int dstX = Math.Abs(nodeA.GridX - nodeB.GridX);
             int dstY = Math.Abs(nodeA.GridY - nodeB.GridY);
+
             // Cartesian distance
             return MathF.Sqrt(dstX * dstX + dstY * dstY);
         }
@@ -190,11 +187,13 @@ namespace TheCure
 
             while (currentNode != startNode && currentNode != null)
             {
-                path.Add(new Vector2(StartX + currentNode.GridX * TileSize + TileSize / 2f, 
+                path.Add(new Vector2(StartX + currentNode.GridX * TileSize + TileSize / 2f,
                                      StartY + currentNode.GridY * TileSize + TileSize / 2f));
                 currentNode = currentNode.Parent;
             }
+
             path.Reverse();
+
             return path;
         }
     }

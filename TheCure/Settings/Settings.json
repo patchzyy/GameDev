@@ -3,7 +3,7 @@
     "MAX_HEALTH": 105
   },
   "SINGLE_BULLET_WEAPON": {
-    "DAMAGE": 10
+    "DAMAGE": 15
   },
   "HEAL_BOMB": {
     "HEALING": 25

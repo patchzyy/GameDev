@@ -66,9 +66,7 @@ public class CommandManager : Manager<CommandManager>
             _friendlyCommandHoldTimer = Math.Max(0f, _friendlyCommandHoldTimer - deltaTime);
 
             if (_friendlyCommandHoldTimer <= 0f)
-            {
                 _friendlyCommandHoldPositions.Clear();
-            }
         }
     }
 
@@ -77,9 +75,7 @@ public class CommandManager : Manager<CommandManager>
         _friendlyCommandHoldPositions.Clear();
 
         foreach (var friendly in GameManager.Get().Friendlies)
-        {
             _friendlyCommandHoldPositions[friendly] = ((CircleCollider)friendly.collider).Center;
-        }
     }
 
     public bool TryGetFriendlyCommandPosition(Friendly friendly, out Vector2 position)
@@ -91,11 +87,10 @@ public class CommandManager : Manager<CommandManager>
         }
 
         if (_friendlyCommandHoldTimer > 0f && _friendlyCommandHoldPositions.TryGetValue(friendly, out position))
-        {
             return true;
-        }
 
         position = Vector2.Zero;
+
         return false;
     }
 

@@ -67,7 +67,7 @@ namespace TheCure
             _screenManager.Load();
             _inputManager.Load();
             _upgradeManager.Load();
-            _passivesManager.Load();    
+            _passivesManager.Load();
             _boostManager.Load();
             _soundManager.Load();
         }
@@ -84,17 +84,11 @@ namespace TheCure
                 if (_gameManager.CurrentGameState == GameState.Playing ||
                     _gameManager.CurrentGameState == GameState.Upgrade ||
                     _gameManager.CurrentGameState == GameState.PassiveUpgrade)
-                {
                     _gameManager.PauseGame();
-                }
                 else if (_gameManager.CurrentGameState == GameState.Paused)
-                {
                     _gameManager.ResumeGame();
-                }
                 else if (_gameManager.CurrentGameState == GameState.StartScreen)
-                {
                     Exit();
-                }
             }
 
             _isEscapeKeyPressed = currentKeyboardState.IsKeyDown(Keys.Escape);
@@ -109,7 +103,7 @@ namespace TheCure
         {
             _graphics.IsFullScreen = false;
             Window.IsBorderless = false;
-            
+
             _graphics.ApplyChanges();
 
             switch (mode)
@@ -117,7 +111,7 @@ namespace TheCure
                 case DisplayModeSetting.Windowed:
                     _graphics.PreferredBackBufferWidth = width;
                     _graphics.PreferredBackBufferHeight = height;
-                    
+
                     break;
 
                 case DisplayModeSetting.Borderless:

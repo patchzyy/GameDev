@@ -31,6 +31,7 @@ namespace TheCure.PlayerActions
         {
             if (GameManager.Get().CurrentGameState != GameState.Playing)
                 return;
+
             _remainingCoolDown -= (float)gameTime.ElapsedGameTime.TotalSeconds;
             _remainingCoolDown = _remainingCoolDown < 0f ? 0f : _remainingCoolDown;
         }

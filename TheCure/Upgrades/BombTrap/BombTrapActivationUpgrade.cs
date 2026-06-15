@@ -19,10 +19,9 @@ public class BombTrapActivationUpgrade : Upgrade
     public void Unlock(List<Upgrade> unlockedUpgrades)
     {
         var stats = WeaponManager.Get().GetBombTrapStats();
+
         if (stats != null)
-        {
             stats.DecreaseActivationDelay(0.1f);
-        }
     }
 }
 

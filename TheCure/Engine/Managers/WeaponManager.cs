@@ -74,9 +74,7 @@ public class WeaponManager : Manager<WeaponManager>
     public ElectricTrapStats GetElectricTrapStats()
     {
         if (ElectricTrap == null)
-        {
             return null;
-        }
 
         return ElectricTrap.ElectricTrapStats;
     }
@@ -116,9 +114,7 @@ public class WeaponManager : Manager<WeaponManager>
     public BombTrapStats GetBombTrapStats()
     {
         if (BombTrapBuild == null)
-        {
             return null;
-        }
 
         return BombTrapBuild.BombTrapStats;
     }
@@ -137,9 +133,7 @@ public class WeaponManager : Manager<WeaponManager>
     public SpikeTrapStats GetSpikeTrapStats()
     {
         if (SpikeTrapBuild == null)
-        {
             return null;
-        }
 
         return SpikeTrapBuild.SpikeTrapStats;
     }

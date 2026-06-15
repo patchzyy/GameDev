@@ -75,6 +75,7 @@ public class ScreenManager : Manager<ScreenManager>
             }
         }
         _selectedDisplayMode = Settings.GetValue(SettingsConst.VIDEO.DISPLAY_MODE);
+
         LoadTutorialContent();
         CreateButtons();
         UpdateResolutionDropdownText();
@@ -377,6 +378,9 @@ public class ScreenManager : Manager<ScreenManager>
 
         _pauseSettingsButton.SetPosition(centerX - buttonWidth / 2, (int)(game.GraphicsDevice.Viewport.Height * 0.59f));
         _settingsBackButton.SetPosition(centerX - buttonWidth / 2, (int)(game.GraphicsDevice.Viewport.Height * 0.75f));
+        _settingsButton.SetPosition(centerX - buttonWidth / 2, (int)(game.GraphicsDevice.Viewport.Height * 0.61f));
+        _pauseSettingsButton.SetPosition( centerX - buttonWidth / 2, (int)(game.GraphicsDevice.Viewport.Height * 0.59f));
+        _settingsBackButton.SetPosition( centerX - buttonWidth / 2, (int)(game.GraphicsDevice.Viewport.Height * 0.75f));
 
         _healSelectButton2.SetPosition(centerX - buttonWidth / 2,
             (int)(game.GraphicsDevice.Viewport.Height * 0.75f) + 120);
@@ -812,9 +816,11 @@ Tips:
         if (_resolutionDropdownOpen)
             foreach (var button in _resolutionButtons)
                 button.Draw(spriteBatch);
+
         if (_displayModeDropdownOpen)
             foreach (var button in _displayModeButtons)
                 button.Draw(spriteBatch);
+
         spriteBatch.End();
     }
 

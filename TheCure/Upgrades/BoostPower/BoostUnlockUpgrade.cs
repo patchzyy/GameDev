@@ -16,6 +16,7 @@ public class BoostUnlockUpgrade : Upgrade
     public void Unlock(List<Upgrade> unlockedUpgrades)
     {
         var boost = new FriendlyBoost("Boost");
+
         PlayerActionsManager.Get().AddAction(boost);
         BoostManager.Get().AddBoost(boost);
     }

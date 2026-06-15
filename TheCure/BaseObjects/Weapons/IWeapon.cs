@@ -9,12 +9,10 @@ namespace TheCure.Weapons
 
         void UpdateCoolDown(float deltaTime)
         {
-
         }
 
         void Fire(Vector2 position, Vector2 direction, Player owner = null)
         {
-
         }
     }
 }

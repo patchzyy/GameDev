@@ -50,9 +50,7 @@ class HealBombExplosion : GameObject
                 healsToGive--;
             }
             else
-            {
                 Destroy();
-            }
         }
     }
 }

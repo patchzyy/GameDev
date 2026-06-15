@@ -162,6 +162,7 @@ namespace TheCure
             }
 
             mover.Center = currentCenter;
+
             return collisionNormal;
         }
     }

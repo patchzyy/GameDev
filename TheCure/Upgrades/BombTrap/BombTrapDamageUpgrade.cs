@@ -19,10 +19,9 @@ public class BombTrapDamageUpgrade : Upgrade
     public void Unlock(List<Upgrade> unlockedUpgrades)
     {
         var stats = WeaponManager.Get().GetBombTrapStats();
+
         if (stats != null)
-        {
             stats.IncreaseDamage(5);
-        }
     }
 }
 

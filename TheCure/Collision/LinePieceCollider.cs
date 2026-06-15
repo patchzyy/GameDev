@@ -71,7 +71,7 @@ namespace TheCure
         public static Vector2 GetDirection(Vector2 point1, Vector2 point2)
         {
             Vector2 direction = point2 - point1;
-            direction.Normalize();
+                    direction.Normalize();
 
             return direction;
         }
@@ -103,9 +103,7 @@ namespace TheCure
                               LineSegmentsIntersect(Start, End, rectBottomLeft, rectTopLeft);
 
             if (!intersects && (tmp.Contains(Start) || IsPointOnRectangleEdge(Start, tmp.shape)) && (tmp.Contains(End) || IsPointOnRectangleEdge(End, tmp.shape)))
-            {
                 intersects = true;
-            }
 
             return intersects;
         }

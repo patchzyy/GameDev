@@ -21,10 +21,8 @@ public class BoostPowerUpgrade : Upgrade
     public void Unlock(List<Upgrade> unlockedUpgrades)
     {
         if (RequiredUpgrade != null && !unlockedUpgrades.Contains(RequiredUpgrade))
-        {
             return;
-        }
-        
+
         BoostManager.Get().Upgrade<FriendlyBoost>();
     }
 }

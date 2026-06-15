@@ -109,23 +109,15 @@ public class UpgradeManager : Manager<UpgradeManager>
 
         var selection = new List<Upgrade>();
         if (_unlockedActions.Count >= 5)
-        {
             selection = _availableUpgrades;
-        }
         else
-        {
             selection = _availableUpgrades.Concat(_availableActions).ToList();
-        }
 
         var random = new Random();
-        var selectableUpgrades = selection.FindAll(upgrade =>
-            upgrade.RequiredUpgrade == null || _unlockedUpgrades.Contains(upgrade.RequiredUpgrade) ||
-            _unlockedActions.Contains(upgrade.RequiredUpgrade));
+        var selectableUpgrades = selection.FindAll(upgrade => upgrade.RequiredUpgrade == null || _unlockedUpgrades.Contains(upgrade.RequiredUpgrade) || _unlockedActions.Contains(upgrade.RequiredUpgrade));
 
         while (selectableUpgrades.Count < 4)
-        {
             selectableUpgrades.Add(new GainHealthUpgrade());
-        }
 
         for (int i = 0; i < 4; i++)
         {
@@ -152,18 +144,18 @@ public class UpgradeManager : Manager<UpgradeManager>
             _availableActions.Remove(upgrade);
             _unlockedActions.Add(upgrade);
             GameManager.Get().SetGameState(GameState.Playing);
+
             return;
         }
 
         if (_availableUpgrades.Contains(upgrade))
         {
             if (upgrade.UnlockedOnce)
-            {
                 _availableUpgrades.Remove(upgrade);
-            }
 
             _unlockedUpgrades.Add(upgrade);
             GameManager.Get().SetGameState(GameState.Playing);
+
             return;
         }
 
@@ -175,14 +167,10 @@ public class UpgradeManager : Manager<UpgradeManager>
     public void Update(GameTime gameTime)
     {
         if (_selectedUpgrades.Count == 0)
-        {
             PickRandomUpgrade();
-        }
 
         if (GameManager.Get().CurrentGameState == GameState.Upgrade)
-        {
             return;
-        }
 
         var score = ScoreManager.Get().GetScore();
 

@@ -22,48 +22,21 @@ namespace TheCure
 
         private static readonly ObstacleDefinition[] BuildingDefinitions =
         {
-            new(
-                "TallWatchTower",
-                new Rectangle(215, 93, 41, 46),
-                new Rectangle(5, 28, 31, 15)),
-            new(
-                "SmallWatchTower",
-                new Rectangle(170, 95, 33, 44),
-                new Rectangle(4, 28, 25, 14)),
-            new(
-                "SmallerWatchTower",
-                new Rectangle(126, 101, 27, 38),
-                new Rectangle(4, 24, 20, 12)),
-            new(
-                "TinyWatchTower",
-                new Rectangle(53, 112, 27, 27),
-                new Rectangle(4, 17, 19, 8)),
-            new(
-                "WoodenPlankGround",
-                new Rectangle(20, 116, 23, 18),
-                new Rectangle(1, 10, 21, 8))
+            new("TallWatchTower", new Rectangle(215, 93, 41, 46), new Rectangle(5, 28, 31, 15)),
+            new("SmallWatchTower", new Rectangle(170, 95, 33, 44), new Rectangle(4, 28, 25, 14)),
+            new("SmallerWatchTower", new Rectangle(126, 101, 27, 38), new Rectangle(4, 24, 20, 12)),
+            new("TinyWatchTower", new Rectangle(53, 112, 27, 27), new Rectangle(4, 17, 19, 8)),
+            new("WoodenPlankGround", new Rectangle(20, 116, 23, 18), new Rectangle(1, 10, 21, 8))
         };
 
-        private static readonly ObstacleDefinition HorizontalWallDefinition = new(
-            "HorizontalWall",
-            new Rectangle(160, 6, 55, 16),
-            new Rectangle(0, 2, 55, 12));
+        private static readonly ObstacleDefinition HorizontalWallDefinition = new("HorizontalWall", new Rectangle(160, 6, 55, 16), new Rectangle(0, 2, 55, 12));
 
-        private static readonly ObstacleDefinition VerticalWallDefinition = new(
-            "VerticalWall",
-            new Rectangle(139, 24, 13, 46),
-            new Rectangle(1, 0, 11, 46));
+        private static readonly ObstacleDefinition VerticalWallDefinition = new("VerticalWall", new Rectangle(139, 24, 13, 46), new Rectangle(1, 0, 11, 46));
 
         private static readonly ObstacleDefinition[] GroundSpikeDefinitions =
         {
-            new(
-                "WoodSpikeInGroundFacingLeft",
-                new Rectangle(256, 25, 18, 23),
-                new Rectangle(3, 4, 12, 15)),
-            new(
-                "WoodSpikeInGroundFacingRight",
-                new Rectangle(259, 64, 16, 21),
-                new Rectangle(2, 4, 11, 14))
+            new("WoodSpikeInGroundFacingLeft", new Rectangle(256, 25, 18, 23), new Rectangle(3, 4, 12, 15)),
+            new("WoodSpikeInGroundFacingRight", new Rectangle(259, 64, 16, 21), new Rectangle(2, 4, 11, 14))
         };
 
         public static void Generate(GameManager gameManager, Action<GameObject> addStaticObject)
@@ -105,11 +78,8 @@ namespace TheCure
             for (var i = 0; i < 14; i++)
             {
                 var definition = BuildingDefinitions[gameManager.RNG.Next(BuildingDefinitions.Length)];
-                if (!TryFindPlacement(gameManager, playableBounds, definition.SourceRectangle, Scale, occupied, 40,
-                        out Rectangle destinationRectangle))
-                {
+                if (!TryFindPlacement(gameManager, playableBounds, definition.SourceRectangle, Scale, occupied, 40, out Rectangle destinationRectangle))
                     continue;
-                }
 
                 var collisionRectangle = ScaleAndOffsetRectangle(
                     definition.CollisionRectangle,
@@ -138,18 +108,14 @@ namespace TheCure
                 bool horizontal = gameManager.RNG.NextDouble() < 0.6;
                 int segmentCount = gameManager.RNG.Next(3, 5);
                 var definition = horizontal ? HorizontalWallDefinition : VerticalWallDefinition;
-                Point segmentSize = new(
-                    (int)(definition.SourceRectangle.Width * Scale),
-                    (int)(definition.SourceRectangle.Height * Scale));
+                Point segmentSize = new((int)(definition.SourceRectangle.Width * Scale), (int)(definition.SourceRectangle.Height * Scale));
 
                 Rectangle groupFootprint = horizontal
                     ? new Rectangle(0, 0, segmentSize.X * segmentCount, segmentSize.Y)
                     : new Rectangle(0, 0, segmentSize.X, segmentSize.Y * segmentCount);
 
                 if (!TryFindPlacement(gameManager, playableBounds, groupFootprint.Size, occupied, 48, out Point origin))
-                {
                     continue;
-                }
 
                 var groupCollision = Rectangle.Empty;
                 for (var segmentIndex = 0; segmentIndex < segmentCount; segmentIndex++)
@@ -197,9 +163,7 @@ namespace TheCure
                 Rectangle groupFootprint = new(0, 0, segmentSize.X * segmentCount, segmentSize.Y);
 
                 if (!TryFindPlacement(gameManager, playableBounds, groupFootprint.Size, occupied, 40, out Point origin))
-                {
                     continue;
-                }
 
                 var groupCollision = Rectangle.Empty;
                 for (var segmentIndex = 0; segmentIndex < segmentCount; segmentIndex++)
@@ -263,6 +227,7 @@ namespace TheCure
             }
 
             destinationRectangle = Rectangle.Empty;
+
             return false;
         }
 
@@ -324,6 +289,7 @@ namespace TheCure
         {
             var inflated = rectangle;
             inflated.Inflate(amount, amount);
+
             return inflated;
         }
 

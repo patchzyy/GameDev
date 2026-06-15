@@ -50,7 +50,7 @@ namespace TheCure
             { SettingsConst.FRIENDLY.SIZE, 1f },
             { SettingsConst.FRIENDLY.RADIUS, 20f },
             { SettingsConst.FRIENDLY.START_WEAPON, FriendlyWeapons.HandGun },
-            
+
             // SingleBulletWeapon
             { SettingsConst.SINGLE_BULLET_WEAPON.DAMAGE, 10f },
 
@@ -69,7 +69,7 @@ namespace TheCure
             { SettingsConst.KEY_BINDS.ACTION_3, InputBinding.FromKey(Keys.D3) },
             { SettingsConst.KEY_BINDS.ACTION_4, InputBinding.FromKey(Keys.D4) },
             { SettingsConst.KEY_BINDS.ACTION_5, InputBinding.FromKey(Keys.D5) },
-            
+
             // HEAL BOMB
             { SettingsConst.HEAL_BOMB.HEALING, 10f },
             { SettingsConst.HEAL_BOMB.RADIUS, 50 },
@@ -78,21 +78,23 @@ namespace TheCure
             { SettingsConst.HEAL_BOMB_TRAP.HEALING, 5f },
             { SettingsConst.HEAL_BOMB_TRAP.TICK_INTERVAL, 0.4f },
             { SettingsConst.HEAL_BOMB_TRAP.RADIUS, 120 },
-            
+
             // FREEZE TRAP
             { SettingsConst.FREEZE_TRAP.SLOW_FACTOR, 0.4f },
             { SettingsConst.FREEZE_TRAP.DURATION, 2.5f },
-            
+
             // ELECTRIC TRAP
             { SettingsConst.ELECTRIC_TRAP.DAMAGE_PER_TICK, 8 },
             { SettingsConst.ELECTRIC_TRAP.DAMAGE_TICK_INTERVAL, 0.3f },
             { SettingsConst.ELECTRIC_TRAP.STUN_DURATION, 0.8f },
             { SettingsConst.ELECTRIC_TRAP.STUN_FORCE, 300f },
+
             // BOMB TRAP
             { SettingsConst.BOMB_TRAP.ACTIVATION_DELAY, 0.7f },
             { SettingsConst.BOMB_TRAP.EXPLOSION_DAMAGE, 25 },
             { SettingsConst.BOMB_TRAP.EXPLOSION_RADIUS, 100f },
             { SettingsConst.BOMB_TRAP.EXPLOSION_FADE_DURATION, 0.3f },
+
             // SPIKE TRAP
             { SettingsConst.SPIKE_TRAP.DAMAGE_PER_HIT, 15 },
             { SettingsConst.SPIKE_TRAP.DAMAGE_INTERVAL, 0.5f },

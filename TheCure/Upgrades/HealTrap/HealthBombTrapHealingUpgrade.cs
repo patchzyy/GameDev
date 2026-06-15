@@ -19,9 +19,8 @@ public class HealthBombTrapHealingUpgrade : Upgrade
     public void Unlock(List<Upgrade> unlockedUpgrades)
     {
         var stats = WeaponManager.Get().GetHealBombTrapStats();
+
         if (stats != null)
-        {
             stats.IncreaseHealing(2f);
-        }
     }
 }

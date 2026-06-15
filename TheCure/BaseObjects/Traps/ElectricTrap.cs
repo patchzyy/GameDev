@@ -41,7 +41,7 @@ namespace TheCure.BaseObjects.Traps
             StunForce += forceIncrease;
         }
     }
-    
+
     public class ElectricTrap : Trap
     {
         private int _damagePerTick;
@@ -100,9 +100,7 @@ namespace TheCure.BaseObjects.Traps
                 return;
 
             if (other is Enemy enemy)
-            {
                 _affectedEnemies.Add(enemy);
-            }
         }
 
         protected override void OnTrapHit(LivingEntity target)
@@ -110,7 +108,7 @@ namespace TheCure.BaseObjects.Traps
             if (target is Enemy enemy && !_affectedEnemies.Contains(enemy))
             {
                 _affectedEnemies.Add(enemy);
-                enemy.LoseHealth(_damagePerTick);    
+                enemy.LoseHealth(_damagePerTick);
 
                 Vector2 pushDirection = ((CircleCollider)enemy.collider).Center - ((CircleCollider)collider).Center;
                 if (pushDirection.LengthSquared() > 0)

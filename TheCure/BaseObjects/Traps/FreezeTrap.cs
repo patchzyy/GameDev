@@ -81,9 +81,7 @@ namespace TheCure.BaseObjects.Traps
                 enemy._speed *= SlowFactor;
             }
             else
-            {
                 _slowedEnemies[target as Enemy] = SlowDuration;
-            }
         }
     }
 }

@@ -51,6 +51,7 @@ namespace TheCure
                 OnDeath,
                 true
             );
+
             SyncHealthBarPosition();
 
             base.Load();
@@ -98,10 +99,9 @@ namespace TheCure
             if (_hitTimer > 0)
             {
                 _hitTimer -= deltaTime;
+
                 if (_hitTimer <= 0)
-                {
                     SetState(PlayerAnimationState.Idle);
-                }
             }
 
             UpdateState();
@@ -120,9 +120,7 @@ namespace TheCure
             SpriteEffects effects = SpriteEffects.None;
 
             if (_facingDirection.X < 0)
-            {
                 effects = SpriteEffects.FlipHorizontally;
-            }
 
             Color tint = _isFlashing ? _flashColor : Color.White;
             DrawAnimatedSprite(spriteBatch, tint, _facingDirection);
@@ -138,10 +136,9 @@ namespace TheCure
                 if (collisionNormal != Vector2.Zero)
                 {
                     float velocityIntoWall = Vector2.Dot(_velocity, collisionNormal);
+
                     if (velocityIntoWall < 0f)
-                    {
                         _velocity -= collisionNormal * velocityIntoWall;
-                    }
                 }
             }
 

@@ -58,15 +58,15 @@ public class PlayerActionsManager :Manager<PlayerActionsManager>
         _font = ContentsManager.Get().HUDFont;
         _shoot.Load();
         _dash.Load();
+
         foreach (var action in _actions)
-        {
             action.Load();
-        }
     }
 
     public void AddAction(PlayerAction action)
     {
-        if (_actionBindings.Count == _actions.Count) return;
+        if (_actionBindings.Count == _actions.Count)
+            return;
 
         _actionBindingMap.Add(action, _actionBindings[_actions.Count]);
         _actions.Add(action);
@@ -88,9 +88,7 @@ public class PlayerActionsManager :Manager<PlayerActionsManager>
         };
 
         foreach (var action in _actionBindingMap.Keys)
-        {
             action.ResetCoolDown();
-        }
     }
 
 
@@ -113,7 +111,7 @@ public class PlayerActionsManager :Manager<PlayerActionsManager>
     }
 
     public Dash GetDash() => _dash;
-    
+
     public void Draw(SpriteBatch spriteBatch)
     {
         var gameManager = GameManager.Get();
@@ -256,6 +254,7 @@ public class PlayerActionsManager :Manager<PlayerActionsManager>
             iconWidth,
             iconHeight
         );
+
         spriteBatch.Draw(icon, iconRect, Color.White);
     }
 }
