@@ -254,14 +254,14 @@ namespace TheCure
 
         private void UpdatePhase()
         {
-            var phaseMultiplier = MathF.Pow(1.5f, MathF.Floor(_gameTimeElapsed / 30f));
+            var phaseMultiplier = MathF.Pow(1.5f, MathF.Floor(_gameTimeElapsed / 40f));
 
             _currentSpawnInterval = Settings.GetValue(SettingsConst.SPAWNING.ZOMBIE_SPAWN_INTERVAL) / phaseMultiplier;
             _enemiesToSpawn = Math.Max(1, (int)MathF.Round(Settings.GetValue(SettingsConst.SPAWNING.ENEMIES_PER_WAVE) * phaseMultiplier));
             _maxEnemiesOnScreen = Math.Max(1, (int)MathF.Round(Settings.GetValue(SettingsConst.SPAWNING.MAX_ENEMIES_ON_SCREEN) * phaseMultiplier));
             _maxBrutesOnScreen = Math.Max(0, (int)MathF.Round(Settings.GetValue(SettingsConst.SPAWNING.MAX_BRUTES) * phaseMultiplier));
-            _bruteSpawnChance = MathHelper.Clamp(Settings.GetValue(SettingsConst.SPAWNING.BRUTE_SPAWN_CHANCE) * phaseMultiplier, 0f, 1f);
-            _babyZombieSpawnChance = MathHelper.Clamp(Settings.GetValue(SettingsConst.SPAWNING.BABY_ZOMBIE_SPAWN_CHANCE) * phaseMultiplier, 0f, 1f);
+            _bruteSpawnChance = MathHelper.Clamp(Settings.GetValue(SettingsConst.SPAWNING.BRUTE_SPAWN_CHANCE) * phaseMultiplier, 0f, 0.6f);
+            _babyZombieSpawnChance = MathHelper.Clamp(Settings.GetValue(SettingsConst.SPAWNING.BABY_ZOMBIE_SPAWN_CHANCE) * phaseMultiplier, 0f, 0.3f);
         }
 
         private void SpawnEnemies()

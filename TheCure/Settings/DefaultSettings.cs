@@ -53,7 +53,7 @@ namespace TheCure
             { SettingsConst.FRIENDLY.START_WEAPON, FriendlyWeapons.HandGun },
 
             // SingleBulletWeapon
-            { SettingsConst.SINGLE_BULLET_WEAPON.DAMAGE, 10f },
+            { SettingsConst.SINGLE_BULLET_WEAPON.DAMAGE, 20f },
 
             // VIDEO
             { SettingsConst.VIDEO.WIDTH, 1920 },

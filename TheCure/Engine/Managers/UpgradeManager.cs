@@ -45,6 +45,7 @@ public class UpgradeManager : Manager<UpgradeManager>
         var ElectricTrap = new ElectricTrapUnlockUpgrade();
         var SpikeTrap = new SpikeTrapUnlockUpgrade();
         var BombTrap = new BombTrapUnlockUpgrade();
+        var HealTrap = new HealBombTrapUnlockUpgrade();
 
         _availableActions = new List<Upgrade>
         {
@@ -54,6 +55,7 @@ public class UpgradeManager : Manager<UpgradeManager>
             FreezeTrap,
             ElectricTrap,
             BombTrap,
+            HealTrap,
             boostUnlock,
         };
 
@@ -65,9 +67,9 @@ public class UpgradeManager : Manager<UpgradeManager>
             new HealthBombRadiusUpgrade(HealthBomb),
             new HealthBombTickUpgrade(HealthBomb),
             // Heal Bomb Trap runtime upgrades
-            new HealthBombTrapHealingUpgrade(HealthBomb),
-            new HealthBombTrapTickUpgrade(HealthBomb),
-            new HealthBombTrapRadiusUpgrade(HealthBomb),
+            new HealthBombTrapHealingUpgrade(HealTrap),
+            new HealthBombTrapTickUpgrade(HealTrap),
+            new HealthBombTrapRadiusUpgrade(HealTrap),
             // Freeze trap upgrades
             new FreezeTrapDurationUpgrade(FreezeTrap),
             new FreezeTrapSlowUpgrade(FreezeTrap),
@@ -119,7 +121,7 @@ public class UpgradeManager : Manager<UpgradeManager>
         while (selectableUpgrades.Count < 4)
             selectableUpgrades.Add(new GainHealthUpgrade());
 
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < 3; i++)
         {
             var randomIndex = random.Next(0, selectableUpgrades.Count);
             var upgrade = selectableUpgrades[randomIndex];
@@ -127,6 +129,7 @@ public class UpgradeManager : Manager<UpgradeManager>
             _selectedUpgrades.Add(upgrade);
             selectableUpgrades.RemoveAt(randomIndex);
         }
+        _selectedUpgrades.Add(new GainHealthUpgrade());
     }
 
     public void Draw(SpriteBatch spriteBatch, GameManager gameManager)
