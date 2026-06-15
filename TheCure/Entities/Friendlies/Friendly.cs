@@ -29,7 +29,6 @@ namespace TheCure
         private const float BaseRadius = 120f;
         private const float RingSpacing = 75f;
 
-        private const float MaxMoveSpeed = 120f;
         private const float Steering = 5f;
         private const float StopDistance = 4f;
 
@@ -159,14 +158,14 @@ namespace TheCure
             if (_isEscaping)
                 return;
 
-            if (tmp is Bullet bullet && bullet.IsHealing)
-            {
-                if (!_healthBar.IsMaxHealth)
-                {
-                    GainHealth(1);
-                    tmp.Destroy();
-                }
-            }
+            // if (tmp is Bullet bullet && bullet.IsHealing)
+            // {
+            //     if (!_healthBar.IsMaxHealth)
+            //     {
+            //         GainHealth(1);
+            //         tmp.Destroy();
+            //     }
+            // }
 
             if (tmp is Wall wall)
             {
@@ -260,7 +259,7 @@ namespace TheCure
 
             toTarget /= dist;
 
-            float speed = Math.Min(dist * 2f, MaxMoveSpeed);
+            float speed = Math.Min(dist * 2f, _speed);
             Vector2 desired = toTarget * speed;
 
             float blend = MathHelper.Clamp(Steering * dt, 0f, 1f);

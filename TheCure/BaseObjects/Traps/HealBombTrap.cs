@@ -41,7 +41,7 @@ namespace TheCure.BaseObjects.Traps
 
         private float _healTickTimer;
 
-        public HealBombTrap(HealBombStats stats, Vector2 position, float duration = 15f) : base(position, duration)
+        public HealBombTrap(HealBombStats stats, Vector2 position, float duration = 5f) : base(position, duration)
         {
             _healAmountPerTick = stats.HealAmountPerTick;
             _healTickInterval = stats.HealTickInterval;

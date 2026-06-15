@@ -13,7 +13,7 @@ namespace TheCure
             { SettingsConst.PLAYER.MOVE_SPEED, 300f },
 
             // ZOMBIE
-            { SettingsConst.ZOMBIE.SPEED, 60f },
+            { SettingsConst.ZOMBIE.SPEED, 280f },
             { SettingsConst.ZOMBIE.STAGGER, 1f },
             { SettingsConst.ZOMBIE.ATTACK_DAMAGE, 10f },
             { SettingsConst.ZOMBIE.ATTACK_COOL_DOWN, 1f },
@@ -29,23 +29,24 @@ namespace TheCure
             { SettingsConst.BRUTE.MAX_HEALTH, 200f },
 
             // BABY ZOMBIE
-            { SettingsConst.BABY_ZOMBIE.MOVE_SPEED_MULTIPLIER, 2.0f },
+            { SettingsConst.BABY_ZOMBIE.MOVE_SPEED_MULTIPLIER, 1.5f },
             { SettingsConst.BABY_ZOMBIE.HEALTH_MULTIPLIER, 0.2f },
             { SettingsConst.BABY_ZOMBIE.SCALE, 1.25f },
 
             // SPAWNING
-            { SettingsConst.SPAWNING.ZOMBIE_SPAWN_INTERVAL, 2f },
-            { SettingsConst.SPAWNING.ENEMIES_PER_WAVE, 5 },
-            { SettingsConst.SPAWNING.MAX_ENEMIES_ON_SCREEN, 20 },
-            { SettingsConst.SPAWNING.BRUTE_SPAWN_CHANCE, 0.1f },
+            { SettingsConst.SPAWNING.ZOMBIE_SPAWN_INTERVAL, 1f },
+            { SettingsConst.SPAWNING.ENEMIES_PER_WAVE, 10 },
+            { SettingsConst.SPAWNING.MAX_ENEMIES_ON_SCREEN, 30 },
+            { SettingsConst.SPAWNING.BRUTE_SPAWN_CHANCE, 0.05f },
+            { SettingsConst.SPAWNING.BABY_ZOMBIE_SPAWN_CHANCE, 0.05f },
             { SettingsConst.SPAWNING.MAX_BRUTES, 0 },
 
             // FRIENDLY
             { SettingsConst.FRIENDLY.FOLLOW_DISTANCE, 60f },
-            { SettingsConst.FRIENDLY.MOVE_SPEED, 50f },
-            { SettingsConst.FRIENDLY.START_HEALTH, 100f },
-            { SettingsConst.FRIENDLY.MAX_HEALTH, 100f },
-            { SettingsConst.FRIENDLY.ATTACK_DAMAGE, 10f },
+            { SettingsConst.FRIENDLY.MOVE_SPEED, 2500f },
+            { SettingsConst.FRIENDLY.START_HEALTH, 70f },
+            { SettingsConst.FRIENDLY.MAX_HEALTH, 70f },
+            { SettingsConst.FRIENDLY.ATTACK_DAMAGE, 20f },
             { SettingsConst.FRIENDLY.HEALTH_LOSS_PER_SECOND, 2f },
             { SettingsConst.FRIENDLY.SIZE, 1f },
             { SettingsConst.FRIENDLY.RADIUS, 20f },
@@ -74,27 +75,26 @@ namespace TheCure
             { SettingsConst.HEAL_BOMB.HEALING, 10f },
             { SettingsConst.HEAL_BOMB.RADIUS, 50 },
             { SettingsConst.HEAL_BOMB.TICKS, 5 },
+            
             // HEAL BOMB TRAP (separate from throwable heal bomb)
-            { SettingsConst.HEAL_BOMB_TRAP.HEALING, 5f },
-            { SettingsConst.HEAL_BOMB_TRAP.TICK_INTERVAL, 0.4f },
-            { SettingsConst.HEAL_BOMB_TRAP.RADIUS, 120 },
-
+            { SettingsConst.HEAL_BOMB_TRAP.HEALING, 4f },
+            { SettingsConst.HEAL_BOMB_TRAP.TICK_INTERVAL, 0.2f },
+            { SettingsConst.HEAL_BOMB_TRAP.RADIUS, 60 },
             // FREEZE TRAP
-            { SettingsConst.FREEZE_TRAP.SLOW_FACTOR, 0.4f },
-            { SettingsConst.FREEZE_TRAP.DURATION, 2.5f },
-
+            { SettingsConst.FREEZE_TRAP.SLOW_FACTOR, 0.2f },
+            { SettingsConst.FREEZE_TRAP.DURATION, 1.5f },
             // ELECTRIC TRAP
-            { SettingsConst.ELECTRIC_TRAP.DAMAGE_PER_TICK, 8 },
-            { SettingsConst.ELECTRIC_TRAP.DAMAGE_TICK_INTERVAL, 0.3f },
+            { SettingsConst.ELECTRIC_TRAP.DAMAGE_PER_TICK, 4 },
+            { SettingsConst.ELECTRIC_TRAP.DAMAGE_TICK_INTERVAL, 0.8f },
             { SettingsConst.ELECTRIC_TRAP.STUN_DURATION, 0.8f },
-            { SettingsConst.ELECTRIC_TRAP.STUN_FORCE, 300f },
-
+            { SettingsConst.ELECTRIC_TRAP.STUN_FORCE, 50f },
+            
             // BOMB TRAP
             { SettingsConst.BOMB_TRAP.ACTIVATION_DELAY, 0.7f },
             { SettingsConst.BOMB_TRAP.EXPLOSION_DAMAGE, 25 },
             { SettingsConst.BOMB_TRAP.EXPLOSION_RADIUS, 100f },
             { SettingsConst.BOMB_TRAP.EXPLOSION_FADE_DURATION, 0.3f },
-
+            
             // SPIKE TRAP
             { SettingsConst.SPIKE_TRAP.DAMAGE_PER_HIT, 15 },
             { SettingsConst.SPIKE_TRAP.DAMAGE_INTERVAL, 0.5f },

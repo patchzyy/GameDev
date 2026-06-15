@@ -11,9 +11,12 @@ namespace TheCure
 
         public BabyZombie() : base(
             textureName: "Zombie-Walk",
-            speed: Settings.GetValue(SettingsConst.ZOMBIE.SPEED) * Settings.GetValue(SettingsConst.BABY_ZOMBIE.MOVE_SPEED_MULTIPLIER),
-            startHealth: Settings.GetValue(SettingsConst.ZOMBIE.START_HEALTH) * Settings.GetValue(SettingsConst.BABY_ZOMBIE.HEALTH_MULTIPLIER),
-            maxHealth: Settings.GetValue(SettingsConst.ZOMBIE.START_HEALTH) * Settings.GetValue(SettingsConst.BABY_ZOMBIE.HEALTH_MULTIPLIER),
+            speed: Settings.GetValue(SettingsConst.ZOMBIE.SPEED) *
+                   Settings.GetValue(SettingsConst.BABY_ZOMBIE.MOVE_SPEED_MULTIPLIER),
+            startHealth: Settings.GetValue(SettingsConst.ZOMBIE.START_HEALTH) *
+                         Settings.GetValue(SettingsConst.BABY_ZOMBIE.HEALTH_MULTIPLIER),
+            maxHealth: Settings.GetValue(SettingsConst.ZOMBIE.START_HEALTH) *
+                       Settings.GetValue(SettingsConst.BABY_ZOMBIE.HEALTH_MULTIPLIER),
             frameCount: 7,
             frameRate: 8f,
             scale: Settings.GetValue(SettingsConst.BABY_ZOMBIE.SCALE)
@@ -51,9 +54,8 @@ namespace TheCure
                 {
                     SoundManager.Get().PlayZombieHit();
                     LoseHealth(bullet.Damage);
+                    bullet.Destroy();
                 }
-
-                bullet.Destroy();
             }
 
             if ((tmp is Friendly || tmp is Player) && _currentTarget == null)

@@ -14,7 +14,7 @@ namespace TheCure.Weapons
 
         public override void Fire(Vector2 position, Vector2 direction)
         {
-            Bullet bullet = new Bullet(position, direction, 300f, true, damage: damage);
+            Bullet bullet = new Bullet(position, direction, 300f, damage, true);
             SoundManager.Get().PlayPlayerShoot();
             GameManager.Get().AddGameObject(bullet);
 

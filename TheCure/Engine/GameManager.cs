@@ -58,8 +58,8 @@ namespace TheCure
 
             RNG = new Random();
 
-            CurrentGameState = GameState.HealSelection;
-            PreviousGameState = GameState.HealSelection;
+            CurrentGameState = GameState.StartScreen;
+            PreviousGameState = GameState.StartScreen;
             _currentSpawnInterval = _initialSpawnInterval;
         }
 
@@ -254,33 +254,21 @@ namespace TheCure
 
         private void UpdatePhase()
         {
-            if (_gameTimeElapsed < 60f)
-            {
-                _currentSpawnInterval = Settings.GetValue(SettingsConst.SPAWNING.ZOMBIE_SPAWN_INTERVAL);
-                _enemiesToSpawn = Settings.GetValue(SettingsConst.SPAWNING.ENEMIES_PER_WAVE);
-                _maxEnemiesOnScreen = Settings.GetValue(SettingsConst.SPAWNING.MAX_ENEMIES_ON_SCREEN);
-                _maxBrutesOnScreen = Settings.GetValue(SettingsConst.SPAWNING.MAX_BRUTES);
-                _bruteSpawnChance = Settings.GetValue(SettingsConst.SPAWNING.BRUTE_SPAWN_CHANCE);
-                _babyZombieSpawnChance = 0f;
-            }
-            else if (_gameTimeElapsed < 180f)
-            {
-                _currentSpawnInterval = 2.0f;
-                _enemiesToSpawn = 2;
-                _maxEnemiesOnScreen = 35;
-                _maxBrutesOnScreen = 2;
-                _bruteSpawnChance = 0.15f;
-                _babyZombieSpawnChance = 0.20f;
-            }
-            else
-            {
-                _currentSpawnInterval = 1.2f;
-                _enemiesToSpawn = 3;
-                _maxEnemiesOnScreen = 50;
-                _maxBrutesOnScreen = 5;
-                _bruteSpawnChance = 0.20f;
-                _babyZombieSpawnChance = 0.30f;
-            }
+            var phaseMultiplier = MathF.Pow(1.6f, MathF.Floor(_gameTimeElapsed / 40f));
+
+            _currentSpawnInterval = Settings.GetValue(SettingsConst.SPAWNING.ZOMBIE_SPAWN_INTERVAL) / phaseMultiplier;
+            _enemiesToSpawn = Math.Max(1,
+                (int)MathF.Round(Settings.GetValue(SettingsConst.SPAWNING.ENEMIES_PER_WAVE) * phaseMultiplier));
+            _maxEnemiesOnScreen = Math.Max(1,
+                (int)MathF.Round(Settings.GetValue(SettingsConst.SPAWNING.MAX_ENEMIES_ON_SCREEN) * phaseMultiplier));
+            _maxBrutesOnScreen = Math.Max(0,
+                (int)MathF.Round(Settings.GetValue(SettingsConst.SPAWNING.MAX_BRUTES) * phaseMultiplier));
+            _bruteSpawnChance =
+                MathHelper.Clamp(Settings.GetValue(SettingsConst.SPAWNING.BRUTE_SPAWN_CHANCE) * phaseMultiplier, 0f,
+                    0.6f);
+            _babyZombieSpawnChance =
+                MathHelper.Clamp(Settings.GetValue(SettingsConst.SPAWNING.BABY_ZOMBIE_SPAWN_CHANCE) * phaseMultiplier,
+                    0f, 0.3f);
         }
 
         private void SpawnEnemies()
@@ -298,9 +286,9 @@ namespace TheCure
             if (totalEnemies >= _maxEnemiesOnScreen)
                 return;
 
-            _enemiesToSpawn = Math.Min(_enemiesToSpawn, _maxEnemiesOnScreen - totalEnemies);
+            var loop = Math.Min(_enemiesToSpawn, _maxEnemiesOnScreen - totalEnemies);
 
-            for (var i = 0; i < _enemiesToSpawn; i++)
+            for (var i = 0; i < loop; i++)
             {
                 if (bruteCount < _maxBrutesOnScreen && RNG.NextDouble() < _bruteSpawnChance)
                 {
@@ -348,9 +336,6 @@ namespace TheCure
         {
             switch (CurrentGameState)
             {
-                case GameState.HealSelection:
-                    ScreenManager.Get().DrawHealSelectScreen(spriteBatch);
-                    break;
 
                 case GameState.StartScreen:
                     ScreenManager.Get().DrawStartScreen(spriteBatch);
@@ -417,7 +402,8 @@ namespace TheCure
             var stats = new List<Stat>
             {
                 new Stat("Max Health", PlayerManager.Get().Player._maxHealth.ToString()),
-                new Stat("Move Speed", (PlayerManager.Get().Player._speed / 10).ToString("0.0", CultureInfo.InvariantCulture)),
+                new Stat("Move Speed",
+                    (PlayerManager.Get().Player._speed / 10).ToString("0.0", CultureInfo.InvariantCulture)),
                 new Stat("Friendlies", _gameObjects.OfType<Friendly>().Count().ToString()),
             };
 
@@ -462,7 +448,8 @@ namespace TheCure
                 var healBombTrapStats = WeaponManager.Get().GetHealBombTrapStats();
                 stats.Add(new Stat("-", "-"));
                 stats.Add(new Stat("Heal Bomb Trap", "-"));
-                stats.Add(new Stat("Healing", healBombTrapStats.HealAmountPerTick.ToString("0.0", CultureInfo.InvariantCulture)));
+                stats.Add(new Stat("Healing",
+                    healBombTrapStats.HealAmountPerTick.ToString("0.0", CultureInfo.InvariantCulture)));
                 stats.Add(new Stat("Tick Interval",
                     healBombTrapStats.HealTickInterval.ToString("0.0", CultureInfo.InvariantCulture)));
                 stats.Add(
@@ -474,7 +461,8 @@ namespace TheCure
                 var bombTrapStats = WeaponManager.Get().GetBombTrapStats();
                 stats.Add(new Stat("-", "-"));
                 stats.Add(new Stat("Bomb Trap", "-"));
-                stats.Add(new Stat("Activation Delay", bombTrapStats.ActivationDelay.ToString("0.0", CultureInfo.InvariantCulture)));
+                stats.Add(new Stat("Activation Delay",
+                    bombTrapStats.ActivationDelay.ToString("0.0", CultureInfo.InvariantCulture)));
                 stats.Add(new Stat("Damage", bombTrapStats.ExplosionDamage.ToString()));
                 stats.Add(new Stat("Radius",
                     bombTrapStats.ExplosionRadius.ToString("0.0", CultureInfo.InvariantCulture)));

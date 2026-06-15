@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using TheCure.Enemies;
 using TheCure.Managers;
@@ -12,7 +13,7 @@ namespace TheCure
 
         public Zombie() : base(
             textureName: "Zombie-Walk",
-            speed: Settings.GetValue(SettingsConst.ZOMBIE.SPEED),
+            speed: Settings.GetValue(SettingsConst.ZOMBIE.SPEED) + (float)(new Random().NextDouble() * 60f - 20f),
             startHealth: Settings.GetValue(SettingsConst.ZOMBIE.START_HEALTH),
             maxHealth: Settings.GetValue(SettingsConst.ZOMBIE.MAX_HEALTH),
             frameCount: 7,
@@ -24,6 +25,7 @@ namespace TheCure
             _attackDamage = Settings.GetValue(SettingsConst.ZOMBIE.ATTACK_DAMAGE);
             _attackCoolDown = Settings.GetValue(SettingsConst.ZOMBIE.ATTACK_COOL_DOWN);
         }
+
         public override void Load()
         {
             base.Load();

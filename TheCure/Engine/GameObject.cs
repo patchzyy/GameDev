@@ -15,6 +15,7 @@ namespace TheCure
         protected const float _flashDuration = 0.15f;
         protected Color _flashColor;
         protected bool _isFlashing => _flashTimer > 0f;
+        private float _aliveTimer = 0f;
 
         public float LastHealed;
 
@@ -45,6 +46,9 @@ namespace TheCure
 
         public virtual void Update(GameTime gameTime)
         {
+            if (_aliveTimer < 2f)
+                _aliveTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+            
             if (_isFlashing)
                 _flashTimer -= (float)gameTime.ElapsedGameTime.TotalSeconds;
 
@@ -73,7 +77,8 @@ namespace TheCure
             _animatedSprite = new AnimatedSprite(texture, frameWidth, texture.Height, frames, fps, loop, reverse);
         }
 
-        public void SetHealthBar(Texture2D texture, float maxHealth, float startHealth, Action onDeath, Action onMaxHealth, bool hide = false)
+        public void SetHealthBar(Texture2D texture, float maxHealth, float startHealth, Action onDeath,
+            Action onMaxHealth, bool hide = false)
         {
             _healthBar = new HealthBar(texture, maxHealth, startHealth, onDeath, onMaxHealth, hide);
         }
@@ -98,6 +103,11 @@ namespace TheCure
         {
             if (_healthBar != null)
             {
+                if (_aliveTimer < 2f)
+                {
+                    return;
+                }
+
                 _healthBar.DecreaseHealth(amount);
 
                 _flashTimer = _flashDuration;
