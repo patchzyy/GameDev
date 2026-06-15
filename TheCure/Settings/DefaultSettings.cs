@@ -13,7 +13,7 @@ namespace TheCure
             { SettingsConst.PLAYER.MOVE_SPEED, 300f },
 
             // ZOMBIE
-            { SettingsConst.ZOMBIE.SPEED, 60f },
+            { SettingsConst.ZOMBIE.SPEED, 270f },
             { SettingsConst.ZOMBIE.STAGGER, 1f },
             { SettingsConst.ZOMBIE.ATTACK_DAMAGE, 10f },
             { SettingsConst.ZOMBIE.ATTACK_COOL_DOWN, 1f },
@@ -29,20 +29,21 @@ namespace TheCure
             { SettingsConst.BRUTE.MAX_HEALTH, 200f },
 
             // BABY ZOMBIE
-            { SettingsConst.BABY_ZOMBIE.MOVE_SPEED_MULTIPLIER, 2.0f },
+            { SettingsConst.BABY_ZOMBIE.MOVE_SPEED_MULTIPLIER, 1.5f },
             { SettingsConst.BABY_ZOMBIE.HEALTH_MULTIPLIER, 0.2f },
             { SettingsConst.BABY_ZOMBIE.SCALE, 1.25f },
 
             // SPAWNING
-            { SettingsConst.SPAWNING.ZOMBIE_SPAWN_INTERVAL, 2f },
-            { SettingsConst.SPAWNING.ENEMIES_PER_WAVE, 5 },
+            { SettingsConst.SPAWNING.ZOMBIE_SPAWN_INTERVAL, 1f },
+            { SettingsConst.SPAWNING.ENEMIES_PER_WAVE, 10 },
             { SettingsConst.SPAWNING.MAX_ENEMIES_ON_SCREEN, 20 },
-            { SettingsConst.SPAWNING.BRUTE_SPAWN_CHANCE, 0.1f },
+            { SettingsConst.SPAWNING.BRUTE_SPAWN_CHANCE, 0.05f },
+            { SettingsConst.SPAWNING.BABY_ZOMBIE_SPAWN_CHANCE, 0.05f },
             { SettingsConst.SPAWNING.MAX_BRUTES, 0 },
 
             // FRIENDLY
             { SettingsConst.FRIENDLY.FOLLOW_DISTANCE, 60f },
-            { SettingsConst.FRIENDLY.MOVE_SPEED, 50f },
+            { SettingsConst.FRIENDLY.MOVE_SPEED, 350f },
             { SettingsConst.FRIENDLY.START_HEALTH, 100f },
             { SettingsConst.FRIENDLY.MAX_HEALTH, 100f },
             { SettingsConst.FRIENDLY.ATTACK_DAMAGE, 10f },

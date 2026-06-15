@@ -254,33 +254,14 @@ namespace TheCure
 
         private void UpdatePhase()
         {
-            if (_gameTimeElapsed < 60f)
-            {
-                _currentSpawnInterval = Settings.GetValue(SettingsConst.SPAWNING.ZOMBIE_SPAWN_INTERVAL);
-                _enemiesToSpawn = Settings.GetValue(SettingsConst.SPAWNING.ENEMIES_PER_WAVE);
-                _maxEnemiesOnScreen = Settings.GetValue(SettingsConst.SPAWNING.MAX_ENEMIES_ON_SCREEN);
-                _maxBrutesOnScreen = Settings.GetValue(SettingsConst.SPAWNING.MAX_BRUTES);
-                _bruteSpawnChance = Settings.GetValue(SettingsConst.SPAWNING.BRUTE_SPAWN_CHANCE);
-                _babyZombieSpawnChance = 0f;
-            }
-            else if (_gameTimeElapsed < 180f)
-            {
-                _currentSpawnInterval = 2.0f;
-                _enemiesToSpawn = 2;
-                _maxEnemiesOnScreen = 35;
-                _maxBrutesOnScreen = 2;
-                _bruteSpawnChance = 0.15f;
-                _babyZombieSpawnChance = 0.20f;
-            }
-            else
-            {
-                _currentSpawnInterval = 1.2f;
-                _enemiesToSpawn = 3;
-                _maxEnemiesOnScreen = 50;
-                _maxBrutesOnScreen = 5;
-                _bruteSpawnChance = 0.20f;
-                _babyZombieSpawnChance = 0.30f;
-            }
+            var phaseMultiplier = MathF.Pow(1.5f, MathF.Floor(_gameTimeElapsed / 30f));
+
+            _currentSpawnInterval = Settings.GetValue(SettingsConst.SPAWNING.ZOMBIE_SPAWN_INTERVAL) / phaseMultiplier;
+            _enemiesToSpawn = Math.Max(1, (int)MathF.Round(Settings.GetValue(SettingsConst.SPAWNING.ENEMIES_PER_WAVE) * phaseMultiplier));
+            _maxEnemiesOnScreen = Math.Max(1, (int)MathF.Round(Settings.GetValue(SettingsConst.SPAWNING.MAX_ENEMIES_ON_SCREEN) * phaseMultiplier));
+            _maxBrutesOnScreen = Math.Max(0, (int)MathF.Round(Settings.GetValue(SettingsConst.SPAWNING.MAX_BRUTES) * phaseMultiplier));
+            _bruteSpawnChance = MathHelper.Clamp(Settings.GetValue(SettingsConst.SPAWNING.BRUTE_SPAWN_CHANCE) * phaseMultiplier, 0f, 1f);
+            _babyZombieSpawnChance = MathHelper.Clamp(Settings.GetValue(SettingsConst.SPAWNING.BABY_ZOMBIE_SPAWN_CHANCE) * phaseMultiplier, 0f, 1f);
         }
 
         private void SpawnEnemies()

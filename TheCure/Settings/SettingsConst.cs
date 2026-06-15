@@ -54,6 +54,7 @@ namespace TheCure
             public static readonly SettingKey<int> ENEMIES_PER_WAVE = new(_group, "ENEMIES_PER_WAVE");
             public static readonly SettingKey<int> MAX_ENEMIES_ON_SCREEN = new(_group, "MAX_ENEMIES_ON_SCREEN");
             public static readonly SettingKey<float> BRUTE_SPAWN_CHANCE = new(_group, "BRUTE_SPAWN_CHANCE");
+            public static readonly SettingKey<float> BABY_ZOMBIE_SPAWN_CHANCE = new(_group, "BABY_ZOMBIE_SPAWN_CHANCE");
             public static readonly SettingKey<int> MAX_BRUTES = new(_group, "MAX_BRUTES");
         }
 
