@@ -3,5 +3,8 @@
     "WIDTH": 1920,
     "HEIGHT": 1080,
     "DISPLAY_MODE": 2
+  },
+  "HEAL_BOMB_TRAP": {
+    "HEALING": 6
   }
 }

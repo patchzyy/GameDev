@@ -254,7 +254,7 @@ namespace TheCure
 
         private void UpdatePhase()
         {
-            var phaseMultiplier = MathF.Pow(1.2f, MathF.Floor(_gameTimeElapsed / 40f));
+            var phaseMultiplier = MathF.Pow(1.6f, MathF.Floor(_gameTimeElapsed / 40f));
 
             _currentSpawnInterval = Settings.GetValue(SettingsConst.SPAWNING.ZOMBIE_SPAWN_INTERVAL) / phaseMultiplier;
             _enemiesToSpawn = Math.Max(1,

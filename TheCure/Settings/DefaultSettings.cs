@@ -13,7 +13,7 @@ namespace TheCure
             { SettingsConst.PLAYER.MOVE_SPEED, 300f },
 
             // ZOMBIE
-            { SettingsConst.ZOMBIE.SPEED, 250f },
+            { SettingsConst.ZOMBIE.SPEED, 280f },
             { SettingsConst.ZOMBIE.STAGGER, 1f },
             { SettingsConst.ZOMBIE.ATTACK_DAMAGE, 10f },
             { SettingsConst.ZOMBIE.ATTACK_COOL_DOWN, 1f },
