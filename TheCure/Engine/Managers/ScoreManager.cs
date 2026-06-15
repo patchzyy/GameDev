@@ -39,9 +39,7 @@ namespace TheCure
                 _scorePopups[i].TimeLeft -= deltaTime;
 
                 if (_scorePopups[i].TimeLeft <= 0)
-                {
                     _scorePopups.RemoveAt(i);
-                }
             }
         }
     }

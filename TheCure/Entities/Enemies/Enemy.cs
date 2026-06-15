@@ -3,13 +3,11 @@ using Microsoft.Xna.Framework;
 using TheCure.Managers;
 using TheCure.Entities;
 
-
-
 namespace TheCure.Enemies
 {
     public abstract class Enemy : LivingEntity
     {
-        protected float _attackCooldown;
+        protected float _attackCoolDown;
         protected float _attackTimer;
         protected float _attackDamage;
         protected bool _attackNextCombat;
@@ -94,7 +92,7 @@ namespace TheCure.Enemies
                 direction = currentWaypoint - ((CircleCollider)collider).Center;
 
                 // Zijn we dichtbij genoeg? Pak de volgende waypoint
-                if (direction.LengthSquared() < 64f * 0.5f * 64f * 0.5f) // halverwege 
+                if (direction.LengthSquared() < 64f * 0.5f * 64f * 0.5f) // halverwege
                 {
                     _currentPath.RemoveAt(0);
                     if (_currentPath.Count > 0)
@@ -105,10 +103,7 @@ namespace TheCure.Enemies
                 }
             }
             else
-            {
-                // fallback
                 direction = targetPosition - ((CircleCollider)collider).Center;
-            }
 
             if (direction.LengthSquared() > 0.0001f)
             {
@@ -128,7 +123,7 @@ namespace TheCure.Enemies
             _currentTarget?.LoseHealth(_attackDamage);
             SoundManager.Get().PlayFriendlyHit();
             _attackNextCombat = false;
-            _attackTimer = _attackCooldown;
+            _attackTimer = _attackCoolDown;
             _currentTarget = null;
         }
 
@@ -158,9 +153,7 @@ namespace TheCure.Enemies
             base.Update(gameTime);
 
             if (_animatedSprite.IsFinished)
-            {
                 OnDeathFinish();
-            }
 
             return true;
         }

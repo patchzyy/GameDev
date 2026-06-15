@@ -19,9 +19,8 @@ public class HealthBombTrapRadiusUpgrade : Upgrade
     public void Unlock(List<Upgrade> unlockedUpgrades)
     {
         var stats = WeaponManager.Get().GetHealBombTrapStats();
+
         if (stats != null)
-        {
             stats.IncreaseRadius(15f);
-        }
     }
 }

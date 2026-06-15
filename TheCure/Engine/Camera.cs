@@ -43,22 +43,14 @@ namespace TheCure
             int maxY = worldBounds.Bottom - Viewport.Height;
 
             if (maxX < worldBounds.Left)
-            {
                 _position.X = worldBounds.Left;
-            }
             else
-            {
                 _position.X = MathHelper.Clamp(_position.X, worldBounds.Left, maxX);
-            }
 
             if (maxY < worldBounds.Top)
-            {
                 _position.Y = worldBounds.Top;
-            }
             else
-            {
                 _position.Y = MathHelper.Clamp(_position.Y, worldBounds.Top, maxY);
-            }
         }
 
         public Rectangle GetViewBounds()

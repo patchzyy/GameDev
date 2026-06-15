@@ -22,7 +22,6 @@ public abstract class Throwable : GameObject
 
     private Shadow _shadow;
 
-
     public Throwable(Vector2 position, Vector2 target, string textureName, Color color)
     {
         _startPosition = position;
@@ -105,6 +104,7 @@ class Shadow : GameObject
     public override void Load()
     {
         var content = ContentsManager.Get().GetContent();
+
         Texture = content.Load<Texture2D>("Bullet");
         base.Load();
     }
@@ -113,6 +113,7 @@ class Shadow : GameObject
     {
         var offset = _collider.Center - new Vector2(Texture.Width / 2, Texture.Height / 2);
         var color = new Color(255, 255, 255, 50);
+
         spriteBatch.Draw(Texture, offset, color);
     }
 }

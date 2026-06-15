@@ -46,14 +46,10 @@ namespace TheCure
         public virtual void Update(GameTime gameTime)
         {
             if (_isFlashing)
-            {
                 _flashTimer -= (float)gameTime.ElapsedGameTime.TotalSeconds;
-            }
 
             if (_healthBar != null && collider != null)
-            {
                 _healthBar.UpdateHealthBar(collider.GetBoundingBox().Center, collider.GetBoundingBox().Height);
-            }
         }
 
         public virtual void Draw(GameTime gameTime, SpriteBatch spriteBatch)
@@ -77,8 +73,7 @@ namespace TheCure
             _animatedSprite = new AnimatedSprite(texture, frameWidth, texture.Height, frames, fps, loop, reverse);
         }
 
-        public void SetHealthBar(Texture2D texture, float maxHealth, float startHealth, Action onDeath,
-            Action onMaxHealth, bool hide = false)
+        public void SetHealthBar(Texture2D texture, float maxHealth, float startHealth, Action onDeath, Action onMaxHealth, bool hide = false)
         {
             _healthBar = new HealthBar(texture, maxHealth, startHealth, onDeath, onMaxHealth, hide);
         }
@@ -109,9 +104,7 @@ namespace TheCure
                 _flashColor = Color.Red * 0.9f;
             }
             else
-            {
                 System.Diagnostics.Debug.WriteLine("No health bar set");
-            }
         }
 
         public void GainHealth(float amount)
@@ -126,17 +119,13 @@ namespace TheCure
                 _flashColor = Color.Green * 0.9f;
             }
             else
-            {
                 System.Diagnostics.Debug.WriteLine("No health bar set");
-            }
         }
 
         public void ResetHealth()
         {
             if (_healthBar != null)
-            {
                 _healthBar.ResetHealth();
-            }
         }
 
         public float CurrentHealth()

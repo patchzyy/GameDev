@@ -45,14 +45,12 @@ namespace TheCure
 
         public bool LeftMousePress()
         {
-            return CurrentMouseState.LeftButton == ButtonState.Pressed &&
-                   LastMouseState.LeftButton == ButtonState.Released;
+            return CurrentMouseState.LeftButton == ButtonState.Pressed && LastMouseState.LeftButton == ButtonState.Released;
         }
 
         public bool RightMousePress()
         {
-            return CurrentMouseState.RightButton == ButtonState.Pressed &&
-                   LastMouseState.RightButton == ButtonState.Released;
+            return CurrentMouseState.RightButton == ButtonState.Pressed && LastMouseState.RightButton == ButtonState.Released;
         }
 
         public bool IsBindingDown(InputBinding binding)

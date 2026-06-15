@@ -74,9 +74,7 @@ namespace TheCure.BaseObjects.Traps
                             float distance = toFriendly.Length();
 
                             if (distance < _healRadius)
-                            {
                                 friendly.GainHealth((int)_healAmountPerTick);
-                            }
                         }
                     }
                 }
@@ -91,9 +89,7 @@ namespace TheCure.BaseObjects.Traps
                             float distance = toEnemy.Length();
 
                             if (distance < _healRadius)
-                            {
                                 enemy.GainHealth((int)_healAmountPerTick);
-                            }
                         }
                     }
                 }
@@ -109,7 +105,6 @@ namespace TheCure.BaseObjects.Traps
             {
                 target.GainHealth((int)(_healAmountPerTick * 2));
             }
-
         }
     }
 }

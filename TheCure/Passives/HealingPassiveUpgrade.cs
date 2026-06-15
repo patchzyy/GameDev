@@ -16,6 +16,7 @@ public class HealingPassiveUpgrade : Upgrade
     public void Unlock(List<Upgrade> unlockedUpgrades)
     {
         float oldHealingPower = Settings.GetValue(SettingsConst.SINGLE_BULLET_WEAPON.DAMAGE);
+
         Settings.Save(SettingsConst.SINGLE_BULLET_WEAPON.DAMAGE, oldHealingPower + 5);
         PlayerManager.Get().Player.WeaponsSystem.Reload();
     }

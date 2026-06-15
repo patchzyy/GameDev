@@ -43,9 +43,7 @@ public class BoostManager : Manager<BoostManager>
 
 
             if (changed)
-            {
                 ApplyStatsForBoost(boost);
-            }
         }
     }
 
@@ -73,9 +71,7 @@ public class BoostManager : Manager<BoostManager>
                 Math.Abs(before - after) > 0.0001f;
 
             if (changed)
-            {
                 ApplyStatsForBoost(boost);
-            }
         }
     }
 
@@ -86,9 +82,7 @@ public class BoostManager : Manager<BoostManager>
         foreach (var boost in _boosts)
         {
             if (boost.BoostSettings.Contains(statKey))
-            {
                 multiplier *= boost.GetBoostMultiplier();
-            }
         }
 
         return multiplier;
@@ -96,10 +90,7 @@ public class BoostManager : Manager<BoostManager>
 
     public void ApplyStatsForBoost(Boost boost)
     {
-        if (boost.BoostSettings.Contains(SettingsConst.FRIENDLY.ATTACK_DAMAGE) ||
-            boost.BoostSettings.Contains(SettingsConst.FRIENDLY.SIZE))
-        {
+        if (boost.BoostSettings.Contains(SettingsConst.FRIENDLY.ATTACK_DAMAGE) || boost.BoostSettings.Contains(SettingsConst.FRIENDLY.SIZE))
             StatManager.Get().UpdateFriendliesStats();
-        }
     }
 }

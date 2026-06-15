@@ -137,14 +137,10 @@ namespace TheCure
             }
 
             bool hasCommandPosition = commandManager.TryGetFriendlyCommandPosition(this, out Vector2 commandTarget);
-            Vector2 target = hasCommandPosition
-                ? commandTarget
-                : GetRingTarget(gm);
+            Vector2 target = hasCommandPosition ? commandTarget : GetRingTarget(gm);
 
             if (!hasCommandPosition || !commandManager.IsFriendlyCommandHolding())
-            {
                 target += GetSeparation(gm);
-            }
 
             MoveTo(target, dt);
             Attack(gameTime);
@@ -429,7 +425,8 @@ namespace TheCure
 
             foreach (var enemy in GameManager.Get().Enemies)
             {
-                if (enemy == null) continue;
+                if (enemy == null)
+                    continue;
 
                 if (enemy is Zombie zombie && zombie.LastHealed < 7f)
                     continue;
@@ -450,7 +447,6 @@ namespace TheCure
         {
             _sizeMultiplier = sizeMultiplier;
             ((CircleCollider)collider).Radius = BaseColliderRadius * _sizeMultiplier;
-            
         }
 
         public void SetWeaponDamage(float damage)

@@ -37,7 +37,7 @@ public class ScreenManager : Manager<ScreenManager>
     private Button _resolutionDropdownButton;
     private List<Button> _resolutionButtons;
     private bool _resolutionDropdownOpen = false;
-    private readonly (int width, int height)[] _resolutions = 
+    private readonly (int width, int height)[] _resolutions =
     {
         (1920, 1080),
         (2560, 1440)
@@ -71,6 +71,7 @@ public class ScreenManager : Manager<ScreenManager>
             }
         }
         _selectedDisplayMode = Settings.GetValue(SettingsConst.VIDEO.DISPLAY_MODE);
+
         LoadTutorialContent();
         CreateButtons();
         UpdateResolutionDropdownText();
@@ -146,7 +147,7 @@ public class ScreenManager : Manager<ScreenManager>
             if (_resolutionDropdownOpen)
                 foreach (var button in _resolutionButtons)
                     button.Update(mouseState);
-            
+
             if (_displayModeDropdownOpen)
                 foreach (var button in _displayModeButtons)
                     button.Update(mouseState);
@@ -173,7 +174,7 @@ public class ScreenManager : Manager<ScreenManager>
             ContentsManager.Get().ButtonFont);
         _continueButton = new Button(new Rectangle(0, 0, buttonWidth, buttonHeight), "Continue",
             ContentsManager.Get().ButtonFont);
-    
+
         _pauseQuitButton = new Button(new Rectangle(0, 0, buttonWidth, buttonHeight), "Quit",
             ContentsManager.Get().ButtonFont);
         _restartButton = new Button(new Rectangle(0, 0, buttonWidth, buttonHeight), "Play Again",
@@ -190,7 +191,7 @@ public class ScreenManager : Manager<ScreenManager>
         _settingsBackButton = new Button(
             new Rectangle(0, 0, buttonWidth, buttonHeight), "Back",
             ContentsManager.Get().ButtonFont);
-        
+
         _healSelectButton2 = new Button(new Rectangle(0, 0, buttonWidth, buttonHeight), "Instant heal",
             ContentsManager.Get().ButtonFont);
         _healSelectButton3 = new Button(new Rectangle(0, 0, buttonWidth, buttonHeight), "Heal in movement",
@@ -326,7 +327,7 @@ public class ScreenManager : Manager<ScreenManager>
         _settingsButton.SetPosition(centerX - buttonWidth / 2, (int)(game.GraphicsDevice.Viewport.Height * 0.61f));
         _pauseSettingsButton.SetPosition( centerX - buttonWidth / 2, (int)(game.GraphicsDevice.Viewport.Height * 0.59f));
         _settingsBackButton.SetPosition( centerX - buttonWidth / 2, (int)(game.GraphicsDevice.Viewport.Height * 0.75f));
-        
+
         _healSelectButton2.SetPosition(centerX - buttonWidth / 2,
             (int)(game.GraphicsDevice.Viewport.Height * 0.75f) + 120);
         _healSelectButton3.SetPosition(centerX - buttonWidth / 2,
@@ -618,17 +619,19 @@ public class ScreenManager : Manager<ScreenManager>
 
         _settingsBackButton.Draw(spriteBatch);
 
-        _resolutionDropdownButton.Draw(spriteBatch);       
+        _resolutionDropdownButton.Draw(spriteBatch);
         _displayModeDropdownButton.Draw(spriteBatch);
-        
+
         _applySettingsButton.Draw(spriteBatch);
-        
+
         if (_resolutionDropdownOpen)
             foreach (var button in _resolutionButtons)
                 button.Draw(spriteBatch);
+
         if (_displayModeDropdownOpen)
             foreach (var button in _displayModeButtons)
                 button.Draw(spriteBatch);
+
         spriteBatch.End();
     }
 

@@ -19,10 +19,9 @@ public class BombTrapFadeUpgrade : Upgrade
     public void Unlock(List<Upgrade> unlockedUpgrades)
     {
         var stats = WeaponManager.Get().GetBombTrapStats();
+
         if (stats != null)
-        {
             stats.DecreaseFadeDuration(0.05f);
-        }
     }
 }
 

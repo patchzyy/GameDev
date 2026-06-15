@@ -19,10 +19,9 @@ public class SpikeTrapTickUpgrade : Upgrade
     public void Unlock(List<Upgrade> unlockedUpgrades)
     {
         var stats = WeaponManager.Get().GetSpikeTrapStats();
+
         if (stats != null)
-        {
             stats.DecreaseDamageInterval(0.05f);
-        }
     }
 }
 

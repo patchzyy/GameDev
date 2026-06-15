@@ -21,7 +21,7 @@ namespace TheCure
         {
             _stagger = Settings.GetValue(SettingsConst.BRUTE.STAGGER);
             _attackDamage = Settings.GetValue(SettingsConst.BRUTE.ATTACK_DAMAGE);
-            _attackCooldown = Settings.GetValue(SettingsConst.BRUTE.ATTACK_COOLDOWN);
+            _attackCoolDown = Settings.GetValue(SettingsConst.BRUTE.ATTACK_COOLDOWN);
         }
 
         public override void Load()
@@ -48,9 +48,7 @@ namespace TheCure
             if (tmp is Bullet bullet)
             {
                 if (!bullet.IsHealing)
-                {
                     LoseHealth(bullet.Damage);
-                }
 
                 bullet.Destroy();
             }
@@ -62,9 +60,7 @@ namespace TheCure
             }
 
             if (tmp is Wall wall)
-            {
                 wall.ResolveCircleCollision((CircleCollider)collider, _previousCenter);
-            }
 
             base.OnCollision(tmp);
         }

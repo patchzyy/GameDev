@@ -9,7 +9,7 @@ namespace TheCure.Weapons
 
         public SingleBulletWeapon()
         {
-            this.damage = Settings.GetValue(SettingsConst.SINGLE_BULLET_WEAPON.DAMAGE);
+            damage = Settings.GetValue(SettingsConst.SINGLE_BULLET_WEAPON.DAMAGE);
         }
 
         public override void Fire(Vector2 position, Vector2 direction)
@@ -23,7 +23,7 @@ namespace TheCure.Weapons
 
         public void ResetDamage()
         {
-            this.damage = Settings.GetValue(SettingsConst.SINGLE_BULLET_WEAPON.DAMAGE);
+            damage = Settings.GetValue(SettingsConst.SINGLE_BULLET_WEAPON.DAMAGE);
         }
     }
 }

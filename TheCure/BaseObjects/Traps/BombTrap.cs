@@ -68,9 +68,7 @@ namespace TheCure.BaseObjects.Traps
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             if (!_activated && _elapsedTime >= _activationDelay)
-            {
                 _activated = true;
-            }
 
             if (_activated && !_exploded)
             {
@@ -95,9 +93,7 @@ namespace TheCure.BaseObjects.Traps
         protected override void OnTrapHit(LivingEntity target)
         {
             if (target is Enemy && _activated && !_exploded)
-            {
                 Explode();
-            }
         }
 
         private void Explode()

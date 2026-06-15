@@ -15,8 +15,6 @@ public class GainHealthUpgrade : Upgrade
     public void Unlock(List<Upgrade> unlockedUpgrades)
     {
         if (unlockedUpgrades.Contains(RequiredUpgrade) || RequiredUpgrade == null)
-        {
             PlayerManager.Get().Player.GainHealth(10);
-        }
     }
 }

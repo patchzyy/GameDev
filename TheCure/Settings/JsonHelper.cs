@@ -15,9 +15,7 @@ namespace TheCure
             string? directory = Path.GetDirectoryName(path);
 
             if (!string.IsNullOrEmpty(directory))
-            {
                 Directory.CreateDirectory(directory);
-            }
 
             string json = JsonSerializer.Serialize(data, new JsonSerializerOptions
             {
@@ -32,9 +30,7 @@ namespace TheCure
             string path = GetPath(fileName);
 
             if (!File.Exists(path))
-            {
                 return default;
-            }
 
             string json = File.ReadAllText(path);
             return JsonSerializer.Deserialize<T>(json);

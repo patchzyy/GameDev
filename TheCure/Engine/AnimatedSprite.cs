@@ -25,7 +25,7 @@ namespace TheCure
         public Vector2 Origin => new(FrameWidth / 2f, FrameHeight / 2f);
         private float SecondsPerFrame => 1f / FrameRate;
         public bool IsFinished => !IsLooping && (
-            (!IsReversed && CurrentFrame == FrameCount - 1 && !IsPlaying) || 
+            (!IsReversed && CurrentFrame == FrameCount - 1 && !IsPlaying) ||
             (IsReversed && CurrentFrame == 0 && !IsPlaying));
 
         public Rectangle SourceRectangle
@@ -140,6 +140,7 @@ namespace TheCure
 
                 CurrentFrame = 0;
                 IsPlaying = false;
+
                 return;
             }
 

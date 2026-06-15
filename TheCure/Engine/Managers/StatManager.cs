@@ -24,9 +24,7 @@ public class StatManager : Manager<StatManager>
     {
         var friendlies = GameManager.Get().Friendlies;
         foreach (var friendly in friendlies)
-        {
             UpdateFriendlyStats(friendly);
-        }
     }
 
     public void UpdateZombieStats(Zombie zombie)
@@ -36,8 +34,6 @@ public class StatManager : Manager<StatManager>
     public void UpdateZombiesStats(List<Zombie> zombies)
     {
         foreach (var zombie in zombies)
-        {
             UpdateZombieStats(zombie);
-        }
     }
 }
