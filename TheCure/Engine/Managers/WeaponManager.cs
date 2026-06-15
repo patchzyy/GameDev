@@ -41,7 +41,7 @@ public class WeaponManager : Manager<WeaponManager>
 
     public void UnlockFreezeTrap()
     {
-        FreezeTrap = new Build("Build", TrapType.Freeze, 5f);
+        FreezeTrap = new Build("FreezeTrap", TrapType.Freeze, 5f);
         PlayerActionsManager.Get().AddAction(FreezeTrap);
     }
 
@@ -62,7 +62,7 @@ public class WeaponManager : Manager<WeaponManager>
 
     public void UnlockElectricTrap()
     {
-        ElectricTrap = new Build("Build", TrapType.Electric, 5f);
+        ElectricTrap = new Build("ElectricTrap", TrapType.Electric, 5f);
         PlayerActionsManager.Get().AddAction(ElectricTrap);
     }
 
@@ -81,7 +81,7 @@ public class WeaponManager : Manager<WeaponManager>
 
     public void UnlockHealTrap()
     {
-        HealTrap = new Build("Build", TrapType.HealBomb, 10f);
+        HealTrap = new Build("HealTrap", TrapType.HealBomb, 10f);
         PlayerActionsManager.Get().AddAction(HealTrap);
     }
 
@@ -102,7 +102,7 @@ public class WeaponManager : Manager<WeaponManager>
 
     public void UnlockBombTrap()
     {
-        BombTrapBuild = new Build("Build", TrapType.Bomb, 12f);
+        BombTrapBuild = new Build("BombTrap", TrapType.Bomb, 12f);
         PlayerActionsManager.Get().AddAction(BombTrapBuild);
     }
 
@@ -121,7 +121,7 @@ public class WeaponManager : Manager<WeaponManager>
 
     public void UnlockSpikeTrap()
     {
-        SpikeTrapBuild = new Build("Build", TrapType.Spike, 8f);
+        SpikeTrapBuild = new Build("SpikeTrap", TrapType.Spike, 8f);
         PlayerActionsManager.Get().AddAction(SpikeTrapBuild);
     }
 
