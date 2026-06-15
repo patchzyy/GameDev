@@ -1,16 +1,4 @@
 {
-  "PLAYER": {
-    "MAX_HEALTH": 110
-  },
-  "SINGLE_BULLET_WEAPON": {
-    "DAMAGE": 20
-  },
-  "HEAL_BOMB": {
-    "HEALING": 25
-  },
-  "FREEZE_TRAP": {
-    "DURATION": 2.7
-  },
   "VIDEO": {
     "WIDTH": 1920,
     "HEIGHT": 1080,

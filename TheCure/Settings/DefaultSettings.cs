@@ -75,27 +75,26 @@ namespace TheCure
             { SettingsConst.HEAL_BOMB.HEALING, 10f },
             { SettingsConst.HEAL_BOMB.RADIUS, 50 },
             { SettingsConst.HEAL_BOMB.TICKS, 5 },
+            
             // HEAL BOMB TRAP (separate from throwable heal bomb)
-            { SettingsConst.HEAL_BOMB_TRAP.HEALING, 5f },
-            { SettingsConst.HEAL_BOMB_TRAP.TICK_INTERVAL, 0.4f },
-            { SettingsConst.HEAL_BOMB_TRAP.RADIUS, 120 },
-
+            { SettingsConst.HEAL_BOMB_TRAP.HEALING, 4f },
+            { SettingsConst.HEAL_BOMB_TRAP.TICK_INTERVAL, 0.2f },
+            { SettingsConst.HEAL_BOMB_TRAP.RADIUS, 60 },
             // FREEZE TRAP
-            { SettingsConst.FREEZE_TRAP.SLOW_FACTOR, 0.4f },
-            { SettingsConst.FREEZE_TRAP.DURATION, 2.5f },
-
+            { SettingsConst.FREEZE_TRAP.SLOW_FACTOR, 0.2f },
+            { SettingsConst.FREEZE_TRAP.DURATION, 1.5f },
             // ELECTRIC TRAP
-            { SettingsConst.ELECTRIC_TRAP.DAMAGE_PER_TICK, 8 },
-            { SettingsConst.ELECTRIC_TRAP.DAMAGE_TICK_INTERVAL, 0.3f },
+            { SettingsConst.ELECTRIC_TRAP.DAMAGE_PER_TICK, 4 },
+            { SettingsConst.ELECTRIC_TRAP.DAMAGE_TICK_INTERVAL, 0.8f },
             { SettingsConst.ELECTRIC_TRAP.STUN_DURATION, 0.8f },
-            { SettingsConst.ELECTRIC_TRAP.STUN_FORCE, 300f },
-
+            { SettingsConst.ELECTRIC_TRAP.STUN_FORCE, 50f },
+            
             // BOMB TRAP
             { SettingsConst.BOMB_TRAP.ACTIVATION_DELAY, 0.7f },
             { SettingsConst.BOMB_TRAP.EXPLOSION_DAMAGE, 25 },
             { SettingsConst.BOMB_TRAP.EXPLOSION_RADIUS, 100f },
             { SettingsConst.BOMB_TRAP.EXPLOSION_FADE_DURATION, 0.3f },
-
+            
             // SPIKE TRAP
             { SettingsConst.SPIKE_TRAP.DAMAGE_PER_HIT, 15 },
             { SettingsConst.SPIKE_TRAP.DAMAGE_INTERVAL, 0.5f },
