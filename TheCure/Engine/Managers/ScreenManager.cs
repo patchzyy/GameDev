@@ -149,6 +149,9 @@ public class ScreenManager : Manager<ScreenManager>
             if (inputManager.IsKeyPress(Keys.PageUp))
                 _infoScrollOffset -= 300f;
 
+            if (_infoScrollOffset < 0f)
+                _infoScrollOffset = 0f;
+
             _infoBackButton.Update(mouseState);
             return;
         }
@@ -359,17 +362,21 @@ public class ScreenManager : Manager<ScreenManager>
         int buttonWidth = 200;
         int centerX = game.GraphicsDevice.Viewport.Width / 2;
 
-        _startButton.SetPosition(centerX - buttonWidth / 2, (int)(game.GraphicsDevice.Viewport.Height * 0.54f));
-        _infoButton.SetPosition(centerX - buttonWidth / 2, (int)(game.GraphicsDevice.Viewport.Height * 0.58f));
-        _quitButton.SetPosition(centerX - buttonWidth / 2, (int)(game.GraphicsDevice.Viewport.Height * 0.68f));
+        int menuButtonSpacing = 70;
+        int menuStartY = (int)(game.GraphicsDevice.Viewport.Height * 0.48f);
+
+        _startButton.SetPosition(centerX - buttonWidth / 2, menuStartY);
+        _infoButton.SetPosition(centerX - buttonWidth / 2, menuStartY + menuButtonSpacing);
+        _settingsButton.SetPosition(centerX - buttonWidth / 2, menuStartY + menuButtonSpacing * 2);
+        _quitButton.SetPosition(centerX - buttonWidth / 2, menuStartY + menuButtonSpacing * 3);
+
         _continueButton.SetPosition(centerX - buttonWidth / 2, (int)(game.GraphicsDevice.Viewport.Height * 0.5f));
 
         _restartButton.SetPosition(centerX - buttonWidth / 2, (int)(game.GraphicsDevice.Viewport.Height * 0.5f));
         _pauseQuitButton.SetPosition(centerX - buttonWidth / 2, (int)(game.GraphicsDevice.Viewport.Height * 0.68f));
 
-        _settingsButton.SetPosition(centerX - buttonWidth / 2, (int)(game.GraphicsDevice.Viewport.Height * 0.61f));
-        _pauseSettingsButton.SetPosition( centerX - buttonWidth / 2, (int)(game.GraphicsDevice.Viewport.Height * 0.59f));
-        _settingsBackButton.SetPosition( centerX - buttonWidth / 2, (int)(game.GraphicsDevice.Viewport.Height * 0.75f));
+        _pauseSettingsButton.SetPosition(centerX - buttonWidth / 2, (int)(game.GraphicsDevice.Viewport.Height * 0.59f));
+        _settingsBackButton.SetPosition(centerX - buttonWidth / 2, (int)(game.GraphicsDevice.Viewport.Height * 0.75f));
 
         _healSelectButton2.SetPosition(centerX - buttonWidth / 2,
             (int)(game.GraphicsDevice.Viewport.Height * 0.75f) + 120);
@@ -655,11 +662,6 @@ public class ScreenManager : Manager<ScreenManager>
             new Rectangle(0, 0, game.GraphicsDevice.Viewport.Width, game.GraphicsDevice.Viewport.Height),
             new Color(0, 0, 0, 180));
 
-        string title = "INFORMATIE";
-        Vector2 titleSize = content.TitleFont.MeasureString(title);
-        spriteBatch.DrawString(content.TitleFont, title,
-            new Vector2(game.GraphicsDevice.Viewport.Width / 2 - titleSize.X / 2, 120), Color.White);
-
         string goal = "Doel: Overleef zo lang mogelijk en behaal de hoogste score door zombies te verslaan en te converteren tot vriendelijken.";
         static string ToAscii(string s)
         {
@@ -668,9 +670,6 @@ public class ScreenManager : Manager<ScreenManager>
         }
 
         var safeGoal = ToAscii(goal);
-        Vector2 goalSize = content.ButtonFont.MeasureString(safeGoal);
-        spriteBatch.DrawString(content.ButtonFont, safeGoal,
-            new Vector2(game.GraphicsDevice.Viewport.Width / 2 - goalSize.X / 2, 220), Color.White);
 
         string details =
             @"Doel:
@@ -757,6 +756,15 @@ Tips:
         float visibleHeight = game.GraphicsDevice.Viewport.Height - contentTop - 140f;
 
         _infoScrollOffset = MathHelper.Clamp(_infoScrollOffset, 0f, Math.Max(0f, contentHeight - visibleHeight));
+
+        string title = "INFORMATIE";
+        Vector2 titleSize = content.TitleFont.MeasureString(title);
+        spriteBatch.DrawString(content.TitleFont, title,
+            new Vector2(game.GraphicsDevice.Viewport.Width / 2 - titleSize.X / 2, 120 - _infoScrollOffset), Color.White);
+
+        Vector2 goalSize = content.ButtonFont.MeasureString(safeGoal);
+        spriteBatch.DrawString(content.ButtonFont, safeGoal,
+            new Vector2(game.GraphicsDevice.Viewport.Width / 2 - goalSize.X / 2, 220 - _infoScrollOffset), Color.White);
 
         float lineY = contentTop - _infoScrollOffset;
         foreach (var line in lines)
