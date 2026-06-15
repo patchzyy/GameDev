@@ -11,7 +11,6 @@
         Quit,
         Paused,
         GameOver,
-        HealSelection,
         Settings
     }
 }

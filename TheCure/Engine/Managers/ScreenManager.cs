@@ -1,9 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using TheCure.Upgrades;
-using TheCure.Weapons;
-using TheCure.Weapons.Throw;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,10 +23,6 @@ public class ScreenManager : Manager<ScreenManager>
     private Button _settingsButton;
     private Button _pauseSettingsButton;
     private Button _settingsBackButton;
-
-    private Button _healSelectButton2;
-    private Button _healSelectButton3;
-    private Button _healSelectButton4;
 
     private Texture2D _tutorialPlayerTexture;
     private Texture2D _tutorialZombieTexture;
@@ -107,15 +100,6 @@ public class ScreenManager : Manager<ScreenManager>
             _infoButton.Update(mouseState);
             _settingsButton.Update(mouseState);
             _quitButton.Update(mouseState);
-
-            return;
-        }
-
-        if (state == GameState.HealSelection)
-        {
-            _healSelectButton2.Update(mouseState);
-            _healSelectButton3.Update(mouseState);
-            _healSelectButton4.Update(mouseState);
 
             return;
         }
@@ -225,13 +209,6 @@ public class ScreenManager : Manager<ScreenManager>
             new Rectangle(0, 0, buttonWidth, buttonHeight), "Back",
             ContentsManager.Get().ButtonFont);
 
-        _healSelectButton2 = new Button(new Rectangle(0, 0, buttonWidth, buttonHeight), "Instant heal",
-            ContentsManager.Get().ButtonFont);
-        _healSelectButton3 = new Button(new Rectangle(0, 0, buttonWidth, buttonHeight), "Heal in movement",
-            ContentsManager.Get().ButtonFont);
-        _healSelectButton4 = new Button(new Rectangle(0, 0, buttonWidth, buttonHeight), "Heal shoot",
-            ContentsManager.Get().ButtonFont);
-
         _resolutionButtons = new List<Button>();
         _resolutionDropdownButton = new Button( new Rectangle(0,0,180,50), "", ContentsManager.Get().ButtonFont);
         for (int i = 0; i < _resolutions.Length; i++)
@@ -300,17 +277,11 @@ public class ScreenManager : Manager<ScreenManager>
             gameManager.SetGameState(GameState.Settings);
         });
         _settingsBackButton.SetAction(() => gameManager.SetGameState(_previousState, false));
-
         _infoBackButton = new Button(
             new Rectangle(0, 0, buttonWidth, buttonHeight), "Back",
             ContentsManager.Get().ButtonFont);
 
         _infoBackButton.SetAction(() => gameManager.SetGameState(GameState.StartScreen));
-
-
-        _healSelectButton2.SetAction(() => HealSelectButtonAction(HealType.Instant));
-        _healSelectButton3.SetAction(() => HealSelectButtonAction(HealType.Movement));
-        _healSelectButton4.SetAction(() => HealSelectButtonAction(HealType.Shoot));
 
         _resolutionDropdownButton.SetAction(() =>
         {
@@ -329,25 +300,6 @@ public class ScreenManager : Manager<ScreenManager>
         });
 
         _applySettingsButton.SetAction(ApplySettings);
-    }
-
-    private void HealSelectButtonAction(HealType type)
-    {
-        switch (type)
-        {
-            case HealType.Movement:
-                PlayerManager.Get().Player.WeaponsSystem.SetShootWeapon(ShootWeapons.Movement);
-                break;
-            case HealType.Instant:
-                PlayerManager.Get().Player.WeaponsSystem.SetShootWeapon(ShootWeapons.Instant);
-                break;
-            case HealType.Shoot:
-                PlayerManager.Get().Player.WeaponsSystem.SetShootWeapon(ShootWeapons.SingleBullet);
-                break;
-        }
-
-        PlayerActionsManager.Get().ReloadShoot();
-        GameManager.Get().SetGameState(GameState.StartScreen);
     }
 
     private void RestartButtonAction()
@@ -382,12 +334,6 @@ public class ScreenManager : Manager<ScreenManager>
         _pauseSettingsButton.SetPosition( centerX - buttonWidth / 2, (int)(game.GraphicsDevice.Viewport.Height * 0.59f));
         _settingsBackButton.SetPosition( centerX - buttonWidth / 2, (int)(game.GraphicsDevice.Viewport.Height * 0.75f));
 
-        _healSelectButton2.SetPosition(centerX - buttonWidth / 2,
-            (int)(game.GraphicsDevice.Viewport.Height * 0.75f) + 120);
-        _healSelectButton3.SetPosition(centerX - buttonWidth / 2,
-            (int)(game.GraphicsDevice.Viewport.Height * 0.75f) + 180);
-        _healSelectButton4.SetPosition(centerX - buttonWidth / 2, (int)(game.GraphicsDevice.Viewport.Height * 0.75f));
-
         var resolutionLabel = "Resolution: ";
         var resolutionLabelSize = ContentsManager.Get().ButtonFont.MeasureString(resolutionLabel);
 
@@ -412,29 +358,6 @@ public class ScreenManager : Manager<ScreenManager>
             _displayModeButtons[i].SetPosition(displayButtonX, displayButtonY + 60 + i * 60);
 
         _applySettingsButton.SetPosition(centerX - 100, (int)(game.GraphicsDevice.Viewport.Height * 0.65f));
-    }
-
-    public void DrawHealSelectScreen(SpriteBatch spriteBatch)
-    {
-        var game = GameManager.Get().Game;
-        spriteBatch.Begin();
-        var content = ContentsManager.Get();
-
-        spriteBatch.Draw(content.BackgroundTexture,
-            new Rectangle(0, 0, game.GraphicsDevice.Viewport.Width, game.GraphicsDevice.Viewport.Height),
-            Color.White);
-
-        string title = "Choose your healing type";
-        Vector2 titleSize = content.TitleFont.MeasureString(title);
-        spriteBatch.DrawString(content.TitleFont, title,
-            new Vector2(game.GraphicsDevice.Viewport.Width / 2 - titleSize.X / 2, 150),
-            Color.White);
-
-        _healSelectButton2.Draw(spriteBatch);
-        _healSelectButton3.Draw(spriteBatch);
-        _healSelectButton4.Draw(spriteBatch);
-
-        spriteBatch.End();
     }
 
     public void DrawGameOver(SpriteBatch spriteBatch)

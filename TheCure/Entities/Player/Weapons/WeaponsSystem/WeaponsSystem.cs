@@ -1,7 +1,6 @@
 using System;
 using Microsoft.Xna.Framework;
 using TheCure.Managers;
-using TheCure.Weapons.Throw;
 
 namespace TheCure.Weapons;
 
@@ -12,10 +11,6 @@ public class WeaponsSystem
     public BaseWeapon CurrentWeapon { get; set; }
 
     private SingleBulletWeapon _singleBulletWeapon = new SingleBulletWeapon();
-
-    private MovementWeapon _movementWeapon = new MovementWeapon();
-
-    private InstantWeapon _instantWeapon = new InstantWeapon();
 
     public WeaponsSystem()
     {
@@ -30,8 +25,6 @@ public class WeaponsSystem
     public void Reload()
     {
         _singleBulletWeapon = new SingleBulletWeapon();
-        _instantWeapon = new InstantWeapon();
-        _movementWeapon = new MovementWeapon();
     }
 
     public void Update(GameTime gameTime)
@@ -47,14 +40,6 @@ public class WeaponsSystem
             case ShootWeapons.SingleBullet:
                 Console.WriteLine("Single bullet weapon selected");
                 CurrentWeapon = _singleBulletWeapon;
-                break;
-            case ShootWeapons.Movement:
-                Console.WriteLine("Movement weapon selected");
-                CurrentWeapon = _movementWeapon;
-                break;
-            case ShootWeapons.Instant:
-                Console.WriteLine("Instant weapon selected");
-                CurrentWeapon = _instantWeapon;
                 break;
         }
     }

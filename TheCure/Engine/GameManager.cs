@@ -58,8 +58,8 @@ namespace TheCure
 
             RNG = new Random();
 
-            CurrentGameState = GameState.HealSelection;
-            PreviousGameState = GameState.HealSelection;
+            CurrentGameState = GameState.StartScreen;
+            PreviousGameState = GameState.StartScreen;
             _currentSpawnInterval = _initialSpawnInterval;
         }
 
@@ -336,9 +336,6 @@ namespace TheCure
         {
             switch (CurrentGameState)
             {
-                case GameState.HealSelection:
-                    ScreenManager.Get().DrawHealSelectScreen(spriteBatch);
-                    break;
 
                 case GameState.StartScreen:
                     ScreenManager.Get().DrawStartScreen(spriteBatch);
