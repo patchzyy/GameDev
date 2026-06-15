@@ -118,6 +118,7 @@ namespace TheCure
         {
             CurrentGameState = GameState.Playing;
         }
+
         public void SetGameState(GameState newState, bool savePrevious = true)
         {
             if (savePrevious)
@@ -125,6 +126,7 @@ namespace TheCure
 
             CurrentGameState = newState;
         }
+
         public void Load()
         {
             HUD = new HUD();
@@ -421,53 +423,69 @@ namespace TheCure
             if (WeaponManager.Get().IsHealBombUnlocked())
             {
                 var healBomb = WeaponManager.Get().HealBomb;
-                stats.Add(new Stat("Health Bomb Radius", healBomb.Radius.ToString()));
-                stats.Add(new Stat("Health Bomb Healing", healBomb.HealingAmount.ToString()));
-                stats.Add(new Stat("Health Bomb Ticks", healBomb.Ticks.ToString()));
+                stats.Add(new Stat("-", "-"));
+                stats.Add(new Stat("Health Bomb", "-"));
+                stats.Add(new Stat("Radius", healBomb.Radius.ToString()));
+                stats.Add(new Stat("Healing", healBomb.HealingAmount.ToString()));
+                stats.Add(new Stat("Ticks", healBomb.Ticks.ToString()));
             }
 
             if (WeaponManager.Get().IsFreezeTrapUnlocked())
             {
                 var freezeTrapStats = WeaponManager.Get().GetFreezeTrapStats();
-                stats.Add(new Stat("Freeze Trap Duration", freezeTrapStats.SlowDuration.ToString()));
-                stats.Add(new Stat("Freeze Trap Slow Factor", freezeTrapStats.SlowFactor.ToString()));
+                stats.Add(new Stat("-", "-"));
+                stats.Add(new Stat("Freeze Trap", "-"));
+                stats.Add(new Stat("Duration", freezeTrapStats.SlowDuration.ToString()));
+                stats.Add(new Stat("Slow Factor", freezeTrapStats.SlowFactor.ToString()));
             }
 
             if (WeaponManager.Get().IsElectricTrapUnlocked())
             {
                 var electricTrapStats = WeaponManager.Get().GetElectricTrapStats();
-
-                stats.Add(new Stat("Electric Trap Damage", electricTrapStats.DamagePerTick.ToString()));
-                stats.Add(new Stat("Electric Trap Tick Interval", electricTrapStats.DamageTickInterval.ToString("0.0", CultureInfo.InvariantCulture)));
-                stats.Add(new Stat("Electric Trap Stun Duration", electricTrapStats.StunDuration.ToString("0.0", CultureInfo.InvariantCulture)));
-                stats.Add(new Stat("Electric Trap Stun Force", electricTrapStats.StunForce.ToString("0.0", CultureInfo.InvariantCulture)));
+                stats.Add(new Stat("-", "-"));
+                stats.Add(new Stat("Electric Trap", "-"));
+                stats.Add(new Stat("Damage", electricTrapStats.DamagePerTick.ToString()));
+                stats.Add(new Stat("Tick Interval",
+                    electricTrapStats.DamageTickInterval.ToString("0.0", CultureInfo.InvariantCulture)));
+                stats.Add(new Stat("Stun Duration",
+                    electricTrapStats.StunDuration.ToString("0.0", CultureInfo.InvariantCulture)));
+                stats.Add(new Stat("Stun Force",
+                    electricTrapStats.StunForce.ToString("0.0", CultureInfo.InvariantCulture)));
             }
 
             if (WeaponManager.Get().IsHealTrapUnlocked())
             {
                 var healBombTrapStats = WeaponManager.Get().GetHealBombTrapStats();
-
-                stats.Add(new Stat("Heal Bomb Trap Healing", healBombTrapStats.HealAmountPerTick.ToString("0.0", CultureInfo.InvariantCulture)));
-                stats.Add(new Stat("Heal Bomb Trap Tick Interval", healBombTrapStats.HealTickInterval.ToString("0.0", CultureInfo.InvariantCulture)));
-                stats.Add(new Stat("Heal Bomb Trap Radius", healBombTrapStats.HealRadius.ToString("0.0", CultureInfo.InvariantCulture)));
+                stats.Add(new Stat("-", "-"));
+                stats.Add(new Stat("Heal Bomb Trap", "-"));
+                stats.Add(new Stat("Healing", healBombTrapStats.HealAmountPerTick.ToString("0.0", CultureInfo.InvariantCulture)));
+                stats.Add(new Stat("Tick Interval",
+                    healBombTrapStats.HealTickInterval.ToString("0.0", CultureInfo.InvariantCulture)));
+                stats.Add(
+                    new Stat("Radius", healBombTrapStats.HealRadius.ToString("0.0", CultureInfo.InvariantCulture)));
             }
 
             if (WeaponManager.Get().IsBombTrapUnlocked())
             {
                 var bombTrapStats = WeaponManager.Get().GetBombTrapStats();
-
-                stats.Add(new Stat("Bomb Trap Activation Delay", bombTrapStats.ActivationDelay.ToString("0.0", CultureInfo.InvariantCulture)));
-                stats.Add(new Stat("Bomb Trap Damage", bombTrapStats.ExplosionDamage.ToString()));
-                stats.Add(new Stat("Bomb Trap Radius", bombTrapStats.ExplosionRadius.ToString("0.0", CultureInfo.InvariantCulture)));
-                stats.Add(new Stat("Bomb Trap Fade Duration", bombTrapStats.ExplosionFadeDuration.ToString("0.0", CultureInfo.InvariantCulture)));
+                stats.Add(new Stat("-", "-"));
+                stats.Add(new Stat("Bomb Trap", "-"));
+                stats.Add(new Stat("Activation Delay", bombTrapStats.ActivationDelay.ToString("0.0", CultureInfo.InvariantCulture)));
+                stats.Add(new Stat("Damage", bombTrapStats.ExplosionDamage.ToString()));
+                stats.Add(new Stat("Radius",
+                    bombTrapStats.ExplosionRadius.ToString("0.0", CultureInfo.InvariantCulture)));
+                stats.Add(new Stat("Fade Duration",
+                    bombTrapStats.ExplosionFadeDuration.ToString("0.0", CultureInfo.InvariantCulture)));
             }
 
             if (WeaponManager.Get().IsSpikeTrapUnlocked())
             {
                 var spikeTrapStats = WeaponManager.Get().GetSpikeTrapStats();
-
-                stats.Add(new Stat("Spike Trap Damage", spikeTrapStats.DamagePerHit.ToString()));
-                stats.Add(new Stat("Spike Trap Damage Interval", spikeTrapStats.DamageInterval.ToString("0.0", CultureInfo.InvariantCulture)));
+                stats.Add(new Stat("-", "-"));
+                stats.Add(new Stat("Spike Trap", "-"));
+                stats.Add(new Stat("Damage", spikeTrapStats.DamagePerHit.ToString()));
+                stats.Add(new Stat("Damage Interval",
+                    spikeTrapStats.DamageInterval.ToString("0.0", CultureInfo.InvariantCulture)));
             }
 
             return stats;
